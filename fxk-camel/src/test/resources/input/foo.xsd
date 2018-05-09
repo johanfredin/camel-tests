@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="users">
+        <xsd:complexType mixed="true">
+            <xsd:sequence>
+                <xsd:element name="user" maxOccurs="unbounded">
+                    <xsd:complexType mixed="true">
+                        <xsd:sequence>
+                            <xsd:element name="name" minOccurs="0" type="xsd:normalizedString"/>
+                            <xsd:element name="age" minOccurs="0" type="xsd:int"/>
+                            <xsd:element name="gender" minOccurs="0" type="xsd:normalizedString"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
