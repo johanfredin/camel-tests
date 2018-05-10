@@ -14,7 +14,7 @@ public class JobUtils {
         return new StringBuilder()
                 .append(inputType.getType())
                 .append(url)
-                .append("/fileName=")
+                .append("/?fileName=")
                 .append(fileName)
                 .append(option.getOption())
                 .toString();
