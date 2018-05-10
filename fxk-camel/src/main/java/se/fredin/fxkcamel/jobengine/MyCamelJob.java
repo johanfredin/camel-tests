@@ -1,13 +1,15 @@
-package se.fredin.fxkcamel.job;
+package se.fredin.fxkcamel.jobengine;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class JobRouterComponent extends JobengineJob {
+public class MyCamelJob extends JobengineJob {
 
     @Override
     public void configure() {
+        /*
         from("file:" + getSettingsComponent().getInputDirectory() + "?noop=true")
                 .to("file:" + getSettingsComponent().getOutputDirectory());
+                */
     }
 }

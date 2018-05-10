@@ -1,4 +1,4 @@
-package se.fredin.fxkcamel.job;
+package se.fredin.fxkcamel.jobengine;
 
 import org.wiztools.xsdgen.ParseException;
 import org.wiztools.xsdgen.XsdGen;

@@ -1,2 +1,3 @@
-"id";"name"
-"1";"johan"
+first-name;last-name;age;gender;country
+Anders;Svensson;25;Male;Sweden
+Laila;Bagge;35;Female;US

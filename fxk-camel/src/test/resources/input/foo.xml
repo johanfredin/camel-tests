@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <users>
     <user>
-        <name>Anders</name>
+        <first-name>Anders</first-name>
+        <last-name>Svensson</last-name>
         <age>25</age>
         <gender>Male</gender>
+        <country>Sweden</country>
     </user>
     <user>
-        <name>Laila</name>
-        <age>23</age>
+        <first-name>Laila</first-name>
+        <last-name>Bagge</last-name>
+        <age>35</age>
         <gender>Female</gender>
+        <country>US</country>
     </user>
 </users>

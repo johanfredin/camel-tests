@@ -1,8 +1,7 @@
-package se.fredin.fxkcamel.job;
+package se.fredin.fxkcamel.jobengine;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.fredin.fxkcamel.settings.SettingsComponent;
 
 public abstract class JobengineJob extends RouteBuilder {
 

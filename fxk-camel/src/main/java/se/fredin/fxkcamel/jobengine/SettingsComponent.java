@@ -1,4 +1,4 @@
-package se.fredin.fxkcamel.settings;
+package se.fredin.fxkcamel.jobengine;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
