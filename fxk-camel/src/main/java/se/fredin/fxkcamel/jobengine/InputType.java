@@ -8,7 +8,7 @@ public enum InputType {
 
     private final String type;
 
-    private InputType(String type) {
+    InputType(String type) {
         this.type = type;
     }
 

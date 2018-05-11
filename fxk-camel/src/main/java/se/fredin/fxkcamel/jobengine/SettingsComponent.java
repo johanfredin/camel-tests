@@ -12,6 +12,9 @@ public class SettingsComponent {
     @Value("${output-directory}")
     private String outputDirectory;
 
+    @Value("${schema-directory}")
+    private String xmlSchemaDirectory;
+
     public String getInputDirectory() {
         return inputDirectory;
     }
@@ -26,5 +29,13 @@ public class SettingsComponent {
 
     public void setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    public String getXmlSchemaDirectory() {
+        return xmlSchemaDirectory;
+    }
+
+    public void setXmlSchemaDirectory(String xmlSchemaDirectory) {
+        this.xmlSchemaDirectory = xmlSchemaDirectory;
     }
 }
