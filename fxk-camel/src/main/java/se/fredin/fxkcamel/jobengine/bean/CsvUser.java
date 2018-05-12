@@ -1,10 +1,14 @@
 package se.fredin.fxkcamel.jobengine.bean;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 
+import java.io.Serializable;
+
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class CsvUser {
+public class CsvUser implements Serializable {
 
     @DataField(pos = 1)
     private String firstName;

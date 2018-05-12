@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlType;
     "user"
 })
 @XmlRootElement(name = "users")
-public class Users {
+public class Users implements Cloneable {
 
     protected List<Users.User> user;
 
@@ -81,6 +81,9 @@ public class Users {
         return this.user;
     }
 
+    public void setUsers(List<Users.User> user) {
+        this.user= user;
+    }
 
     /**
      * <p>Java class for anonymous complex type.
@@ -113,7 +116,7 @@ public class Users {
         "gender",
         "country"
     })
-    public static class User {
+    public static class User implements  Cloneable{
 
         @XmlElement(name = "first-name", required = true)
         protected String firstName;
@@ -239,4 +242,10 @@ public class Users {
 
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Users clone = new Users();
+        clone.setUsers(this.getUser());
+        return clone;
+    }
 }
