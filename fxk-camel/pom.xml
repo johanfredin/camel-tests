@@ -85,6 +85,27 @@
             <version>LATEST</version>
         </dependency>
 
+        <dependency>
+
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jdbc</artifactId>
+            <version>RELEASE</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>RELEASE</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>RELEASE</version>
+
+        </dependency>
     </dependencies>
 
     <build>
