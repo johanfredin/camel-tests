@@ -1,16 +1,1 @@
-[
-  {
-    "firstName": "Laila",
-    "lastName": "Bagge",
-    "age": 35,
-    "gender": "FEMALE",
-    "country": "Denmark"
-  },
-  {
-    "firstName": "Anders",
-    "lastName": "Svensson",
-    "age": 25,
-    "gender": "MALE",
-    "country": "Sweden"
-  }
-]
+[{"id":0,"firstName":"Laila","lastName":"Bagge","age":35,"gender":"FEMALE","country":"Denmark"},{"id":0,"firstName":"Anders","lastName":"Svensson","age":25,"gender":"MALE","country":"Sweden"}]

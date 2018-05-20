@@ -2,9 +2,9 @@ package se.fredin.fxkcamel.jobengine;
 
 public enum InputType {
 
-    FILE("file:"),
-    DB("sql:"),
-    JPA("jpa:");
+    FILE("file"),
+    SQL("sql"),
+    JPA("jpa");
 
     private final String type;
 

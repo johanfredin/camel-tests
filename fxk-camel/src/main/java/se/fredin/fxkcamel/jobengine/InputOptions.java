@@ -2,8 +2,8 @@ package se.fredin.fxkcamel.jobengine;
 
 public enum InputOptions {
 
-    KEEP("&noop=true"),
-    DISCARD("&noop=false");
+    KEEP("noop=true"),
+    DISCARD("noop=false");
 
     private String option;
 
