@@ -1,44 +1,39 @@
 package se.fredin.fxkcamel.jobengine.bean;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 import org.apache.camel.dataformat.bindy.annotation.Link;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.List;
 
-@Entity
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class CsvUser implements Serializable {
-
-    @Id
-    private long id;
+public class User implements Serializable {
 
     @DataField(pos = 1)
-    private String firstName;
+    private long id;
 
     @DataField(pos = 2)
-    private String lastName;
+    private String firstName;
 
     @DataField(pos = 3)
-    private int age;
+    private String lastName;
 
     @DataField(pos = 4)
-    private String gender;
+    private int age;
 
     @DataField(pos = 5)
+    private String gender;
+
+    @DataField(pos = 6)
     private String country;
 
     @Link
     private List<Pet> pets;
 
-    public CsvUser() {}
+    public User() {}
 
-    public CsvUser(long id, String firstName, String lastName, int age, String gender, String country) {
+    public User(long id, String firstName, String lastName, int age, String gender, String country) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Doing ex.1 where input/output is SQL
+ * Doing ex.1 where input is SQL
  */
 @Component
 public class Ex1_SQL extends JobengineJob {
