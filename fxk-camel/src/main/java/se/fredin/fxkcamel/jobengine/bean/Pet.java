@@ -7,7 +7,7 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 public class Pet {
 
     @DataField(pos = 1)
-    private int id;
+    private long id;
 
     @DataField(pos = 2)
     private String name;
@@ -28,11 +28,11 @@ public class Pet {
         this.type = type;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

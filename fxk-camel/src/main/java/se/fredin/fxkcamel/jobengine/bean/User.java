@@ -3,6 +3,7 @@ package se.fredin.fxkcamel.jobengine.bean;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 import org.apache.camel.dataformat.bindy.annotation.Link;
+import org.apache.camel.dataformat.bindy.annotation.LinkType;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,19 +29,11 @@ public class User implements Serializable {
     @DataField(pos = 6)
     private String country;
 
-    @Link
+    @Link(linkType = LinkType.OneToMany)
     private List<Pet> pets;
 
     public User() {}
 
-    public User(long id, String firstName, String lastName, int age, String gender, String country) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.gender = gender;
-        this.country = country;
-    }
 
     public void setId(long id) {
         this.id = id;
@@ -100,7 +93,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "CsvUser{" +
+        return "User{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Doing ex.1 where input/output is csv
  */
-@Component
+//@Component
 public class Ex1_CSV extends JobengineJob {
 
     @Override
