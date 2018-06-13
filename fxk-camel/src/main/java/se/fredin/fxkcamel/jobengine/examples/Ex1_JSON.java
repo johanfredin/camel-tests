@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 /**
  * Doing ex.1 where input/output is JSON
  */
-@Component
 public class Ex1_JSON extends JobengineJob {
 
     @Override

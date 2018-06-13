@@ -1,7 +1,6 @@
 package se.fredin.fxkcamel.jobengine.examples;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.jobengine.JobUtils;
@@ -15,8 +14,9 @@ import java.util.stream.Collectors;
 /**
  * Doing ex.1 where input/output is csv
  */
-//@Component
 public class Ex1_CSV extends JobengineJob {
+
+
 
     @Override
     public void configure() {
@@ -27,7 +27,7 @@ public class Ex1_CSV extends JobengineJob {
                 .unmarshal(bindyCsvDataFormat)                                                               // Unmarshal CSV to POJO
                 .process(e -> processUsers(e))                                                               // Do transformation
                 .marshal(bindyCsvDataFormat)                                                                 // Marshal POJO back to CSV
-                .to(JobUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv"));   // Write output file
+                .to(JobUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv")).stop();   // Write output file
 
     }
 

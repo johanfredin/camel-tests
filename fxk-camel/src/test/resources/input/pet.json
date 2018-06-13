@@ -1,0 +1,21 @@
+[
+  {
+    "id": 0,
+    "name": "Alex",
+    "gender": "Male",
+    "type": "Dog"
+  },
+  {
+    "id": 0,
+    "name": "Latifa",
+    "gender": "Female",
+    "type": "Cat"
+  },
+  {
+    "id": 2,
+    "name": "Serenade",
+    "gender": "Female",
+    "type": "Pig"
+  }
+]
+

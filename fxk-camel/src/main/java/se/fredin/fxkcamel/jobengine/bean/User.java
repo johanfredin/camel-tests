@@ -1,39 +1,20 @@
 package se.fredin.fxkcamel.jobengine.bean;
 
-import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
-import org.apache.camel.dataformat.bindy.annotation.DataField;
-import org.apache.camel.dataformat.bindy.annotation.Link;
-import org.apache.camel.dataformat.bindy.annotation.LinkType;
-
 import java.io.Serializable;
 import java.util.List;
 
-@CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
 public class User implements Serializable {
 
-    @DataField(pos = 1)
     private long id;
-
-    @DataField(pos = 2)
     private String firstName;
-
-    @DataField(pos = 3)
     private String lastName;
-
-    @DataField(pos = 4)
     private int age;
-
-    @DataField(pos = 5)
     private String gender;
-
-    @DataField(pos = 6)
     private String country;
 
-    @Link(linkType = LinkType.OneToMany)
     private List<Pet> pets;
 
     public User() {}
-
 
     public void setId(long id) {
         this.id = id;

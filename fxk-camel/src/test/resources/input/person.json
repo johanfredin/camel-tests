@@ -1,0 +1,27 @@
+[
+  {
+    "id":0,
+    "firstName": "Anders",
+    "lastName": "Svensson",
+    "age": 25,
+    "gender": "Male",
+    "country": "Sweden"
+  },
+  {
+    "id":1,
+    "firstName": "Laila",
+    "lastName": "Bagge",
+    "age": 35,
+    "gender": "Female",
+    "country": "Denmark"
+  },
+  {
+    "id":2,
+    "firstName": "Klas",
+    "lastName": "Axelsson",
+    "age": 0,
+    "gender": "Male",
+    "country": "NO"
+  }
+]
+

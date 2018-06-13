@@ -27,9 +27,6 @@ public class CsvUser implements Serializable {
     @DataField(pos = 5)
     private String country;
 
-    @Link
-    private List<Pet> pets;
-
     public CsvUser() {}
 
     public CsvUser(long id, String firstName, String lastName, int age, String gender, String country) {
@@ -89,13 +86,6 @@ public class CsvUser implements Serializable {
         this.country = country;
     }
 
-    public void setPets(List<Pet> pets) {
-        this.pets = pets;
-    }
-
-    public List<Pet> getPets() {
-        return pets;
-    }
 
     @Override
     public String toString() {
@@ -106,7 +96,6 @@ public class CsvUser implements Serializable {
                 ", age=" + age +
                 ", gender='" + gender + '\'' +
                 ", country='" + country + '\'' +
-                ", pets=" + pets +
                 '}';
     }
 

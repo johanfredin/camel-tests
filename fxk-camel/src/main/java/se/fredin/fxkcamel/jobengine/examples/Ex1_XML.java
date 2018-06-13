@@ -1,10 +1,6 @@
 package se.fredin.fxkcamel.jobengine.examples;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.InvalidPayloadException;
-import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
-import org.apache.camel.model.dataformat.JaxbDataFormat;
-import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.jaxb.Users;
 import se.fredin.fxkcamel.jobengine.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
@@ -15,7 +11,6 @@ import java.util.stream.Collectors;
 /**
  * Doing ex.1 where input/output is xml
  */
-@Component
 public class Ex1_XML extends JobengineJob {
 
     @Override

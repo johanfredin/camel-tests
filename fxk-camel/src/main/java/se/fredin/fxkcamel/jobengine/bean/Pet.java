@@ -1,23 +1,11 @@
 package se.fredin.fxkcamel.jobengine.bean;
 
-import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
-import org.apache.camel.dataformat.bindy.annotation.DataField;
-
-@CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
 public class Pet {
 
-    @DataField(pos = 1)
     private long id;
-
-    @DataField(pos = 2)
     private String name;
-
-    @DataField(pos = 3)
     private String gender;
-
-    @DataField(pos = 4)
     private String type;
-
 
     public Pet() {}
 
