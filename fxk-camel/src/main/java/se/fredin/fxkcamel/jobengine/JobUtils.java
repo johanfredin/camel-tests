@@ -70,6 +70,7 @@ public class JobUtils {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
+
     public static JacksonXMLDataFormat toXml(boolean prettyPrint) {
         JacksonXMLDataFormat dataFormat = new JacksonXMLDataFormat();
         dataFormat.setPrettyPrint(prettyPrint);

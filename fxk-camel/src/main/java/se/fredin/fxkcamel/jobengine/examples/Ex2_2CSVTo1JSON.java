@@ -1,7 +1,7 @@
 package se.fredin.fxkcamel.jobengine.examples;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.component.jackson.ListJacksonDataFormat;
+import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import se.fredin.fxkcamel.jobengine.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
@@ -10,30 +10,27 @@ import se.fredin.fxkcamel.jobengine.bean.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Read 2 csv files and join them into one
+ * Read 2 csv files and join them into one json file
  */
-public class Ex2_2JSONTo1 extends JobengineJob {
+public class Ex2_2CSVTo1JSON extends JobengineJob {
 
 
     @Override
     public void configure() throws Exception {
 
-        ListJacksonDataFormat jsonFormatUser = new ListJacksonDataFormat(User.class);
-        ListJacksonDataFormat jsonFormatPet = new ListJacksonDataFormat(Pet.class);
-
-
-        from(JobUtils.file(getSettingsComponent().getInputDirectory(), "pet.json"))
+        from(JobUtils.file(getSettingsComponent().getInputDirectory(), "pet.csv"))
                 .routeId("pets")
-                .unmarshal(jsonFormatPet)
+                .unmarshal(new BindyCsvDataFormat(Pet.class))
                 .to("direct:pet")
                 .setStartupOrder(1);
 
-        from(JobUtils.file(getSettingsComponent().getInputDirectory(), "person.json"))
+        from(JobUtils.file(getSettingsComponent().getInputDirectory(), "person.csv"))
                 .routeId("users")
-                .unmarshal(jsonFormatUser)
+                .unmarshal(new BindyCsvDataFormat(User.class))
                 .pollEnrich("direct:pet", (oe, ne) -> aggregate(oe, ne))
                 .marshal().json(JsonLibrary.Jackson)
                 .to(JobUtils.file(getSettingsComponent().getOutputDirectory(), "person-with-pets.json"))
@@ -43,20 +40,17 @@ public class Ex2_2JSONTo1 extends JobengineJob {
 
 
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-        List<User> users = JobUtils.asList(oldExchange);
-        List<Pet> pets = JobUtils.asList(newExchange);
 
         // Create map <k, list<v>> of pets
-        Map<Long, List<Pet>> petMap = pets.stream()
+        Map<Long, List<Pet>> petMap = JobUtils.<Pet>asList(newExchange).stream()
                 .collect(Collectors.groupingBy(Pet::getId));
 
-        // Match the 2
-        for (User u : users) {
-            List<Pet> petList = petMap.get(u.getId());
-            if (petList != null) {
-                u.setPets(petList);
-            }
-        }
+
+        // Match the 2 (JRE8 way)
+        List<User> users = JobUtils.<User>asList(oldExchange)
+                .stream()
+                .peek(u -> u.setPets(petMap.get(u.getId())))
+                .collect(Collectors.toList());
 
         oldExchange.getIn().setBody(users);
         return oldExchange;

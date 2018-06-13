@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import se.fredin.fxkcamel.jobengine.examples.Ex1_CSV;
 import se.fredin.fxkcamel.jobengine.examples.Ex1_JSON;
 import se.fredin.fxkcamel.jobengine.examples.Ex1_XML;
-import se.fredin.fxkcamel.jobengine.examples.Ex2_2JSONTo1;
+import se.fredin.fxkcamel.jobengine.examples.Ex2_2CSVTo1JSON;
 
 @SpringBootApplication
 public class FxkCamelApplication {
@@ -31,8 +31,8 @@ public class FxkCamelApplication {
     }
 
     @Bean
-    public Ex2_2JSONTo1 ex2_2JSONTO1() {
-        return new Ex2_2JSONTo1();
+    public Ex2_2CSVTo1JSON ex2_2JSONTO1() {
+        return new Ex2_2CSVTo1JSON();
     }
 
 }
