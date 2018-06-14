@@ -1,4 +1,4 @@
-package se.fredin.fxkcamel.jobengine;
+package se.fredin.fxkcamel.jobengine.utils;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
@@ -33,6 +33,7 @@ public class JobUtils {
     }
 
     public static String sql(String query) {
+
         return sql(query, null, true, SqlResultType.ALL, null);
     }
 
@@ -70,6 +71,13 @@ public class JobUtils {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
+    public static String getTransformedUrl(String immUrl, String immUrlPrefix, String outputUrlPrefix) {
+        String url = immUrlPrefix.toLowerCase().replace("\\", "/");
+        immUrl = immUrl.toLowerCase().replace("\\", "/");
+        String outUrl = outputUrlPrefix.toLowerCase().replace("\\", "/");
+
+        return immUrl.replace(url, outUrl);
+    }
 
     public static JacksonXMLDataFormat toXml(boolean prettyPrint) {
         JacksonXMLDataFormat dataFormat = new JacksonXMLDataFormat();

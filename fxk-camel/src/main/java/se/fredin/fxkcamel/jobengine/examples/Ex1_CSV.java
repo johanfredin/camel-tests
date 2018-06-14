@@ -2,10 +2,9 @@ package se.fredin.fxkcamel.jobengine.examples;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
-import org.springframework.stereotype.Component;
-import se.fredin.fxkcamel.jobengine.JobUtils;
+import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
-import se.fredin.fxkcamel.jobengine.bean.CsvUser;
+import se.fredin.fxkcamel.jobengine.examples.bean.CsvUser;
 
 import java.util.Comparator;
 import java.util.List;

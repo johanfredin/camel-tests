@@ -1,20 +1,14 @@
 package se.fredin.fxkcamel.jobengine.examples;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.camel.Exchange;
 import org.apache.camel.component.jackson.ListJacksonDataFormat;
-import org.apache.camel.json.simple.JsonObject;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.springframework.stereotype.Component;
-import se.fredin.fxkcamel.jaxb.Users;
-import se.fredin.fxkcamel.jobengine.JobUtils;
+import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
-import se.fredin.fxkcamel.jobengine.bean.CsvUser;
+import se.fredin.fxkcamel.jobengine.examples.bean.CsvUser;
 
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**

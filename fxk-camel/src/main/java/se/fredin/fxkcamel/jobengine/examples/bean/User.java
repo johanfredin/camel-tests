@@ -1,42 +1,35 @@
-package se.fredin.fxkcamel.jobengine.bean;
+package se.fredin.fxkcamel.jobengine.examples.bean;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
-import org.apache.camel.dataformat.bindy.annotation.Link;
 
 import java.io.Serializable;
 import java.util.List;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class CsvUser implements Serializable {
-
-    private long id;
+public class User implements Serializable {
 
     @DataField(pos = 1)
-    private String firstName;
+    private long id;
 
     @DataField(pos = 2)
-    private String lastName;
+    private String firstName;
 
     @DataField(pos = 3)
-    private int age;
+    private String lastName;
 
     @DataField(pos = 4)
-    private String gender;
+    private int age;
 
     @DataField(pos = 5)
+    private String gender;
+
+    @DataField(pos = 6)
     private String country;
 
-    public CsvUser() {}
+    private List<Pet> pets;
 
-    public CsvUser(long id, String firstName, String lastName, int age, String gender, String country) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.gender = gender;
-        this.country = country;
-    }
+    public User() {}
 
     public void setId(long id) {
         this.id = id;
@@ -86,16 +79,24 @@ public class CsvUser implements Serializable {
         this.country = country;
     }
 
+    public void setPets(List<Pet> pets) {
+        this.pets = pets;
+    }
+
+    public List<Pet> getPets() {
+        return pets;
+    }
 
     @Override
     public String toString() {
-        return "CsvUser{" +
+        return "User{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
                 ", gender='" + gender + '\'' +
                 ", country='" + country + '\'' +
+                ", pets=" + pets +
                 '}';
     }
 

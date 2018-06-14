@@ -3,12 +3,14 @@ package se.fredin.fxkcamel;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import se.fredin.fxkcamel.jobengine.examples.Ex1_CSV;
 import se.fredin.fxkcamel.jobengine.examples.Ex1_JSON;
 import se.fredin.fxkcamel.jobengine.examples.Ex1_XML;
 import se.fredin.fxkcamel.jobengine.examples.Ex2_2CSVTo1JSON;
 
 @SpringBootApplication
+@ComponentScan
 public class FxkCamelApplication {
 
     public static void main(String[] args) {
@@ -30,8 +32,8 @@ public class FxkCamelApplication {
         return new Ex1_XML();
     }
 
-    @Bean
-    public Ex2_2CSVTo1JSON ex2_2JSONTO1() {
+//    @Bean
+    public Ex2_2CSVTo1JSON ex2_2CSVTo1JSON() {
         return new Ex2_2CSVTo1JSON();
     }
 

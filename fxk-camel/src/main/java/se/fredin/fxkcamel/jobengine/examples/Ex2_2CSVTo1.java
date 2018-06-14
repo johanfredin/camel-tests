@@ -1,17 +1,6 @@
 package se.fredin.fxkcamel.jobengine.examples;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
-import org.springframework.stereotype.Component;
-import se.fredin.fxkcamel.jobengine.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
-import se.fredin.fxkcamel.jobengine.bean.Pet;
-import se.fredin.fxkcamel.jobengine.bean.User;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Read 2 csv files and join them into one

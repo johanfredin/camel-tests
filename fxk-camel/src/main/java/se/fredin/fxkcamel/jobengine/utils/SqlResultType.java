@@ -1,4 +1,4 @@
-package se.fredin.fxkcamel.jobengine;
+package se.fredin.fxkcamel.jobengine.utils;
 
 public enum SqlResultType {
 

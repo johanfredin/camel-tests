@@ -1,4 +1,4 @@
-package se.fredin.fxkcamel.jobengine.bean;
+package se.fredin.fxkcamel.jobengine.examples.bean;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;

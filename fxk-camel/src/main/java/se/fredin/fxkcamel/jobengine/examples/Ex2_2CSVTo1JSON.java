@@ -3,14 +3,13 @@ package se.fredin.fxkcamel.jobengine.examples;
 import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import se.fredin.fxkcamel.jobengine.JobUtils;
+import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
-import se.fredin.fxkcamel.jobengine.bean.Pet;
-import se.fredin.fxkcamel.jobengine.bean.User;
+import se.fredin.fxkcamel.jobengine.examples.bean.Pet;
+import se.fredin.fxkcamel.jobengine.examples.bean.User;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
