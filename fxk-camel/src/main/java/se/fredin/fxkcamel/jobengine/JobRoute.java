@@ -1,12 +1,12 @@
 package se.fredin.fxkcamel.jobengine;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Expression;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.jobengine.bean.Item;
 import se.fredin.fxkcamel.jobengine.bean.ItemAsset;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
+import se.fredin.fxkcamel.jobengine.utils.TaskUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,26 +35,28 @@ public class JobRoute extends JobengineJob {
                 .setStartupOrder(1);
 
         from(file(prop(INPUT_DIR), "items.csv"))
-//                .onCompletion().log("Route=read-items done")
                 .routeId("read-items")
                 .unmarshal(itemFormat)
                 .split(body())
-                    .choice()
-                        .when(simple("${in.body.isSentToWeb()}"))
-                            .to("seda:items-ok")
-                        .otherwise()
-                            .to("seda:items-nok")
+                .choice()
+                .when(simple("${in.body.isSentToWeb()}"))
+                .to("seda:items-ok")
+                .otherwise()
+                .to("seda:items-nok")
 
 //                .pollEnrich("direct:assets", )
                 .startupOrder(2);
 
         from("seda:items-ok")
+                .aggregate(constant(true), (oe, ne) -> TaskUtils.merge(oe, ne, Item.class))
+                .completionInterval(500L)
                 .marshal(itemFormat)
                 .to(file(prop(OUTPUT_DIR), "items-ok.csv"))
                 .startupOrder(3);
 
         from("seda:items-nok")
-//                .onCompletion().log("Items not ok finished")
+                .aggregate(constant(true), (oe, ne) -> TaskUtils.merge(oe, ne, Item.class))
+                .completionInterval(500L)
                 .marshal(itemFormat)
                 .to(file(prop(OUTPUT_DIR), "items-nok.csv"))
                 .startupOrder(4);
@@ -67,9 +69,21 @@ public class JobRoute extends JobengineJob {
         List<String> imageTypes = Arrays.asList("01", "02", "03");
         List<ItemAsset> assets = JobUtils.<ItemAsset>asList(e)
                 .stream()
-                .filter(a ->
-                        !a.getUncPath().isEmpty() &&
-                        (imageTypes.contains(a.getType().split("-")[0]) && !a.getQuality().equalsIgnoreCase("originalimage")))
+                .filter(a -> {
+                            if (!a.getUncPath().isEmpty()) {
+                                try {
+                                    String[] typeTokens = a.getType().split("-");
+                                    if (typeTokens.length > 1) {
+                                        return imageTypes.contains(typeTokens[0]) && !a.getQuality().equalsIgnoreCase("originalimage");
+                                    }
+                                } catch(Exception ex) {
+                                    return false;
+                                }
+                            }
+
+                            return false;
+                        }
+                )
                 .peek(asset -> asset.setUncPath(JobUtils.getTransformedUrl(asset.getUncPath(), prop("imm-url-prefix"), prop("ecom-url-prefix"))))
                 .collect(Collectors.toList());
         e.getIn().setBody(assets);

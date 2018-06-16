@@ -6,7 +6,7 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 import java.io.Serializable;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class ItemAsset implements Serializable {
+public class ItemAsset implements JobEngineBean {
 
     @DataField(pos = 1, columnName = "Artikelnummer")
     private String articleNumber;
@@ -64,5 +64,10 @@ public class ItemAsset implements Serializable {
 
     public void setDelete(boolean delete) {
         this.delete = delete;
+    }
+
+    @Override
+    public Object getId() {
+        return getArticleNumber();
     }
 }

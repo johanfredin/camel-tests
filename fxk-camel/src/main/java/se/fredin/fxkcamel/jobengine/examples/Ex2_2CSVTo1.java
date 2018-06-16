@@ -16,7 +16,7 @@ public class Ex2_2CSVTo1 extends JobengineJob {
 //                .unmarshal(new BindyCsvDataFormat(User.class))
 //                .pollEnrich("direct:pet", new AggregationStrategy() {
 //                    @Override
-//                    public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+//                    public Exchange merge(Exchange oldExchange, Exchange newExchange) {
 //                        List<User> users = JobUtils.asList(oldExchange);
 //                        List<Pet> pets = JobUtils.asList(newExchange);
 //

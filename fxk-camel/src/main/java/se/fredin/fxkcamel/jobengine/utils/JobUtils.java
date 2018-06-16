@@ -67,6 +67,33 @@ public class JobUtils {
         return uriBuilder.toString();
     }
 
+    public static boolean isTrueAny(boolean... conditions) {
+        return isTrue(Operator.OR, conditions);
+    }
+
+    public static boolean isTrueAll(boolean... conditions) {
+        return isTrue(Operator.AND, conditions);
+    }
+
+
+    public static boolean isTrue(Operator operator, boolean... conditions) {
+        boolean trueStatementFound = false;
+        for (boolean condition : conditions) {
+            if (!condition) {
+                if(operator == Operator.AND) {
+                    return false;
+                }
+            }
+            trueStatementFound = true;
+        }
+
+        if(operator == Operator.OR) {
+            return trueStatementFound;
+        }
+        return true;
+    }
+
+
     public static <T> List<T> asList(Exchange e) {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }

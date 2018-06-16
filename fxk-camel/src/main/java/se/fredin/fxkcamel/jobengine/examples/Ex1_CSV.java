@@ -22,11 +22,11 @@ public class Ex1_CSV extends JobengineJob {
 
         BindyCsvDataFormat bindyCsvDataFormat = new BindyCsvDataFormat(CsvUser.class);
 
-        from(JobUtils.file(getSettingsComponent().getInputDirectory(), "foo.csv"))                  // Fetch input file
-                .unmarshal(bindyCsvDataFormat)                                                               // Unmarshal CSV to POJO
+        from(JobUtils.file(getSettingsComponent().getInputDirectory(), "foo.csv"))                           // Fetch input file
+                .unmarshal(bindyCsvDataFormat)                                                                     // Unmarshal CSV to POJO
                 .process(e -> processUsers(e))                                                               // Do transformation
                 .marshal(bindyCsvDataFormat)                                                                 // Marshal POJO back to CSV
-                .to(JobUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv")).stop();   // Write output file
+                .to(JobUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv")).stop();    // Write output file
 
     }
 
