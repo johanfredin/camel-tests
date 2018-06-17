@@ -2,9 +2,15 @@ package se.fredin.fxkcamel.jobengine.utils;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
+import se.fredin.fxkcamel.jobengine.bean.JobEngineBean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class JobUtils {
 
@@ -80,14 +86,14 @@ public class JobUtils {
         boolean trueStatementFound = false;
         for (boolean condition : conditions) {
             if (!condition) {
-                if(operator == Operator.AND) {
+                if (operator == Operator.AND) {
                     return false;
                 }
             }
             trueStatementFound = true;
         }
 
-        if(operator == Operator.OR) {
+        if (operator == Operator.OR) {
             return trueStatementFound;
         }
         return true;
@@ -96,6 +102,10 @@ public class JobUtils {
 
     public static <T> List<T> asList(Exchange e) {
         return new ArrayList<T>(e.getIn().getBody(List.class));
+    }
+
+    public static <T extends JobEngineBean> Map<Object, List<T>> asMap(Exchange e) {
+        return JobUtils.<T>asList(e).stream().collect(Collectors.groupingBy(T::getId));
     }
 
     public static String getTransformedUrl(String immUrl, String immUrlPrefix, String outputUrlPrefix) {

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.jobengine.bean.Item;
 import se.fredin.fxkcamel.jobengine.bean.ItemAsset;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
-import se.fredin.fxkcamel.jobengine.utils.TaskUtils;
+import se.fredin.fxkcamel.jobengine.utils.task.TaskUtils;
+import se.fredin.fxkcamel.jobengine.utils.task.join.OutEntity;
+import se.fredin.fxkcamel.jobengine.utils.task.join.RecordSelection;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,36 +28,31 @@ public class JobRoute extends JobengineJob {
     @Override
     public void configure() throws Exception {
 
-        from(file(prop(INPUT_DIR), "item-assets.csv"))
-                .routeId("read-item-assets")
-                .unmarshal(assetFormat)
-                .process(e -> filterAssets(e))
-                .marshal(assetFormat)
-                .to(file(prop(OUTPUT_DIR), "assets-filtered.csv"))
-                .setStartupOrder(1);
-
-        from(file(prop(INPUT_DIR), "items.csv"))
-                .routeId("read-items")
+        from(file(prop(INPUT_DIR), "items.csv")).routeId("read-items")
                 .unmarshal(itemFormat)
                 .split(body())
-                .choice()
-                .when(simple("${in.body.isSentToWeb()}"))
-                .to("seda:items-ok")
-                .otherwise()
-                .to("seda:items-nok")
+                    .choice()
+                        .when(simple("${in.body.isSentToWeb()}"))
+                            .to("seda:items-ok-split")
+                        .otherwise()
+                            .to("seda:items-nok")
+                .startupOrder(1);
 
-//                .pollEnrich("direct:assets", )
+        from("seda:items-ok-split").routeId("aggregate-items-ok-split")
+                .aggregate(constant(true), (oe, ne) -> TaskUtils.union(oe, ne, Item.class))
+                .completionInterval(500L)
+                .to("seda:items-ok-aggregated")
                 .startupOrder(2);
 
-        from("seda:items-ok")
-                .aggregate(constant(true), (oe, ne) -> TaskUtils.merge(oe, ne, Item.class))
-                .completionInterval(500L)
-                .marshal(itemFormat)
-                .to(file(prop(OUTPUT_DIR), "items-ok.csv"))
-                .startupOrder(3);
+        from(file(prop(INPUT_DIR), "item-assets.csv")).routeId("read-item-assets")
+                .unmarshal(assetFormat)
+                .process(e -> filterAssets(e))
+                .pollEnrich("seda:items-ok-aggregated", (oe, ne) -> TaskUtils.join(oe, ne, ItemAsset.class, Item.class, RecordSelection.RECORDS_ONLY_IN_BOTH, OutEntity.ENTITY_1))
+                .to("direct:assets-filtered")
+                .setStartupOrder(3);
 
         from("seda:items-nok")
-                .aggregate(constant(true), (oe, ne) -> TaskUtils.merge(oe, ne, Item.class))
+                .aggregate(constant(true), (oe, ne) -> TaskUtils.union(oe, ne, Item.class))
                 .completionInterval(500L)
                 .marshal(itemFormat)
                 .to(file(prop(OUTPUT_DIR), "items-nok.csv"))

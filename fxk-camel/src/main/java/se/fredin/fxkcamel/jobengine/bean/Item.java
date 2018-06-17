@@ -7,7 +7,7 @@ import se.fredin.fxkcamel.jobengine.JobengineJob;
 import java.io.Serializable;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class Item implements JobEngineBean {
+public class Item implements JobEngineBean<String> {
 
     @DataField(pos = 1, columnName = "Artikelnummer")
     private String articleNumber;
@@ -85,7 +85,7 @@ public class Item implements JobEngineBean {
     }
 
     @Override
-    public Object getId() {
+    public String getId() {
         return getArticleNumber();
     }
 }

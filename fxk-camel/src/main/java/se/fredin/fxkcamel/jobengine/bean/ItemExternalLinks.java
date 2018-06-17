@@ -3,10 +3,8 @@ package se.fredin.fxkcamel.jobengine.bean;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 
-import java.io.Serializable;
-
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class ItemAsset implements JobEngineBean<String> {
+public class ItemExternalLinks implements JobEngineBean<String> {
 
     @DataField(pos = 1, columnName = "Artikelnummer")
     private String articleNumber;
