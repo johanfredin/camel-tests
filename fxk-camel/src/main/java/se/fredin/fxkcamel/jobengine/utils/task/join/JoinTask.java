@@ -6,7 +6,9 @@ import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Used for joining 2 collections similar to how it was made in the fxk connector
@@ -63,18 +65,22 @@ public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
         Map<Object, List<T1>> c1Beans = JobUtils.<T1>asMap(this.mainExchange);
         Map<Object, List<T2>> c2Beans = JobUtils.<T2>asMap(this.joiningExchange);
 
-        c1Beans.entrySet()
+        Map<Object, List<T1>> collect = c1Beans.entrySet()
                 .stream()
-                // Filter depending on record selection
-                .filter(me -> handleMatch(me, c2Beans))
+                .filter(me -> handleMatch(me, c2Beans))                             // Filter depending on record selection
+                .peek(me -> addData(me, c2Beans))                                   // Merge data from joining exchange
+                .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));     // Collect the result
 
-                // Merge data from joining exchange
-                .peek(me -> addData(me, c2Beans))
-
+        // Merge the list values into one
+        List<T1> result = collect.values()
+                .stream()
+                .flatMap(listContainer -> listContainer.stream())
                 .collect(Collectors.toList());
 
+        // Update the body with the result
+        this.mainExchange.getIn().setBody(result);
 
-        return null;
+        return this.mainExchange;
 
     }
 
