@@ -48,7 +48,7 @@ public class JobRoute extends JobengineJob {
         from(file(prop(INPUT_DIR), "item-assets.csv")).routeId("read-item-assets")
                 .unmarshal(assetFormat)
                 .process(e -> filterAssets(e))
-                .pollEnrich(
+                .pollEnrich("seda:items-ok-aggregated", (oe, ne) -> new JoinTask<ItemAsset, Item>(oe, ne, RecordSelection.RECORDS_ONLY_IN_TYPE_1, OutEntity.ENTITY_1).join(ItemAsset.class, Item.class))
                         "seda:items-ok-aggregated",
                         (oe, ne) -> new JoinTask<ItemAsset, Item>(oe, ne, RecordSelection.RECORDS_ONLY_IN_BOTH, OutEntity.ENTITY_1).join(ItemAsset.class, Item.class))
                 .to("direct:assets-filtered")
