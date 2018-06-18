@@ -2,7 +2,7 @@ package se.fredin.fxkcamel.jobengine.utils;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
-import se.fredin.fxkcamel.jobengine.bean.JobEngineBean;
+import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
 
 import java.util.ArrayList;
 import java.util.List;

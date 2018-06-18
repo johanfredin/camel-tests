@@ -1,7 +1,7 @@
 package se.fredin.fxkcamel.jobengine.task.union;
 
 import org.apache.camel.Exchange;
-import se.fredin.fxkcamel.jobengine.bean.JobEngineBean;
+import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.ArrayList;

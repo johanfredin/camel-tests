@@ -1,4 +1,4 @@
-package se.fredin.fxkcamel.jobengine.bean;
+package se.fredin.fxkcamel.jobengine.mock.bean;
 
 import java.io.Serializable;
 
