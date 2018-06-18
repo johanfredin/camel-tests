@@ -60,8 +60,8 @@ public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
     }
 
     public Exchange join(Class<T1> c1, Class<T2> c2) {
-        Map<Object, List<T1>> c1Beans = JobUtils.<T1>asMap(this.mainExchange);
-        Map<Object, List<T2>> c2Beans = JobUtils.<T2>asMap(this.joiningExchange);
+        Map<Object, List<T1>> c1Beans = JobUtils.<T1>asMap(getMainExchange());
+        Map<Object, List<T2>> c2Beans = JobUtils.<T2>asMap(getJoiningExchange());
 
         c1Beans.entrySet()
                 .stream()
@@ -89,20 +89,20 @@ public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
     private boolean handleMatch(Map.Entry<Object, List<T1>> mapEntry, Map<Object, List<T2>> c2Beans) {
 
         // When selection is all we always want all data regardless of match
-        if(this.recordSelection == RecordSelection.ALL) {
+        if(getRecordSelection() == RecordSelection.ALL) {
             return true;
         }
 
         // Keep record in collection if record selection one of: only_in_both, all AND out entity one of: both, entity_1
         if (c2Beans.containsKey(mapEntry.getKey())) {
-            switch (this.recordSelection) {
+            switch (getRecordSelection()) {
                 case RECORDS_ONLY_IN_TYPE_1_AND_2:
                     return true;
             }
         }
 
         // Handle when no match found
-        switch (this.recordSelection) {
+        switch (getRecordSelection()) {
             case RECORDS_ONLY_IN_TYPE_1:
             case RECORDS_ONLY_IN_TYPE_2:
                 return true;
@@ -113,10 +113,19 @@ public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
     private void addData(Map.Entry<Object,List<T1>> me, Map<Object,List<T2>> c2Beans) {
 
         // If we only want data from main exchange then no point in looking for data from joining exchange
-        if(this.outEntity == OutEntity.ENTITY_1) {
+        if(getOutEntity() == OutEntity.ENTITY_1) {
             return;
         }
 
     }
 
+    @Override
+    public String toString() {
+        return "JoinTask{" +
+                "mainExchange=" + mainExchange +
+                ", joiningExchange=" + joiningExchange +
+                ", recordSelection=" + recordSelection +
+                ", outEntity=" + outEntity +
+                '}';
+    }
 }

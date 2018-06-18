@@ -7,6 +7,7 @@ import se.fredin.fxkcamel.jobengine.bean.Item;
 import se.fredin.fxkcamel.jobengine.bean.ItemAsset;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 import se.fredin.fxkcamel.jobengine.utils.task.TaskUtils;
+import se.fredin.fxkcamel.jobengine.utils.task.join.JoinTask;
 import se.fredin.fxkcamel.jobengine.utils.task.join.OutEntity;
 import se.fredin.fxkcamel.jobengine.utils.task.join.RecordSelection;
 
@@ -47,7 +48,9 @@ public class JobRoute extends JobengineJob {
         from(file(prop(INPUT_DIR), "item-assets.csv")).routeId("read-item-assets")
                 .unmarshal(assetFormat)
                 .process(e -> filterAssets(e))
-                .pollEnrich("seda:items-ok-aggregated", (oe, ne) -> TaskUtils.join(oe, ne, ItemAsset.class, Item.class, RecordSelection.RECORDS_ONLY_IN_BOTH, OutEntity.ENTITY_1))
+                .pollEnrich(
+                        "seda:items-ok-aggregated",
+                        (oe, ne) -> new JoinTask<ItemAsset, Item>(oe, ne, RecordSelection.RECORDS_ONLY_IN_BOTH, OutEntity.ENTITY_1).join(ItemAsset.class, Item.class))
                 .to("direct:assets-filtered")
                 .setStartupOrder(3);
 
