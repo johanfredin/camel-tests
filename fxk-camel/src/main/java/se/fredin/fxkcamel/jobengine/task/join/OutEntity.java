@@ -1,4 +1,4 @@
-package se.fredin.fxkcamel.jobengine.utils.task.join;
+package se.fredin.fxkcamel.jobengine.task.join;
 
 public enum OutEntity {
 

@@ -4,12 +4,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
 import se.fredin.fxkcamel.jobengine.bean.JobEngineBean;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JobUtils {

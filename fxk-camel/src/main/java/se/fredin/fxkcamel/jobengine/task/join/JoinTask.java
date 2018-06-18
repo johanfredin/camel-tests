@@ -1,21 +1,20 @@
-package se.fredin.fxkcamel.jobengine.utils.task.join;
+package se.fredin.fxkcamel.jobengine.task.join;
 
 import org.apache.camel.Exchange;
+import se.fredin.fxkcamel.jobengine.JobengineJob;
 import se.fredin.fxkcamel.jobengine.bean.JobEngineBean;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Used for joining 2 collections similar to how it was made in the fxk connector
  *
- * @Author JFN
+ * @author JFN
  */
-public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
+public class JoinTask {
 
     private Exchange mainExchange;
     private Exchange joiningExchange;
@@ -61,18 +60,18 @@ public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
         this.outEntity = outEntity;
     }
 
-    public Exchange join(Class<T1> c1, Class<T2> c2) {
-        Map<Object, List<T1>> c1Beans = JobUtils.<T1>asMap(getMainExchange());
-        Map<Object, List<T2>> c2Beans = JobUtils.<T2>asMap(getJoiningExchange());
+    public Exchange join() {
+        Map<Object, List<JobEngineBean>> c1Beans = JobUtils.<JobEngineBean>asMap(getMainExchange());
+        Map<Object, List<JobEngineBean>> c2Beans = JobUtils.<JobEngineBean>asMap(getJoiningExchange());
 
-        Map<Object, List<T1>> collect = c1Beans.entrySet()
+        Map<Object, List<JobEngineBean>> collect = c1Beans.entrySet()
                 .stream()
                 .filter(me -> handleMatch(me, c2Beans))                             // Filter depending on record selection
                 .peek(me -> addData(me, c2Beans))                                   // Merge data from joining exchange
                 .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));     // Collect the result
 
         // Merge the list values into one
-        List<T1> result = collect.values()
+        List<JobEngineBean> result = collect.values()
                 .stream()
                 .flatMap(listContainer -> listContainer.stream())
                 .collect(Collectors.toList());
@@ -92,7 +91,7 @@ public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
      * @param c2Beans
      * @return
      */
-    private boolean handleMatch(Map.Entry<Object, List<T1>> mapEntry, Map<Object, List<T2>> c2Beans) {
+    private boolean handleMatch(Map.Entry<Object, List<JobEngineBean>> mapEntry, Map<Object, List<JobEngineBean>> c2Beans) {
 
         // When selection is all we always want all data regardless of match
         if(getRecordSelection() == RecordSelection.ALL) {
@@ -116,7 +115,7 @@ public class JoinTask<T1 extends JobEngineBean, T2 extends JobEngineBean> {
         return true;
     }
 
-    private void addData(Map.Entry<Object,List<T1>> me, Map<Object,List<T2>> c2Beans) {
+    private void addData(Map.Entry<Object,List<JobEngineBean>> me, Map<Object,List<JobEngineBean>> c2Beans) {
 
         // If we only want data from main exchange then no point in looking for data from joining exchange
         if(getOutEntity() == OutEntity.ENTITY_1) {

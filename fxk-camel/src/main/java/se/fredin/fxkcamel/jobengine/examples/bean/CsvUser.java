@@ -2,10 +2,8 @@ package se.fredin.fxkcamel.jobengine.examples.bean;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
-import org.apache.camel.dataformat.bindy.annotation.Link;
 
 import java.io.Serializable;
-import java.util.List;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
 public class CsvUser implements Serializable {
