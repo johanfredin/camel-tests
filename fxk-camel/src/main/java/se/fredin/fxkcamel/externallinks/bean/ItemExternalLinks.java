@@ -10,16 +10,31 @@ public class ItemExternalLinks implements JobEngineBean {
     @DataField(pos = 1, columnName = "Artikelnummer")
     private String articleNumber;
 
-    @DataField(pos = 2, columnName = "Type")
-    private String type;
+    @DataField(pos = 2, columnName = "Produktbild")
+    private String productImage;
 
-    @DataField(pos = 3, columnName = "Quality")
-    private String quality;
+    @DataField(pos = 3, columnName = "Tillagningsbild")
+    private String cookingImage;
 
-    @DataField(pos = 4, columnName = "UNC Path")
-    private String uncPath;
+    @DataField(pos = 4, columnName = "Förpackningsbild")
+    private String packagingImage;
 
-    private boolean delete;
+    @DataField(pos = 5, columnName = "Säkerhetsdatablad")
+    private String safetySheet;
+
+    public ItemExternalLinks() {}
+
+    public ItemExternalLinks(String articleNumber) {
+        this.articleNumber = articleNumber;
+    }
+
+    public ItemExternalLinks(String articleNumber, String productImage, String cookingImage, String packagingImage, String safetySheet) {
+        this.articleNumber = articleNumber;
+        this.productImage = productImage;
+        this.cookingImage = cookingImage;
+        this.packagingImage = packagingImage;
+        this.safetySheet = safetySheet;
+    }
 
     public String getArticleNumber() {
         return articleNumber;
@@ -29,40 +44,36 @@ public class ItemExternalLinks implements JobEngineBean {
         this.articleNumber = articleNumber;
     }
 
-    public String getSentToWeb() {
-        return type;
+    public String getProductImage() {
+        return productImage;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
     }
 
-    public String getQuality() {
-        return quality;
+    public String getCookingImage() {
+        return cookingImage;
     }
 
-    public void setQuality(String quality) {
-        this.quality = quality;
+    public void setCookingImage(String cookingImage) {
+        this.cookingImage = cookingImage;
     }
 
-    public String getUncPath() {
-        return uncPath;
+    public String getPackagingImage() {
+        return packagingImage;
     }
 
-    public void setUncPath(String uncPath) {
-        this.uncPath = uncPath;
+    public void setPackagingImage(String packagingImage) {
+        this.packagingImage = packagingImage;
     }
 
-    public String getType() {
-        return type;
+    public String getSafetySheet() {
+        return safetySheet;
     }
 
-    public boolean isDelete() {
-        return delete;
-    }
-
-    public void setDelete(boolean delete) {
-        this.delete = delete;
+    public void setSafetySheet(String safetySheet) {
+        this.safetySheet = safetySheet;
     }
 
     @Override

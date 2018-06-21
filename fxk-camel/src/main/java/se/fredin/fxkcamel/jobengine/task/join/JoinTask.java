@@ -63,17 +63,13 @@ public class JoinTask {
         Map<Object, List<JobEngineBean>> c1Beans = JobUtils.<JobEngineBean>asMap(getMainExchange());
         Map<Object, List<JobEngineBean>> c2Beans = JobUtils.<JobEngineBean>asMap(getJoiningExchange());
 
-        Map<Object, List<JobEngineBean>> collect = c1Beans.entrySet()
+        List<JobEngineBean> result = c1Beans.entrySet()
                 .stream()
                 .filter(me -> handleMatch(me, c2Beans))                             // Filter depending on record selection
                 .peek(me -> addData(me, c2Beans))                                   // Merge data from joining exchange
-                .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));     // Collect the result
-
-        // Merge the list values into one
-        List<JobEngineBean> result = collect.values()
-                .stream()
-                .flatMap(listContainer -> listContainer.stream())
+                .flatMap(listContainer -> listContainer.getValue().stream())
                 .collect(Collectors.toList());
+
 
         // Update the body with the result
         this.mainExchange.getIn().setBody(result);
@@ -111,7 +107,7 @@ public class JoinTask {
             case RECORDS_ONLY_IN_TYPE_2:
                 return true;
         }
-        return true;
+        return false;
     }
 
     private void addData(Map.Entry<Object,List<JobEngineBean>> me, Map<Object,List<JobEngineBean>> c2Beans) {

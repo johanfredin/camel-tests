@@ -16,24 +16,4 @@ public class FxkCamelApplication {
         SpringApplication.run(FxkCamelApplication.class, args);
     }
 
-//    @Bean
-    public Ex1_CSV ex1_CSV() {
-        return new Ex1_CSV();
-    }
-
-//    @Bean
-    public Ex1_JSON ex1_JSON() {
-        return new Ex1_JSON();
-    }
-
-//    @Bean
-    public Ex1_XML ex1_XML() {
-        return new Ex1_XML();
-    }
-
-//    @Bean
-    public Ex2_2CSVTo1JSON ex2_2CSVTo1JSON() {
-        return new Ex2_2CSVTo1JSON();
-    }
-
 }
