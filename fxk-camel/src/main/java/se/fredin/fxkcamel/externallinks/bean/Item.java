@@ -4,10 +4,12 @@ import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
 
+import java.io.Serializable;
+
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
 public class Item implements JobEngineBean {
 
-    @DataField(pos = 1, columnName = "Artikelnummer")
+    @DataField(pos = 1, columnName = "Artikelnummer", required = true)
     private String articleNumber;
 
     @DataField(pos = 2, columnName = "Skickad Till E-handel")
@@ -25,7 +27,11 @@ public class Item implements JobEngineBean {
     @DataField(pos = 6, columnName = "Säkerhetsdatablad")
     private String packagingImage;
 
+    public Item() {}
 
+    public Item(Serializable id) {
+        this.articleNumber = id.toString();
+    }
 
     public String getArticleNumber() {
         return articleNumber;
@@ -81,6 +87,14 @@ public class Item implements JobEngineBean {
     public boolean isSentToWeb() {
         return getSentToWeb().equalsIgnoreCase("ja");
     }
+
+    public void clearLinks() {
+        setCookingImage("");
+        setPackagingImage("");
+        setProductImage("");
+        setSafetySheet("");
+    }
+
 
     @Override
     public String getId() {

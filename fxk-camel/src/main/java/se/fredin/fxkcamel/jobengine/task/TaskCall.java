@@ -16,8 +16,4 @@ public class TaskCall {
         return new JoinTask(mainExhange, joiningExchange, recordSelection, outEntity).join();
     }
 
-
-
-
-
 }

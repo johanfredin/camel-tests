@@ -7,7 +7,7 @@ import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
 public class ItemAsset implements JobEngineBean {
 
-    @DataField(pos = 1, columnName = "Artikelnummer")
+    @DataField(pos = 1, columnName = "Artikelnummer", required = true)
     private String articleNumber;
 
     @DataField(pos = 2, columnName = "Type")
@@ -18,8 +18,6 @@ public class ItemAsset implements JobEngineBean {
 
     @DataField(pos = 4, columnName = "UNC Path")
     private String uncPath;
-
-    private boolean delete;
 
     public String getArticleNumber() {
         return articleNumber;
@@ -55,14 +53,6 @@ public class ItemAsset implements JobEngineBean {
 
     public String getType() {
         return type;
-    }
-
-    public boolean isDelete() {
-        return delete;
-    }
-
-    public void setDelete(boolean delete) {
-        this.delete = delete;
     }
 
     @Override

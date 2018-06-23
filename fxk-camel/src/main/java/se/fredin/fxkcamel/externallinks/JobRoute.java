@@ -5,17 +5,15 @@ import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.externallinks.bean.Item;
 import se.fredin.fxkcamel.externallinks.bean.ItemAsset;
-import se.fredin.fxkcamel.externallinks.bean.ItemExternalLinks;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
 import se.fredin.fxkcamel.jobengine.task.TaskCall;
+import se.fredin.fxkcamel.jobengine.task.group.GroupExternalLinksTask;
 import se.fredin.fxkcamel.jobengine.task.join.OutEntity;
 import se.fredin.fxkcamel.jobengine.task.join.RecordSelection;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static se.fredin.fxkcamel.jobengine.utils.JobUtils.file;
@@ -25,7 +23,6 @@ public class JobRoute extends JobengineJob {
 
     private BindyCsvDataFormat assetFormat = new BindyCsvDataFormat(ItemAsset.class);
     private BindyCsvDataFormat itemFormat = new BindyCsvDataFormat(Item.class);
-    private BindyCsvDataFormat externalLinksFormat = new BindyCsvDataFormat(ItemExternalLinks.class);
 
     @Override
     public void configure() {
@@ -34,42 +31,51 @@ public class JobRoute extends JobengineJob {
         final String OUTPUT_DIR = "output-directory";
 
 
-        from(file(prop(INPUT_DIR), "items.csv")).routeId("read-items")
-                .unmarshal(itemFormat)
-                .split(body())
-                .choice()
-                .when(simple("${in.body.isSentToWeb()}"))
-                .to("seda:items-ok-split")
-                .otherwise()
-                .to("seda:items-nok")
-                .startupOrder(1);
+        from(file(prop(INPUT_DIR), "items.csv"))                            // Read items.csv file from input directory
+                .routeId("read-items")                                               // Name your route
+                .unmarshal(itemFormat)                                               // Transform file to list of Item objects
+                .split(body())                                                       // Split collection
+                    .choice()                                                        // Specify condition
+                        .when(simple("${in.body.isSentToWeb()}"))              // isSentToWeb() is a boolean method in the Item.java class
+                            .to("seda:items-ok-split")                               // When true send to this route
+                        .otherwise()                                                 // Else
+                            .to("seda:items-nok")                                    // Send to this route
+                .startupOrder(1);                                                    // Set this route to start first
 
-        from("seda:items-ok-split").routeId("aggregate-items-ok-split")
-                .aggregate(constant(true), (oe, ne) -> TaskCall.union(oe, ne))
-                .completionInterval(500L)
-                .to("seda:items-ok-aggregated")
-                .startupOrder(2);
+        from("seda:items-ok-split")                                              // Read the items that are sent to web based on condition in route 1
+                .routeId("aggregate-items-ok-split")                                 // Name the route
+                .aggregate(constant(true), TaskCall::union)                    // Aggregate all the items that gets sent one by one from route1 into a collection again
+                .completionInterval(500L)                                            // Not yet sure why this is needed
+                .to("seda:items-ok-aggregated")                                      // Send the collection to items-ok-aggregated endpoint
+                .startupOrder(2);                                                    // Set this route to start second
 
-        from("seda:items-nok")
-                .aggregate(constant(true), (oe, ne) -> TaskCall.union(oe, ne))
-                .completionInterval(500L)
-                .marshal(itemFormat)
-                .to(file(prop(OUTPUT_DIR), "items-nok.csv"))
-                .startupOrder(3);
+        from("seda:items-nok")                                                  // Read the items that are not send to web based on condition in route 1
+                .routeId("read-items-nok")                                          // Name the route
+                .aggregate(constant(true), TaskCall::union)                   // Aggregate all items that gets sent one by one from route1 into a collection again
+                .completionInterval(500L)                                           // Not yet sure why this is needed
+                .process(this::clearPaths)                                          // Invoke our own method that clears the image paths in the Item bean
+                .to("seda:items-nok-grouped")                                       // Send the collection to items-nok-grouped endpoint
+                .startupOrder(3);                                                   // Set this route to start third
 
 
-        from(file(prop(INPUT_DIR), "item-assets.csv")).routeId("read-item-assets")
-                .unmarshal(assetFormat)
-                .process(this::filterAssets)
-                .pollEnrich(
-                        "seda:items-ok-aggregated",
-                        (oe, ne) -> TaskCall.join(oe, ne, RecordSelection.RECORDS_ONLY_IN_TYPE_1_AND_2, OutEntity.ENTITY_1)
+        from(file(prop(INPUT_DIR), "item-assets.csv"))                      // Read item-assets.csv from input directory
+                .routeId("read-item-assets")                                        // Name the route
+                .unmarshal(assetFormat)                                             // Turn file into a collection of ItemAsset beans
+                .process(this::filterAssets)                                        // Invoke our own method that filters the assets
+                .pollEnrich(                                                        // Enrich route with content from another route
+                        "seda:items-ok-aggregated",                      // Name of the route we want to join in
+                        (me, ne) -> TaskCall.join(                                  // Call our own join class
+                                me,                                                 // The main exchange (this route)
+                                ne,                                                 // The joining exchange (items-ok-aggregated)
+                                RecordSelection.RECORDS_ONLY_IN_TYPE_1_AND_2,       // Join condition. In this case the id must exist in both routes
+                                OutEntity.ENTITY_1                                  // We only want data from the main exchange
+                        )
                 )
-                .process(this::groupRecords)
-                .marshal(externalLinksFormat)
-                .to(file(prop("output-directory"), "items-external-links.csv"))
-                .setStartupOrder(4);
-
+                .process(e -> new GroupExternalLinksTask(e).doExecuteTask())        // Group the data calling our own group class pasing in the exchange (collection of ItemAsset beans)
+                .pollEnrich("seda:items-nok-grouped", TaskCall::union)    // Union our collection (that is now an Item collection) with the Item collection from the route items-nok-grouped
+                .marshal(itemFormat)                                                // Marshal the collection into csv-format
+                .to(file(prop(OUTPUT_DIR), "items-external-links.csv"))     // Write the csv to file items-external-links.csv in the output directory
+                .startupOrder(4);                                                   // Set this route to start last
 
     }
 
@@ -97,32 +103,11 @@ public class JobRoute extends JobengineJob {
         e.getIn().setBody(assets);
     }
 
-    private void groupRecords(Exchange e) {
-        Map<Object, List<ItemAsset>> assets = JobUtils.asMap(e);
-
-        List<ItemExternalLinks> externalLinks = new ArrayList<>();
-
-        for (Map.Entry<Object, List<ItemAsset>> entry : assets.entrySet()) {
-            ItemExternalLinks externalLink = new ItemExternalLinks(entry.getKey().toString());
-            for (ItemAsset asset : entry.getValue()) {
-                switch (asset.getType().toLowerCase()) {
-                    case "03-tillagnings bild":
-                        externalLink.setCookingImage(asset.getUncPath());
-                        break;
-                    case "20-säkerhetsdatablad":
-                        externalLink.setSafetySheet(asset.getUncPath());
-                        break;
-                    case "01-produkt bild":
-                        externalLink.setProductImage(asset.getUncPath());
-                        break;
-                    case "02-förpacknings bild":
-                        externalLink.setPackagingImage(asset.getUncPath());
-                        break;
-                }
-                externalLinks.add(externalLink);
-            }
-        }
-        e.getIn().setBody(externalLinks);
+    private void clearPaths(Exchange exchange) {
+        exchange.getIn().setBody(JobUtils.<Item>asList(exchange)
+                .stream()
+                .peek(Item::clearLinks)
+                .collect(Collectors.toList()));
     }
 
 }
