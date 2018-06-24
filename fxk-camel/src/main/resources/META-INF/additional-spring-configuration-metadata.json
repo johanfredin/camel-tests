@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "output-directory",
+      "type": "java.lang.String",
+      "description": "Description for output-directory."
+    },
+    {
+      "name": "imm-url-prefix",
+      "type": "java.lang.String",
+      "description": "Description for imm-url-prefix."
+    },
+    {
+      "name": "ecom-url-prefix",
+      "type": "java.lang.String",
+      "description": "Description for ecom-url-prefix."
+    },
+    {
+      "name": "pim-hotfolder",
+      "type": "java.lang.String",
+      "description": "Description for pim-hotfolder."
+    },
+    {
+      "name": "input-directory",
+      "type": "java.lang.String",
+      "description": "Description for input-directory."
+    }
+  ] }

@@ -2,12 +2,12 @@ package se.fredin.fxkcamel.jobengine.examples.bean;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
-import java.io.Serializable;
 import java.util.List;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class User implements Serializable {
+public class User extends FxKBean<Long> {
 
     @DataField(pos = 1)
     private long id;
@@ -29,14 +29,17 @@ public class User implements Serializable {
 
     private List<Pet> pets;
 
-    public User() {}
+    public User(long id) {
+        super(id);
+    }
 
     public void setId(long id) {
         this.id = id;
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public void setId(Long aLong) {
+        this.id = aLong;
     }
 
     public String getFirstName() {

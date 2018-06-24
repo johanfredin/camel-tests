@@ -2,9 +2,10 @@ package se.fredin.fxkcamel.jobengine.examples.bean;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class Pet {
+public class Pet extends FxKBean<Long> {
 
     @DataField(pos = 1)
     private long id;
@@ -18,17 +19,20 @@ public class Pet {
     @DataField(pos = 4)
     private String type;
 
-    public Pet() {}
+    public Pet(long id) {
+        super(id);
+    }
 
-    public Pet(int id, String name, String gender, String type) {
-        this.id = id;
+    public Pet(long id, String name, String gender, String type) {
+        super(id);
         this.name = name;
         this.gender = gender;
         this.type = type;
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public void setId(Long aLong) {
+        this.id = aLong;
     }
 
     public void setId(long id) {

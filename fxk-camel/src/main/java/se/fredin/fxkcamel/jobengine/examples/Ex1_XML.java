@@ -2,8 +2,8 @@ package se.fredin.fxkcamel.jobengine.examples;
 
 import org.apache.camel.Exchange;
 import se.fredin.fxkcamel.jaxb.Users;
-import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
+import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.Comparator;
 import java.util.stream.Collectors;

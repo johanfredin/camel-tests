@@ -6,9 +6,16 @@ import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.*;
 
+@ComponentScan
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class JobRouteTest extends CamelTestSupport {
 
     @Override
@@ -37,6 +44,7 @@ public class JobRouteTest extends CamelTestSupport {
     @Test
     public void testReadItemsRoute() throws Exception {
         context.start();
+        System.out.println("read");
         context.stop();
     }
 

@@ -3,9 +3,9 @@ package se.fredin.fxkcamel.jobengine.examples;
 import org.apache.camel.Exchange;
 import org.apache.camel.component.jackson.ListJacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
 import se.fredin.fxkcamel.jobengine.examples.bean.CsvUser;
+import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.Comparator;
 import java.util.List;

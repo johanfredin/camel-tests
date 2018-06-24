@@ -10,6 +10,7 @@ import se.fredin.fxkcamel.jobengine.task.transform.TransformTask;
 import se.fredin.fxkcamel.jobengine.task.union.UnionTask;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class TaskCall {
 
@@ -25,7 +26,7 @@ public class TaskCall {
         return new TransformTask(exchange, transformFunction).doExecuteTask();
     }
 
-    public static <T extends FxKBean> Exchange filter(Exchange exchange, Consumer<T> filterFunction) {
+    public static <T extends FxKBean> Exchange filter(Exchange exchange, Predicate<T> filterFunction) {
         return new FilterTask(exchange, filterFunction).doExecuteTask();
     }
 

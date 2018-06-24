@@ -1,9 +1,7 @@
 package se.fredin.fxkcamel.externallinks;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
-import org.apache.camel.model.RouteDefinition;
 import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.externallinks.bean.Item;
 import se.fredin.fxkcamel.externallinks.bean.ItemAsset;
@@ -20,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static se.fredin.fxkcamel.jobengine.utils.JobUtils.file;
 
-@Component
+//@Component
 public class JobRoute extends JobengineJob {
 
     private BindyCsvDataFormat assetFormat = new BindyCsvDataFormat(ItemAsset.class);
@@ -58,8 +56,6 @@ public class JobRoute extends JobengineJob {
                 .to("seda:items-nok-grouped")                                       // Send the collection to items-nok-grouped endpoint
                 .startupOrder(3);                                                   // Set this route to start third
 
-
-        Processor p;
 
         from(file(prop(INPUT_DIR), "item-assets.csv"))                      // Read item-assets.csv from input directory
                 .routeId("read-item-assets")                                        // Name the route

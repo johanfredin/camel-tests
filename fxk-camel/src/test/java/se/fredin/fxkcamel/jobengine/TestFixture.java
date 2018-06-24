@@ -1,6 +1,7 @@
 package se.fredin.fxkcamel.jobengine;
 
 import org.apache.camel.Exchange;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 import se.fredin.fxkcamel.jobengine.bean.MockItem;
 import se.fredin.fxkcamel.jobengine.bean.MockItemAsset;
 import se.fredin.fxkcamel.jobengine.mock.exchange.MockExchange;
@@ -39,7 +40,7 @@ public class TestFixture {
         return Arrays.asList(mockItemAssets);
     }
 
-    public static <T extends Identifiable> Exchange getMockExchange(List<T> mockBody) {
+    public static <T extends FxKBean> Exchange getMockExchange(List<T> mockBody) {
         Exchange mockExchange = new MockExchange();
         mockExchange.getIn().setBody(mockBody);
         return mockExchange;

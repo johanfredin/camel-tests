@@ -1,17 +1,17 @@
 package se.fredin.fxkcamel.jobengine.bean;
 
-import java.io.Serializable;
-
-public class MockItemAsset implements Identifiable {
+public class MockItemAsset extends FxKBean<String> {
 
     private String itemNo;
     private String quality;
     private String uncPath;
 
-    public MockItemAsset() {}
+    public MockItemAsset(String id) {
+        this(id, null, null);
+    }
 
     public MockItemAsset(String itemNo, String quality, String uncPath) {
-        this.itemNo = itemNo;
+        super(itemNo);
         this.quality = quality;
         this.uncPath = uncPath;
     }
@@ -41,7 +41,7 @@ public class MockItemAsset implements Identifiable {
     }
 
     @Override
-    public Serializable getId() {
-        return getItemNo();
+    public void setId(String s) {
+        this.itemNo = s;
     }
 }
