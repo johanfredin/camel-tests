@@ -1,13 +1,11 @@
 package se.fredin.fxkcamel.jobengine.task.union;
 
-import com.sun.xml.bind.v2.schemagen.xmlschema.Union;
 import org.apache.camel.Exchange;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.fredin.fxkcamel.jobengine.TestFixture;
-import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
-import se.fredin.fxkcamel.jobengine.mock.bean.MockItem;
+import se.fredin.fxkcamel.jobengine.bean.MockItem;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.List;

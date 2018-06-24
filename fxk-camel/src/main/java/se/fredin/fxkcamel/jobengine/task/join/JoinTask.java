@@ -1,7 +1,9 @@
 package se.fredin.fxkcamel.jobengine.task.join;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.apache.camel.Exchange;
-import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
+import se.fredin.fxkcamel.jobengine.task.BaseTask;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
  *
  * @author JFN
  */
-public class JoinTask {
+public class JoinTask extends BaseTask {
 
     private Exchange mainExchange;
     private Exchange joiningExchange;
@@ -59,11 +61,12 @@ public class JoinTask {
         this.outEntity = outEntity;
     }
 
-    public Exchange join() {
-        Map<Object, List<JobEngineBean>> c1Beans = JobUtils.<JobEngineBean>asMap(getMainExchange());
-        Map<Object, List<JobEngineBean>> c2Beans = JobUtils.<JobEngineBean>asMap(getJoiningExchange());
+    @Override
+    public Exchange doExecuteTask() {
+        Map<Object, List<FxKBean>> c1Beans = JobUtils.asMap(getMainExchange());
+        Map<Object, List<FxKBean>> c2Beans = JobUtils.asMap(getJoiningExchange());
 
-        List<JobEngineBean> result = c1Beans.entrySet()
+        List<FxKBean> result = c1Beans.entrySet()
                 .stream()
                 .filter(me -> handleMatch(me, c2Beans))                             // Filter depending on record selection
                 .peek(me -> addData(me, c2Beans))                                   // Merge data from joining exchange
@@ -86,7 +89,7 @@ public class JoinTask {
      * @param c2Beans
      * @return
      */
-    private boolean handleMatch(Map.Entry<Object, List<JobEngineBean>> mapEntry, Map<Object, List<JobEngineBean>> c2Beans) {
+    private boolean handleMatch(Map.Entry<Object, List<FxKBean>> mapEntry, Map<Object, List<FxKBean>> c2Beans) {
 
         // When selection is all we always want all data regardless of match
         if(getRecordSelection() == RecordSelection.ALL) {
@@ -110,7 +113,7 @@ public class JoinTask {
         return false;
     }
 
-    private void addData(Map.Entry<Object,List<JobEngineBean>> me, Map<Object,List<JobEngineBean>> c2Beans) {
+    private void addData(Map.Entry<Object,List<FxKBean>> me, Map<Object,List<FxKBean>> c2Beans) {
 
         // If we only want data from main exchange then no point in looking for data from joining exchange
         if(getOutEntity() == OutEntity.ENTITY_1) {

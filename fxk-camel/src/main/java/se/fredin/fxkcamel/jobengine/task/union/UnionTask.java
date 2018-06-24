@@ -1,13 +1,14 @@
 package se.fredin.fxkcamel.jobengine.task.union;
 
 import org.apache.camel.Exchange;
-import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
+import se.fredin.fxkcamel.jobengine.task.BaseTask;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnionTask {
+public class UnionTask extends BaseTask {
 
     private Exchange newExchange;
     private Exchange oldExchange;
@@ -35,9 +36,10 @@ public class UnionTask {
         this.oldExchange = oldExchange;
     }
 
-    public Exchange union() {
-        JobEngineBean newBean = getNewExchange().getIn().getBody(JobEngineBean.class);
-        List<JobEngineBean> beans = null;
+    @Override
+    public Exchange doExecuteTask() {
+        FxKBean newBean = getNewExchange().getIn().getBody(FxKBean.class);
+        List<FxKBean> beans;
         if (this.oldExchange == null) {
             beans = new ArrayList<>();
             beans.add(newBean);
@@ -45,7 +47,7 @@ public class UnionTask {
             return this.newExchange;
         }
 
-        beans = JobUtils.<JobEngineBean>asList(this.oldExchange);
+        beans = JobUtils.asList(this.oldExchange);
         beans.add(newBean);
         this.oldExchange.getIn().setBody(beans);
         return this.oldExchange;

@@ -2,12 +2,10 @@ package se.fredin.fxkcamel.externallinks.bean;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
-import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
-
-import java.io.Serializable;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class Item implements JobEngineBean {
+public class Item extends FxKBean<String> {
 
     @DataField(pos = 1, columnName = "Artikelnummer", required = true)
     private String articleNumber;
@@ -27,10 +25,8 @@ public class Item implements JobEngineBean {
     @DataField(pos = 6, columnName = "Säkerhetsdatablad")
     private String packagingImage;
 
-    public Item() {}
-
-    public Item(Serializable id) {
-        this.articleNumber = id.toString();
+    public Item(String id) {
+        super(id);
     }
 
     public String getArticleNumber() {
@@ -97,7 +93,20 @@ public class Item implements JobEngineBean {
 
 
     @Override
-    public String getId() {
-        return getArticleNumber();
+    public void setId(String id) {
+        this.articleNumber = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "articleNumber='" + articleNumber + '\'' +
+                ", sentToWeb='" + sentToWeb + '\'' +
+                ", productImage='" + productImage + '\'' +
+                ", safetySheet='" + safetySheet + '\'' +
+                ", cookingImage='" + cookingImage + '\'' +
+                ", packagingImage='" + packagingImage + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

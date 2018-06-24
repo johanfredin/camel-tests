@@ -1,8 +1,8 @@
-package se.fredin.fxkcamel.jobengine.mock.bean;
+package se.fredin.fxkcamel.jobengine.bean;
 
 import java.io.Serializable;
 
-public class MockItemAsset implements JobEngineBean {
+public class MockItemAsset implements Identifiable {
 
     private String itemNo;
     private String quality;

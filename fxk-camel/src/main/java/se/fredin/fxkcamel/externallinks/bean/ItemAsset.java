@@ -2,10 +2,10 @@ package se.fredin.fxkcamel.externallinks.bean;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
-import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class ItemAsset implements JobEngineBean {
+public class ItemAsset extends FxKBean<String> {
 
     @DataField(pos = 1, columnName = "Artikelnummer", required = true)
     private String articleNumber;
@@ -18,6 +18,10 @@ public class ItemAsset implements JobEngineBean {
 
     @DataField(pos = 4, columnName = "UNC Path")
     private String uncPath;
+
+    public ItemAsset(String id) {
+        super(id);
+    }
 
     public String getArticleNumber() {
         return articleNumber;
@@ -56,7 +60,7 @@ public class ItemAsset implements JobEngineBean {
     }
 
     @Override
-    public String getId() {
-        return getArticleNumber();
+    public void setId(String s) {
+        this.articleNumber = s;
     }
 }

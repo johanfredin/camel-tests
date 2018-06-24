@@ -3,8 +3,6 @@ package se.fredin.fxkcamel.jobengine.task.group;
 import org.apache.camel.Exchange;
 import se.fredin.fxkcamel.externallinks.bean.Item;
 import se.fredin.fxkcamel.externallinks.bean.ItemAsset;
-import se.fredin.fxkcamel.externallinks.bean.ItemExternalLinks;
-import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
 
 import java.util.List;
 import java.util.Map;

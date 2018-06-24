@@ -2,7 +2,7 @@ package se.fredin.fxkcamel.jobengine.utils;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
-import se.fredin.fxkcamel.jobengine.mock.bean.JobEngineBean;
+import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 
 public class JobUtils {
 
-    public static final char AND = '&';
-    public static final char ARGS = '?';
-    public static final char EQUALS = '=';
+    private static final char AND = '&';
+    private static final char ARGS = '?';
+    private static final char EQUALS = '=';
 
 
     public static String file(String url, String fileName) {
@@ -36,12 +36,11 @@ public class JobUtils {
     }
 
     public static String sql(String query) {
-
         return sql(query, null, true, SqlResultType.ALL, null);
     }
 
     public static String sql(String query, String dataSource) {
-        return sql(query, null, true, SqlResultType.ALL, null);
+        return sql(query, null, true, SqlResultType.ALL, dataSource);
     }
 
     public static String sql(String query, Class entityClass) {
@@ -97,11 +96,11 @@ public class JobUtils {
     }
 
 
-    public static <T> List<T> asList(Exchange e) {
+    public static <T extends FxKBean> List<T> asList(Exchange e) {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
-    public static <T extends JobEngineBean> Map<Object, List<T>> asMap(Exchange e) {
+    public static <T extends FxKBean> Map<Object, List<T>> asMap(Exchange e) {
         return JobUtils.<T>asList(e).stream().collect(Collectors.groupingBy(T::getId));
     }
 
