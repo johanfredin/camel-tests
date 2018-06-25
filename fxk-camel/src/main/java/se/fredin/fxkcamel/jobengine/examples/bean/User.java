@@ -29,17 +29,13 @@ public class User extends FxKBean<Long> {
 
     private List<Pet> pets;
 
-    public User(long id) {
-        super(id);
-    }
-
     public void setId(long id) {
         this.id = id;
     }
 
     @Override
-    public void setId(Long aLong) {
-        this.id = aLong;
+    public Long getId() {
+        return id;
     }
 
     public String getFirstName() {

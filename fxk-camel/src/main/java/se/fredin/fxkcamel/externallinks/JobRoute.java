@@ -2,7 +2,6 @@ package se.fredin.fxkcamel.externallinks;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
-import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.externallinks.bean.Item;
 import se.fredin.fxkcamel.externallinks.bean.ItemAsset;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
@@ -80,7 +79,7 @@ public class JobRoute extends JobengineJob {
 
     private void filterAssets(Exchange e) {
         List<String> imageTypes = Arrays.asList("01", "02", "03");
-        List<ItemAsset> assets = JobUtils.<ItemAsset>asList(e)
+        List<ItemAsset> assets = JobUtils.<ItemAsset>asFxkBeanList(e)
                 .stream()
                 .filter(a -> {
                             if (!a.getUncPath().isEmpty()) {
@@ -103,7 +102,7 @@ public class JobRoute extends JobengineJob {
     }
 
     private void clearPaths(Exchange exchange) {
-        exchange.getIn().setBody(JobUtils.<Item>asList(exchange)
+        exchange.getIn().setBody(JobUtils.<Item>asFxkBeanList(exchange)
                 .stream()
                 .peek(Item::clearLinks)
                 .collect(Collectors.toList()));

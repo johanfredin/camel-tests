@@ -96,12 +96,14 @@ public class JobUtils {
     }
 
 
-    public static <T extends FxKBean> List<T> asList(Exchange e) {
+    public static <T extends FxKBean> List<T> asFxkBeanList(Exchange e) {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
     public static <T extends FxKBean> Map<Object, List<T>> asMap(Exchange e) {
-        return JobUtils.<T>asList(e).stream().collect(Collectors.groupingBy(T::getId));
+        return JobUtils.<T>asFxkBeanList(e)
+                .stream()
+                .collect(Collectors.groupingBy(T::getId));
     }
 
     public static String getTransformedUrl(String immUrl, String immUrlPrefix, String outputUrlPrefix) {

@@ -47,7 +47,7 @@ public class UnionTask extends BaseTask {
             return this.newExchange;
         }
 
-        beans = JobUtils.asList(this.oldExchange);
+        beans = JobUtils.asFxkBeanList(this.oldExchange);
         beans.add(newBean);
         this.oldExchange.getIn().setBody(beans);
         return this.oldExchange;

@@ -15,7 +15,8 @@ public class GroupExternalLinksTask extends GroupTask<ItemAsset, Item> {
 
     @Override
     protected Item getResult(Map.Entry<Object, List<ItemAsset>> entry) {
-        Item item = new Item(entry.getKey().toString());
+        Item item = new Item();
+        item.setArticleNumber(entry.getKey().toString());
         for (ItemAsset asset : entry.getValue()) {
             switch (asset.getType().toLowerCase()) {
                 case "03-tillagnings bild":

@@ -19,10 +19,6 @@ public class ItemAsset extends FxKBean<String> {
     @DataField(pos = 4, columnName = "UNC Path")
     private String uncPath;
 
-    public ItemAsset(String id) {
-        super(id);
-    }
-
     public String getArticleNumber() {
         return articleNumber;
     }
@@ -60,7 +56,7 @@ public class ItemAsset extends FxKBean<String> {
     }
 
     @Override
-    public void setId(String s) {
-        this.articleNumber = s;
+    public String getId() {
+        return this.articleNumber;
     }
 }

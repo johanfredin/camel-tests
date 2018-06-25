@@ -19,20 +19,17 @@ public class Pet extends FxKBean<Long> {
     @DataField(pos = 4)
     private String type;
 
-    public Pet(long id) {
-        super(id);
-    }
 
     public Pet(long id, String name, String gender, String type) {
-        super(id);
+        this.id = id;
         this.name = name;
         this.gender = gender;
         this.type = type;
     }
 
     @Override
-    public void setId(Long aLong) {
-        this.id = aLong;
+    public Long getId() {
+        return id;
     }
 
     public void setId(long id) {

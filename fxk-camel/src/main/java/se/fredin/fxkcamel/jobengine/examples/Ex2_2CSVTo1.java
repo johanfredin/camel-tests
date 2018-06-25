@@ -17,8 +17,8 @@ public class Ex2_2CSVTo1 extends JobengineJob {
 //                .pollEnrich("direct:pet", new AggregationStrategy() {
 //                    @Override
 //                    public Exchange union(Exchange oldExchange, Exchange newExchange) {
-//                        List<User> users = JobUtils.asList(oldExchange);
-//                        List<Pet> pets = JobUtils.asList(newExchange);
+//                        List<User> users = JobUtils.asFxkBeanList(oldExchange);
+//                        List<Pet> pets = JobUtils.asFxkBeanList(newExchange);
 //
 //                        // Create map <k, list<v>> of pets
 //                        Map<Long, List<Pet>> petMap = pets

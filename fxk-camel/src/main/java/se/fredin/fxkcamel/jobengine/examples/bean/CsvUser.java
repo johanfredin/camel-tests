@@ -24,12 +24,9 @@ public class CsvUser extends FxKBean<Long> {
     @DataField(pos = 5)
     private String country;
 
-    public CsvUser(long id) {
-        super(id);
-    }
 
     public CsvUser(long id, String firstName, String lastName, int age, String gender, String country) {
-        super(id);
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -44,11 +41,6 @@ public class CsvUser extends FxKBean<Long> {
     @Override
     public Long getId() {
         return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstName() {

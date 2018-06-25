@@ -11,7 +11,7 @@ public class MockItemAsset extends FxKBean<String> {
     }
 
     public MockItemAsset(String itemNo, String quality, String uncPath) {
-        super(itemNo);
+        this.itemNo = itemNo;
         this.quality = quality;
         this.uncPath = uncPath;
     }
@@ -41,7 +41,7 @@ public class MockItemAsset extends FxKBean<String> {
     }
 
     @Override
-    public void setId(String s) {
-        this.itemNo = s;
+    public String getId() {
+        return this.itemNo;
     }
 }

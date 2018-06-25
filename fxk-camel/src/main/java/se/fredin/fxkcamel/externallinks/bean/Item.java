@@ -25,10 +25,6 @@ public class Item extends FxKBean<String> {
     @DataField(pos = 6, columnName = "Säkerhetsdatablad")
     private String packagingImage;
 
-    public Item(String id) {
-        super(id);
-    }
-
     public String getArticleNumber() {
         return articleNumber;
     }
@@ -93,8 +89,8 @@ public class Item extends FxKBean<String> {
 
 
     @Override
-    public void setId(String id) {
-        this.articleNumber = id;
+    public String getId() {
+        return this.articleNumber;
     }
 
     @Override
@@ -106,7 +102,6 @@ public class Item extends FxKBean<String> {
                 ", safetySheet='" + safetySheet + '\'' +
                 ", cookingImage='" + cookingImage + '\'' +
                 ", packagingImage='" + packagingImage + '\'' +
-                ", id=" + id +
                 '}';
     }
 }

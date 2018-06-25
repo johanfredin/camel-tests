@@ -24,7 +24,7 @@ public abstract class SimpleTask<T extends FxKBean> extends BaseTask {
 
     @Override
     public Exchange doExecuteTask() {
-        List<T> beans = JobUtils.asList(this.exchange);
+        List<T> beans = JobUtils.asFxkBeanList(this.exchange);
         this.exchange.getIn().setBody(transformData(beans));
         postExecute();
         return this.exchange;

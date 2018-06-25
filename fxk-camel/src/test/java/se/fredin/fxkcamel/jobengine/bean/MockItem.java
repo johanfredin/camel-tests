@@ -10,7 +10,7 @@ public class MockItem extends FxKBean<String> {
     }
 
     public MockItem(String itemNo, String name) {
-        super(itemNo);
+        this.itemNo = itemNo;
         this.name = name;
     }
 
@@ -31,7 +31,7 @@ public class MockItem extends FxKBean<String> {
     }
 
     @Override
-    public void setId(String s) {
-        this.itemNo = s;
+    public String getId() {
+        return this.itemNo;
     }
 }

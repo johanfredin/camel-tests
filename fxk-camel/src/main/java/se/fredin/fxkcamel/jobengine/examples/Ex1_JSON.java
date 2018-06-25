@@ -26,7 +26,7 @@ public class Ex1_JSON extends JobengineJob {
     }
 
     private void processUsers(Exchange exchange) {
-        List<CsvUser> users = JobUtils.<CsvUser>asList(exchange)
+        List<CsvUser> users = JobUtils.<CsvUser>asFxkBeanList(exchange)
                 .stream()                                                       // Iterate users
                 .filter(user -> user.getAge() > 0 && user.getAge() < 100)       // Filter out invalid age
                 .sorted(Comparator.comparing(user -> user.getCountry()))        // Sort on country

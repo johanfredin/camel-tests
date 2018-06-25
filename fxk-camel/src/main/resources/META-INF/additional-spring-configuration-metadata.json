@@ -24,5 +24,25 @@
       "name": "input-directory",
       "type": "java.lang.String",
       "description": "Description for input-directory."
+    },
+    {
+      "name": "input-directory-dl",
+      "type": "java.lang.String",
+      "description": "Description for input-directory-dl."
+    },
+    {
+      "name": "output-directory-dl",
+      "type": "java.lang.String",
+      "description": "Description for output-directory-dl."
+    },
+    {
+      "name": "ex-input-directory",
+      "type": "java.lang.String",
+      "description": "Description for ex-input-directory."
+    },
+    {
+      "name": "ex-output-directory",
+      "type": "java.lang.String",
+      "description": "Description for ex-output-directory."
     }
   ] }

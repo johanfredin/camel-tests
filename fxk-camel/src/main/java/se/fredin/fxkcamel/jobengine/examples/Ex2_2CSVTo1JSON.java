@@ -41,12 +41,12 @@ public class Ex2_2CSVTo1JSON extends JobengineJob {
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 
         // Create map <k, list<v>> of pets
-        Map<Long, List<Pet>> petMap = JobUtils.<Pet>asList(newExchange).stream()
+        Map<Long, List<Pet>> petMap = JobUtils.<Pet>asFxkBeanList(newExchange).stream()
                 .collect(Collectors.groupingBy(Pet::getId));
 
 
         // Match the 2 (JRE8 way)
-        List<User> users = JobUtils.<User>asList(oldExchange)
+        List<User> users = JobUtils.<User>asFxkBeanList(oldExchange)
                 .stream()
                 .peek(u -> u.setPets(petMap.get(u.getId())))
                 .collect(Collectors.toList());
