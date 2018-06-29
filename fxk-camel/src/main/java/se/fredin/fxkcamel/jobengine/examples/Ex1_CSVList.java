@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
  * Perform ex_1 in this case with collections of lists as csv object
  * representations
  */
-//@Component
 public class Ex1_CSVList extends JobengineJob {
 
     @Override

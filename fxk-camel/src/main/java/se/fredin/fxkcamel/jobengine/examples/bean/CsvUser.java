@@ -5,7 +5,7 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class CsvUser extends FxKBean<Long> {
+public class CsvUser implements FxKBean {
 
     private long id;
 

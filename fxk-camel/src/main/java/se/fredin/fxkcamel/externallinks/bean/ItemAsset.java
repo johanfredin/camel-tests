@@ -5,7 +5,7 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class ItemAsset extends FxKBean<String> {
+public class ItemAsset implements FxKBean {
 
     @DataField(pos = 1, columnName = "Artikelnummer", required = true)
     private String articleNumber;

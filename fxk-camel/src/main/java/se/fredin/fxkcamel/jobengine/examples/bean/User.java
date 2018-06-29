@@ -7,7 +7,7 @@ import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 import java.util.List;
 
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
-public class User extends FxKBean<Long> {
+public class User implements FxKBean {
 
     @DataField(pos = 1)
     private long id;

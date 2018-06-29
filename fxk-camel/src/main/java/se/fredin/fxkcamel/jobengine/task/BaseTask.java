@@ -1,11 +1,8 @@
 package se.fredin.fxkcamel.jobengine.task;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public abstract class BaseTask implements Task {
 
-    protected Logger log = LogManager.getLogger(this.getClass());
+//    protected Logger log = LogManager.getLogger(this.getClass());
 
     protected int processedRecords;
 
@@ -24,7 +21,7 @@ public abstract class BaseTask implements Task {
 
     @Override
     public void postExecute() {
-        log.info(getName(), "Task completed");
+//        log.info("Task completed");
     }
 
     @Override

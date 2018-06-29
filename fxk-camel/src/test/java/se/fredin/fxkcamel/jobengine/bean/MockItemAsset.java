@@ -1,6 +1,6 @@
 package se.fredin.fxkcamel.jobengine.bean;
 
-public class MockItemAsset extends FxKBean<String> {
+public class MockItemAsset implements FxKBean {
 
     private String itemNo;
     private String quality;

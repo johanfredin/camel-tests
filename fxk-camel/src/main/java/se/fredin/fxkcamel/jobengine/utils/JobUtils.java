@@ -100,6 +100,10 @@ public class JobUtils {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
+    public static List<Map<String, String>> asList(Exchange e) {
+        return new ArrayList<Map<String, String>>(e.getIn().getBody(List.class));
+    }
+
     public static <T extends FxKBean> Map<Object, List<T>> asMap(Exchange e) {
         return JobUtils.<T>asFxkBeanList(e)
                 .stream()

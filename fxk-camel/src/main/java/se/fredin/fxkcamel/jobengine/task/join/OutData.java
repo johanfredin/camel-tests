@@ -1,9 +1,9 @@
 package se.fredin.fxkcamel.jobengine.task.join;
 
-public enum OutEntity {
+public enum OutData {
 
-    ENTITY_1,
-    ENTITY_2,
+    EXCHANGE_1,
+    EXCHANGE_2,
     BOTH
 
 }

@@ -8,7 +8,7 @@ import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 import java.util.List;
 
 @CsvRecord(separator = "\\|", generateHeaderColumns = true, skipFirstLine = true, quoting = true, allowEmptyStream = true)
-public class Product extends FxKBean<String> {
+public class Product implements FxKBean {
 
     @DataField(pos = 1, columnName = "Product no")
     private String productNo;

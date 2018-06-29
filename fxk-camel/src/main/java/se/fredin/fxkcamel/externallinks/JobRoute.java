@@ -7,7 +7,7 @@ import se.fredin.fxkcamel.externallinks.bean.ItemAsset;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
 import se.fredin.fxkcamel.jobengine.task.TaskCall;
 import se.fredin.fxkcamel.jobengine.task.group.GroupExternalLinksTask;
-import se.fredin.fxkcamel.jobengine.task.join.OutEntity;
+import se.fredin.fxkcamel.jobengine.task.join.OutData;
 import se.fredin.fxkcamel.jobengine.task.join.RecordSelection;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 import static se.fredin.fxkcamel.jobengine.utils.JobUtils.file;
 
-//@Component
 public class JobRoute extends JobengineJob {
 
     private BindyCsvDataFormat assetFormat = new BindyCsvDataFormat(ItemAsset.class);
@@ -66,7 +65,7 @@ public class JobRoute extends JobengineJob {
                                 me,                                                 // The main exchange (this route)
                                 ne,                                                 // The joining exchange (items-ok-aggregated)
                                 RecordSelection.RECORDS_ONLY_IN_TYPE_1_AND_2,       // Join condition. In this case the id must exist in both routes
-                                OutEntity.ENTITY_1                                  // We only want data from the main exchange
+                                OutData.EXCHANGE_1                                  // We only want data from the main exchange
                         )
                 )
                 .process(e -> new GroupExternalLinksTask(e).doExecuteTask())          // Group the data calling our own group class pasing in the exchange (collection of ItemAsset beans)

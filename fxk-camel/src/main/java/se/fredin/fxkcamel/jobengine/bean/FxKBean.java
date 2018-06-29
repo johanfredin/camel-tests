@@ -2,8 +2,8 @@ package se.fredin.fxkcamel.jobengine.bean;
 
 import java.io.Serializable;
 
-public abstract class FxKBean<ID extends Serializable> implements Serializable {
+public interface FxKBean extends Serializable {
 
-    public abstract ID getId();
+    Serializable getId();
 
 }

@@ -1,14 +1,13 @@
 package se.fredin.fxkcamel.jobengine.task.join;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import org.apache.camel.Exchange;
 import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 import se.fredin.fxkcamel.jobengine.task.BaseTask;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Used for joining 2 collections similar to how it was made in the fxk connector
@@ -20,13 +19,20 @@ public class JoinTask extends BaseTask {
     private Exchange mainExchange;
     private Exchange joiningExchange;
     private RecordSelection recordSelection;
-    private OutEntity outEntity;
+    private OutData outData;
 
-    public JoinTask(Exchange mainExchange, Exchange joiningExchange, RecordSelection recordSelection, OutEntity outEntity) {
-        setMainExchange(mainExchange);
-        setJoiningExchange(joiningExchange);
-        setRecordSelection(recordSelection);
-        setOutEntity(outEntity);
+    private String[] entity1Fields;
+    private String[] entity2Fields;
+
+    private List<JoinKey> joinKeys;
+
+    public JoinTask(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, RecordSelection recordSelection, OutData outData, String[] entity1Fields, String[] entity2Fields) {
+        this.mainExchange = mainExchange;
+        this.joiningExchange = joiningExchange;
+        this.joinKeys = joinKeys;
+        this.recordSelection = recordSelection;
+        this.entity1Fields = entity1Fields;
+        this.entity2Fields = entity2Fields;
     }
 
     public Exchange getMainExchange() {
@@ -53,33 +59,29 @@ public class JoinTask extends BaseTask {
         this.recordSelection = recordSelection;
     }
 
-    public OutEntity getOutEntity() {
-        return outEntity;
+    public OutData getOutData() {
+        return outData;
     }
 
-    public void setOutEntity(OutEntity outEntity) {
-        this.outEntity = outEntity;
+    public void setOutData(OutData outData) {
+        this.outData = outData;
     }
 
     @Override
     public Exchange doExecuteTask() {
-        Map<Object, List<FxKBean>> c1Beans = JobUtils.asMap(getMainExchange());
-        Map<Object, List<FxKBean>> c2Beans = JobUtils.asMap(getJoiningExchange());
-
-        List<FxKBean> result = c1Beans.entrySet()
-                .stream()
-                .filter(me -> handleMatch(me, c2Beans))                             // Filter depending on record selection
-                .peek(me -> addData(me, c2Beans))                                   // Merge data from joining exchange
-                .flatMap(listContainer -> listContainer.getValue().stream())
-                .collect(Collectors.toList());
-
-
-        // Update the body with the result
-        this.mainExchange.getIn().setBody(result);
-
-        return this.mainExchange;
-
+        List<Map<String, String>> main = JobUtils.asList(this.mainExchange);
+        List<Map<String, String>> joining = JobUtils.asList(this.joiningExchange);
+        return join(main, joining);
     }
+
+
+    private Exchange join(List<Map<String, String>> main, List<Map<String, String>> joining) {
+
+
+
+        return null;
+    }
+
 
     /**
      * Filter depending on {@link #getRecordSelection()}
@@ -92,7 +94,7 @@ public class JoinTask extends BaseTask {
     private boolean handleMatch(Map.Entry<Object, List<FxKBean>> mapEntry, Map<Object, List<FxKBean>> c2Beans) {
 
         // When selection is all we always want all data regardless of match
-        if(getRecordSelection() == RecordSelection.ALL) {
+        if (getRecordSelection() == RecordSelection.ALL) {
             return true;
         }
 
@@ -113,10 +115,10 @@ public class JoinTask extends BaseTask {
         return false;
     }
 
-    private void addData(Map.Entry<Object,List<FxKBean>> me, Map<Object,List<FxKBean>> c2Beans) {
+    private void addData(Map.Entry<Object, List<FxKBean>> me, Map<Object, List<FxKBean>> c2Beans) {
 
         // If we only want data from main exchange then no point in looking for data from joining exchange
-        if(getOutEntity() == OutEntity.ENTITY_1) {
+        if (getOutData() == OutData.EXCHANGE_1) {
             return;
         }
 
@@ -128,7 +130,7 @@ public class JoinTask extends BaseTask {
                 "mainExchange=" + mainExchange +
                 ", joiningExchange=" + joiningExchange +
                 ", recordSelection=" + recordSelection +
-                ", outEntity=" + outEntity +
+                ", outData=" + outData +
                 '}';
     }
 }

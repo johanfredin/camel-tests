@@ -66,7 +66,7 @@ public class FilterDatasetTask extends BaseTask {
 
     @Override
     public void postExecute() {
-        log.info(filteredRecords + " out of " + getProcessedRecords() + " filtered out");
+//        log.info(filteredRecords + " out of " + getProcessedRecords() + " filtered out");
         super.postExecute();
     }
 }

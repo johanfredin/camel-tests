@@ -6,7 +6,7 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 
 @CsvRecord(separator = "\\|", generateHeaderColumns = true, skipFirstLine = true, quoting = true, allowEmptyStream = true)
-public class ProductBrand extends FxKBean<String> {
+public class ProductBrand implements FxKBean {
 
     @JsonIgnore
     @DataField(pos = 1, columnName = "Product no")

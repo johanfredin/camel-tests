@@ -3,7 +3,6 @@ package se.fredin.fxkcamel.dl_externallinks;
 import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.springframework.stereotype.Component;
 import se.fredin.fxkcamel.dl_externallinks.bean.*;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
 import se.fredin.fxkcamel.jobengine.bean.FxKBean;
@@ -13,21 +12,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
 public class JobRoute extends JobengineJob {
 
     private final String INPUT_DIR = "input-directory-dl";
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
 
         // Read sub-entities into collections
         String readAssetRoute = getRoute("read-assets", "product-assets.csv", ProductAsset.class, "assets", 1);
         String readBrandsRoute = getRoute("read-brands", "product-brand.csv", ProductLabel.class, "brands", 2);
-        String readProductItemRelationsRoute = getRoute("read-product-items", "product-item-relations.csv", ProductItemRelation.class, "produc-items", 3);
+        String readProductItemRelationsRoute = getRoute("read-product-items", "product-item-relations.csv", ProductItemRelation.class, "product-items", 3);
         String readLabelsRoute = getRoute("read-product-labels", "product-markningar.csv", ProductBrand.class, "product-labels", 4);
 
-        // Read main route and join in sub-entites
+        // Read main route and join in sub-entities
         from(JobUtils.file(prop(INPUT_DIR), "product-langs.csv"))
                 .routeId("read-products")
                 .unmarshal(new BindyCsvDataFormat(Product.class))
@@ -51,15 +49,14 @@ public class JobRoute extends JobengineJob {
             List<T> subEntities = subEntitiesMap.get(key);
             if (subEntities != null) {
                 List<Product> productList = products.get(key.toString());
-                T subEntity = subEntities.get(0);
                 for (Product p : productList) {
-                    if (subEntity instanceof ProductAsset) {
+                    if (subEntityToAdd.isInstance(ProductAsset.class)) {
                         p.setAssets((List<ProductAsset>) subEntities);
-                    } else if (subEntity instanceof ProductBrand) {
+                    } else if (subEntityToAdd.isInstance(ProductBrand.class)) {
                         p.setBrands((List<ProductBrand>) subEntities);
-                    } else if (subEntity instanceof ProductLabel) {
+                    } else if (subEntityToAdd.isInstance(ProductLabel.class)) {
                         p.setLabels((List<ProductLabel>) subEntities);
-                    } else if (subEntity instanceof ProductItemRelation) {
+                    } else if (subEntityToAdd.isInstance(ProductItemRelation.class)) {
                         p.setItems((List<ProductItemRelation>) subEntities);
                     }
                 }
