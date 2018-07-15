@@ -10,6 +10,8 @@ public interface Task {
 
     void postExecute();
 
-    String getName();
+    void postCreate();
+
+    String getTaskName();
 
 }

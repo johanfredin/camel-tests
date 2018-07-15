@@ -1,13 +1,10 @@
 package se.fredin.fxkcamel.jobengine.task.join;
 
 import org.apache.camel.Exchange;
-import se.fredin.fxkcamel.jobengine.bean.FxKBean;
 import se.fredin.fxkcamel.jobengine.task.BaseTask;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Used for joining 2 collections similar to how it was made in the fxk connector
@@ -16,23 +13,30 @@ import java.util.Map;
  */
 public class JoinTask extends BaseTask {
 
+    public final byte EXCHANGE_MAIN = 0;
+    public final byte EXCHANGE_JOINING = 1;
+
     private Exchange mainExchange;
     private Exchange joiningExchange;
-    private RecordSelection recordSelection;
-    private OutData outData;
+    private JoinType joinType;
 
     private String[] entity1Fields;
     private String[] entity2Fields;
 
     private List<JoinKey> joinKeys;
 
-    public JoinTask(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, RecordSelection recordSelection, OutData outData, String[] entity1Fields, String[] entity2Fields) {
-        this.mainExchange = mainExchange;
-        this.joiningExchange = joiningExchange;
-        this.joinKeys = joinKeys;
-        this.recordSelection = recordSelection;
-        this.entity1Fields = entity1Fields;
-        this.entity2Fields = entity2Fields;
+    public JoinTask() {
+        super("Join Task");
+    }
+
+    public JoinTask(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, JoinType joinType, String[] entity1Fields, String[] entity2Fields) {
+        super("Join Task");
+        setMainExchange(mainExchange);
+        setJoiningExchange(joiningExchange);
+        setJoinKeys(joinKeys);
+        setJoinType(joinType);
+        setEntity1Fields(entity1Fields);
+        setEntity2Fields(entity2Fields);
     }
 
     public Exchange getMainExchange() {
@@ -51,77 +55,175 @@ public class JoinTask extends BaseTask {
         this.joiningExchange = joiningExchange;
     }
 
-    public RecordSelection getRecordSelection() {
-        return recordSelection;
+    public JoinType getJoinType() {
+        return joinType;
     }
 
-    public void setRecordSelection(RecordSelection recordSelection) {
-        this.recordSelection = recordSelection;
+    public void setJoinType(JoinType joinType) {
+        this.joinType = joinType;
     }
 
-    public OutData getOutData() {
-        return outData;
+    public String[] getEntity1Fields() {
+        return entity1Fields;
     }
 
-    public void setOutData(OutData outData) {
-        this.outData = outData;
+    public void setEntity1Fields(String... entity1Fields) {
+        this.entity1Fields = entity1Fields;
+    }
+
+    public String[] getEntity2Fields() {
+        return entity2Fields;
+    }
+
+    public void setEntity2Fields(String... entity2Fields) {
+        this.entity2Fields = entity2Fields;
+    }
+
+    public List<JoinKey> getJoinKeys() {
+        return joinKeys;
+    }
+
+    public void setJoinKeys(List<JoinKey> joinKeys) {
+        this.joinKeys = joinKeys;
     }
 
     @Override
     public Exchange doExecuteTask() {
         List<Map<String, String>> main = JobUtils.asList(this.mainExchange);
         List<Map<String, String>> joining = JobUtils.asList(this.joiningExchange);
-        return join(main, joining);
-    }
 
+        // Make sure keys exist
+        Set<String> mainKeys = main.get(0).keySet();
+        Set<String> joiningKeys = joining.get(0).keySet();
 
-    private Exchange join(List<Map<String, String>> main, List<Map<String, String>> joining) {
-
-
-
-        return null;
-    }
-
-
-    /**
-     * Filter depending on {@link #getRecordSelection()}
-     * Keep record in collection if record selection if match found and selection one of: only_in_both, all
-     *
-     * @param mapEntry
-     * @param c2Beans
-     * @return
-     */
-    private boolean handleMatch(Map.Entry<Object, List<FxKBean>> mapEntry, Map<Object, List<FxKBean>> c2Beans) {
-
-        // When selection is all we always want all data regardless of match
-        if (getRecordSelection() == RecordSelection.ALL) {
-            return true;
-        }
-
-        // Keep record in collection if record selection one of: only_in_both, all AND out entity one of: both, entity_1
-        if (c2Beans.containsKey(mapEntry.getKey())) {
-            switch (getRecordSelection()) {
-                case RECORDS_ONLY_IN_TYPE_1_AND_2:
-                    return true;
+        for (JoinKey joinKey : this.joinKeys) {
+            if (!mainKeys.contains(joinKey.getKeyInMain())) {
+                throw new RuntimeException("Join key=" + joinKey.getKeyInMain() + " does not exist in main exchange! Available keys in main are: " + Arrays.toString(mainKeys.toArray()));
+            } else if (!joiningKeys.contains(joinKey.getKeyInJoining())) {
+                throw new RuntimeException("Join key=" + joinKey.getKeyInMain() + " does not exist in joining exchange! Available keys in main are: " + Arrays.toString(joiningKeys.toArray()));
             }
         }
 
-        // Handle when no match found
-        switch (getRecordSelection()) {
-            case RECORDS_ONLY_IN_TYPE_1:
-            case RECORDS_ONLY_IN_TYPE_2:
-                return true;
-        }
-        return false;
+        // Proceed with join
+        List<Map<String, String>> result = join(main, joining);
+        this.mainExchange.getIn().setBody(result);
+        super.setProcessedRecords(result.size());
+        super.postExecute();
+        return this.mainExchange;
     }
 
-    private void addData(Map.Entry<Object, List<FxKBean>> me, Map<Object, List<FxKBean>> c2Beans) {
 
-        // If we only want data from main exchange then no point in looking for data from joining exchange
-        if (getOutData() == OutData.EXCHANGE_1) {
-            return;
+    public List<Map<String, String>> join(List<Map<String, String>> main, List<Map<String, String>> joining) {
+        // Group the collections into maps for easier joining later.
+        Map<String, List<Map<String, String>>> mainMap = groupCollection(EXCHANGE_MAIN, main);
+        Map<String, List<Map<String, String>>> joiningMap = groupCollection(EXCHANGE_JOINING, joining);
+
+        switch (this.joinType) {
+            case FULL:
+                return fullJoin(main, joining);
+            case INNER:
+                return innerJoin(mainMap, joiningMap);
+            case LEFT:
+                return leftJoin(main, joining);
+            case RIGHT:
+                return rightJoin(main, joining);
+        }
+        return null;
+    }
+
+    private Map<String, List<Map<String, String>>> groupCollection(byte exchange, List<Map<String, String>> list) {
+        Map<String, List<Map<String, String>>> map = new HashMap<>();
+        for (Map<String, String> m : list) {
+
+            // First set the key
+            String key = "";
+            for (JoinKey joinKey : this.joinKeys) {
+                key += m.get(exchange == EXCHANGE_MAIN ? joinKey.getKeyInMain() : joinKey.getKeyInJoining());
+            }
+
+            // Now group
+            List<Map<String, String>> value = map.get(key);
+            if (value == null) {
+                value = new ArrayList<>();
+            }
+
+            // Add new entry
+            value.add(m);
+
+            // Update map
+            map.put(key, value);
         }
 
+        return map;
+    }
+
+    /**
+     * Joins the 2 exchanges based on inner logic meaning matching keys must exist in
+     * both exchanges
+     *
+     * @param main    the main exchange body
+     * @param joining the joining exchange body
+     * @return an exchange containing the data found in both collections passed in
+     */
+    private List<Map<String, String>> innerJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
+        List<Map<String, String>> result = new ArrayList<>();
+
+        // Iterate main map
+        for (String mainKey : main.keySet()) {
+
+            List<Map<String, String>> joinList = joining.get(mainKey);
+            if (joinList != null) {
+
+                List<Map<String, String>> mainList = main.get(mainKey);
+                for (int i = 0; i < mainList.size(); i++) {
+                    Map<String, String> joinMap = joinList.get(i);
+                    Map<String, String> mainMap = mainList.get(i);
+
+                    // Inner join requires values to exist in both
+                    if (joinMap != null) {
+
+                        Map<String, String> resultMap = new HashMap<>();
+
+                        // Add main fields
+                        for (String mainField : this.entity1Fields) {
+                            resultMap.put(mainField, mainMap.get(mainField));
+                        }
+
+                        // Add join fields
+                        for (String joinField : this.entity2Fields) {
+                            resultMap.put(joinField, joinMap.get(joinField));
+                        }
+
+                        // Add the joined map to the result list
+                        result.add(resultMap);
+                    }
+                }
+
+            }
+        }
+
+        // Add to the exchange
+        return result;
+    }
+
+    private List<Map<String, String>> leftJoin(List<Map<String, String>> main, List<Map<String, String>> joining) {
+        return null;
+    }
+
+    private List<Map<String, String>> rightJoin(List<Map<String, String>> main, List<Map<String, String>> joining) {
+        return null;
+    }
+
+    private List<Map<String, String>> fullJoin(List<Map<String, String>> main, List<Map<String, String>> joining) {
+        return null;
+    }
+
+    private String keysAsString(byte exchange) {
+        String key = "";
+        for (JoinKey joinKey : this.joinKeys) {
+            key += exchange == EXCHANGE_MAIN ? joinKey.getKeyInMain() : joinKey.getKeyInJoining();
+        }
+        return key;
     }
 
     @Override
@@ -129,8 +231,7 @@ public class JoinTask extends BaseTask {
         return "JoinTask{" +
                 "mainExchange=" + mainExchange +
                 ", joiningExchange=" + joiningExchange +
-                ", recordSelection=" + recordSelection +
-                ", outData=" + outData +
+                ", joinType=" + joinType +
                 '}';
     }
 }

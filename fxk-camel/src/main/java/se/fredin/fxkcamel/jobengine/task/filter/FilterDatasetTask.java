@@ -17,7 +17,12 @@ public class FilterDatasetTask extends BaseTask {
 
     private int filteredRecords;
 
+    public FilterDatasetTask() {
+        super("Filter Task");
+    }
+
     public FilterDatasetTask(Exchange exchange, Predicate<List<String>> filterFunction) {
+        super("Filter Task");
         this.exchange = exchange;
         this.filterFunction = filterFunction;
     }

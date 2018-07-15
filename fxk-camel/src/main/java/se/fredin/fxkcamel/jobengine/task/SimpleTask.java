@@ -11,6 +11,7 @@ public abstract class SimpleTask<T extends FxKBean> extends BaseTask {
     protected Exchange exchange;
 
     public SimpleTask(Exchange exchange) {
+        super("Simple Task");
         setExchange(exchange);
     }
 

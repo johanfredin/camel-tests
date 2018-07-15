@@ -18,6 +18,7 @@ public abstract class GroupTask<T extends FxKBean, R extends FxKBean> extends Ba
 
 
     public GroupTask(Exchange exchange) {
+        super("Group Task");
         this.exchange = exchange;
     }
 

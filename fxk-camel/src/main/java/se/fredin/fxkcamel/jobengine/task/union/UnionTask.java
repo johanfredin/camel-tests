@@ -13,9 +13,12 @@ public class UnionTask extends BaseTask {
     private Exchange newExchange;
     private Exchange oldExchange;
 
-    public UnionTask() {}
+    public UnionTask() {
+        super("Union Task");
+    }
 
     public UnionTask(Exchange newExchange, Exchange oldExchange) {
+        super("Union Task");
         setNewExchange(newExchange);
         setOldExchange(oldExchange);
     }

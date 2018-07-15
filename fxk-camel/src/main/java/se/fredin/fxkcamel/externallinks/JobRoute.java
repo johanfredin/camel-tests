@@ -7,8 +7,7 @@ import se.fredin.fxkcamel.externallinks.bean.ItemAsset;
 import se.fredin.fxkcamel.jobengine.JobengineJob;
 import se.fredin.fxkcamel.jobengine.task.TaskCall;
 import se.fredin.fxkcamel.jobengine.task.group.GroupExternalLinksTask;
-import se.fredin.fxkcamel.jobengine.task.join.OutData;
-import se.fredin.fxkcamel.jobengine.task.join.RecordSelection;
+import se.fredin.fxkcamel.jobengine.task.join.JoinType;
 import se.fredin.fxkcamel.jobengine.utils.JobUtils;
 
 import java.util.Arrays;
@@ -55,24 +54,24 @@ public class JobRoute extends JobengineJob {
                 .startupOrder(3);                                                   // Set this route to start third
 
 
-        from(file(prop(INPUT_DIR), "item-assets.csv"))                      // Read item-assets.csv from input directory
-                .routeId("read-item-assets")                                        // Name the route
-                .unmarshal(assetFormat)                                             // Turn file into a collection of ItemAsset beans
-                .process(this::filterAssets)                                        // Invoke our own method that filters the assets
-                .pollEnrich(                                                        // Enrich route with content from another route
-                        "seda:items-ok-aggregated",                      // Name of the route we want to join in
-                        (me, ne) -> TaskCall.join(                                  // Call our own join class
-                                me,                                                 // The main exchange (this route)
-                                ne,                                                 // The joining exchange (items-ok-aggregated)
-                                RecordSelection.RECORDS_ONLY_IN_TYPE_1_AND_2,       // Join condition. In this case the id must exist in both routes
-                                OutData.EXCHANGE_1                                  // We only want data from the main exchange
-                        )
-                )
-                .process(e -> new GroupExternalLinksTask(e).doExecuteTask())          // Group the data calling our own group class pasing in the exchange (collection of ItemAsset beans)
-                .pollEnrich("seda:items-nok-grouped", TaskCall::union)     // Union our collection (that is now an Item collection) with the Item collection from the route items-nok-grouped
-                .marshal(itemFormat)                                                 // Marshal the collection into csv-format
-                .to(file(prop(OUTPUT_DIR), "items-external-links.csv"))      // Write the csv to file items-external-links.csv in the output directory
-                .startupOrder(4);                                                    // Set this route to start last
+//        from(file(prop(INPUT_DIR), "item-assets.csv"))                      // Read item-assets.csv from input directory
+//                .routeId("read-item-assets")                                        // Name the route
+//                .unmarshal(assetFormat)                                             // Turn file into a collection of ItemAsset beans
+//                .process(this::filterAssets)                                        // Invoke our own method that filters the assets
+//                .pollEnrich(                                                        // Enrich route with content from another route
+//                        "seda:items-ok-aggregated",                      // Name of the route we want to join in
+//                        (me, ne) -> TaskCall.join(                                  // Call our own join class
+//                                me,                                                 // The main exchange (this route)
+//                                ne,                                                 // The joining exchange (items-ok-aggregated)
+//                                JoinType.INNER,       // Join condition. In this case the id must exist in both routes
+////                                OutData.EXCHANGE_1                                  // We only want data from the main exchange
+//                        )
+//                )
+//                .process(e -> new GroupExternalLinksTask(e).doExecuteTask())          // Group the data calling our own group class pasing in the exchange (collection of ItemAsset beans)
+//                .pollEnrich("seda:items-nok-grouped", TaskCall::union)     // Union our collection (that is now an Item collection) with the Item collection from the route items-nok-grouped
+//                .marshal(itemFormat)                                                 // Marshal the collection into csv-format
+//                .to(file(prop(OUTPUT_DIR), "items-external-links.csv"))      // Write the csv to file items-external-links.csv in the output directory
+//                .startupOrder(4);                                                    // Set this route to start last
 
     }
 
