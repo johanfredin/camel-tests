@@ -10,7 +10,7 @@ public class Ex1_CSVTest extends FxKJobTest {
 //                new MockRouteDefinition("read-foo-csv",
 //                        Arrays.asList(
 //                                new EndpointToMockEndpoint(
-//                                        JobUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv"),
+//                                        ProcessorUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv"),
 //                                        "mock:foo_fixed")
 //                        )));
 //    }

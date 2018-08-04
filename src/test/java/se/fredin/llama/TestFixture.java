@@ -1,10 +1,10 @@
 package se.fredin.llama;
 
 import org.apache.camel.Exchange;
-import se.fredin.llama.mock.exchange.MockExchange;
-import se.fredin.llama.jobengine.bean.FxKBean;
+import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.bean.MockItem;
 import se.fredin.llama.bean.MockItemAsset;
+import se.fredin.llama.mock.exchange.MockExchange;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,12 +42,13 @@ public class TestFixture {
         return Arrays.asList(mockItemAssets);
     }
 
-    public static <T extends FxKBean> Exchange getMockExchange(List<T> mockBody) {
+    public static <T extends LlamaBean> Exchange getMockExchange(List<T> mockBody) {
         Exchange mockExchange = new MockExchange();
         mockExchange.getIn().setBody(mockBody);
         return mockExchange;
     }
 
+    @SafeVarargs
     public static List<Map<String, String>> getList(Map<String, String>... maps) {
         return Arrays.asList(maps);
     }

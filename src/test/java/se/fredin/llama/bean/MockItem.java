@@ -1,8 +1,6 @@
 package se.fredin.llama.bean;
 
-import se.fredin.llama.jobengine.bean.FxKBean;
-
-public class MockItem implements FxKBean {
+public class MockItem implements LlamaBean {
 
     private String itemNo;
     private String name;

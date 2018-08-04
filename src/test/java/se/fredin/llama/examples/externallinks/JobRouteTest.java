@@ -4,7 +4,6 @@ import org.apache.camel.RoutesBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import se.fredin.llama.jobengine.examples.externallinks.JobRoute;
 
 //@ComponentScan
 //@RunWith(SpringRunner.class)
@@ -12,7 +11,7 @@ import se.fredin.llama.jobengine.examples.externallinks.JobRoute;
 public class JobRouteTest extends CamelTestSupport {
 
     @Override
-    protected RoutesBuilder createRouteBuilder() throws Exception {
+    protected RoutesBuilder createRouteBuilder() {
         return new JobRoute();
     }
 
@@ -22,7 +21,7 @@ public class JobRouteTest extends CamelTestSupport {
     }
 
     @Before
-    public void mockEndpoints() throws Exception {
+    public void mockEndpoints() {
 //        AdviceWithRouteBuilder mockEndpoint = new AdviceWithRouteBuilder() {
 //            @Override
 //            public void configure() throws Exception {
@@ -35,7 +34,7 @@ public class JobRouteTest extends CamelTestSupport {
     }
 
     @Test
-    public void testReadItemsRoute() throws Exception {
+    public void testReadItemsRoute() {
 //        context.start();
 //        System.out.println("read");
 //        context.stop();
