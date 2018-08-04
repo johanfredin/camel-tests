@@ -1,8 +1,8 @@
 package se.fredin.llama.examples;
 
-import se.fredin.llama.FxKJobTest;
+import se.fredin.llama.LlamaRouteTest;
 
-public class Ex1_CSVTest extends FxKJobTest {
+public class Ex1_CSVTest extends LlamaRouteTest {
 
 //    @Override
 //    protected List<MockRouteDefinition> getMockRoutes() {

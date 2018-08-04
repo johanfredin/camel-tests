@@ -1,5 +1,5 @@
 
-package se.fredin.llama.jaxb;
+package se.fredin.llama.examples.jaxb;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;

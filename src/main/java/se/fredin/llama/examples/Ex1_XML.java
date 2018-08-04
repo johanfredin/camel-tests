@@ -2,7 +2,7 @@ package se.fredin.llama.examples;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.LlamaRoute;
-import se.fredin.llama.jaxb.Users;
+import se.fredin.llama.examples.jaxb.Users;
 import se.fredin.llama.utils.Endpoint;
 
 import java.util.Comparator;

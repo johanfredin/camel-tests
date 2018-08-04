@@ -13,6 +13,7 @@ import static se.fredin.llama.TestFixture.*;
 import static se.fredin.llama.utils.ProcessorUtils.field;
 import static se.fredin.llama.utils.ProcessorUtils.fields;
 
+
 public class JoinProcessorTest {
 
     private List<Map<String, String>> mainEntries;

@@ -4,7 +4,7 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 
 //@SpringBootTest
 //@RunWith(SpringRunner.class)
-public abstract class FxKJobTest extends CamelTestSupport {
+public abstract class LlamaRouteTest extends CamelTestSupport {
 
 //    @Autowired
 //    protected SettingsComponent settingsComponent;
