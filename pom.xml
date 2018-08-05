@@ -164,14 +164,14 @@
             <!--<url>https://jitpack.io</url>-->
         <!--</repository>-->
 
-        <!--<repository>-->
-            <!--<id>llama-mvn-repo</id>-->
-            <!--<url>https://raw.github.com/johanfredin/llama/mvn-repo/</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>true</enabled>-->
-                <!--<updatePolicy>always</updatePolicy>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
+        <repository>
+            <id>llama-mvn-repo</id>
+            <url>https://raw.github.com/johanfredin/llama/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
 
     </repositories>
 
