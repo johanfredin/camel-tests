@@ -41,7 +41,7 @@ public class UnionProcessor extends BaseProcessor {
 
     @Override
     public Exchange doExecuteTask() {
-        LlamaBean newBean = getNewExchange().getIn().getBody(LlamaBean.class);
+        var newBean = getNewExchange().getIn().getBody(LlamaBean.class);
         List<LlamaBean> beans;
         if (this.oldExchange == null) {
             beans = new ArrayList<>();

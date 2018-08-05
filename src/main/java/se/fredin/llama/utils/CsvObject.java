@@ -49,8 +49,8 @@ public class CsvObject {
 
 
     public String recordAsString(List<String> record) {
-        String s = "[";
-        for(String field : record) {
+        var s = "[";
+        for(var field : record) {
             s += field;
             if(record.indexOf(field) < record.size() - 1) {
                 s += ",";

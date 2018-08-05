@@ -24,7 +24,6 @@ public class CsvUser implements LlamaBean {
     @DataField(pos = 5)
     private String country;
 
-
     public CsvUser(long id, String firstName, String lastName, int age, String gender, String country) {
         this.id = id;
         this.firstName = firstName;

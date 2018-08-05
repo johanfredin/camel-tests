@@ -43,7 +43,7 @@ public class TestFixture {
     }
 
     public static <T extends LlamaBean> Exchange getMockExchange(List<T> mockBody) {
-        Exchange mockExchange = new MockExchange();
+        var mockExchange = new MockExchange();
         mockExchange.getIn().setBody(mockBody);
         return mockExchange;
     }
@@ -54,8 +54,8 @@ public class TestFixture {
     }
 
     public static Map<String, String> getTestObjects(KeyValuePair... entries) {
-        Map<String, String> map = new HashMap<>();
-        for (KeyValuePair kvp : entries) {
+        var map = new HashMap<String, String>();
+        for (var kvp : entries) {
             map.put(kvp.getKey(), kvp.getValue());
         }
         return map;

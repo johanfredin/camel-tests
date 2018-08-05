@@ -35,19 +35,19 @@ public class JoinProcessorTest {
 
     @Test
     public void testInnerJoin() {
-        JoinProcessor joinProcessor = new JoinProcessor();
+        var joinProcessor = new JoinProcessor();
         joinProcessor.setJoinType(JoinType.INNER);
         joinProcessor.setEntity1Fields(new Fields(fields(field("Id"), field("Name"))));
         joinProcessor.setEntity2Fields(new Fields(fields(field("Pet"), field("Color"))));
         joinProcessor.setJoinKeys(Collections.singletonList(new JoinKey("Id", "Id")));
 
-        List<Map<String, String>> result = joinProcessor.join(this.mainEntries, this.joiningEntries);
+        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
 
         // Test results
         assertEquals("Result size should be 3", 3, result.size());
 
         // Test keys
-        for (Map<String, String> map : result) {
+        for (var map : result) {
             assertTrue("Keys contains Id", map.keySet().contains("Id"));
             assertTrue("Keys contains Name", map.keySet().contains("Name"));
             assertTrue("Keys contains Pet", map.keySet().contains("Pet"));
@@ -56,7 +56,7 @@ public class JoinProcessorTest {
             // Make sure we didn't get these
             assertFalse("Keys does not contain Age", map.keySet().contains("Age"));
 
-            final String ID = map.get("Id");
+            final var ID = map.get("Id");
             switch (ID) {
                 case "1":
                     assertEquals("Name=Jonas", "Jonas", map.get("Name"));

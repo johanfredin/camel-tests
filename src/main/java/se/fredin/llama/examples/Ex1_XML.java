@@ -16,15 +16,15 @@ public class Ex1_XML extends LlamaRoute {
     @Override
     public void configure() {
         from(Endpoint.file(prop("ex-input-directory"), "foo.xml"))
-        .convertBodyTo(Users.class)
-        .process(this::processUsers)
-        .marshal().jaxb()
-        .to(Endpoint.file(prop("ex-output-directory"), "foo_fixed.xml"))
-        .end();
+                .convertBodyTo(Users.class)
+                .process(this::processUsers)
+                .marshal().jaxb()
+                .to(Endpoint.file(prop("ex-output-directory"), "foo_fixed.xml"))
+                .end();
     }
 
     private void processUsers(Exchange exchange) {
-        Users users = exchange.getIn().getBody(Users.class);
+        var users = exchange.getIn().getBody(Users.class);
         users.setUsers(users.getUser()
                 .stream()                                                       // Iterate users
                 .filter(user -> user.getAge() > 0 && user.getAge() < 100)       // Filter out invalid age

@@ -51,10 +51,10 @@ public class CsvFilterProcessor extends BaseProcessor {
 
     @Override
     public Exchange doExecuteTask() {
-        List<List<String>> records = ProcessorUtils.asTypedList(this.exchange);
+        var records = ProcessorUtils.<List<String>>asTypedList(this.exchange);
         setProcessedRecords(records.size());
 
-        List<List<String>> filteredRecords = records
+        var filteredRecords = records
                 .stream()
                 .filter(this.filterFunction)
                 .collect(Collectors.toList());

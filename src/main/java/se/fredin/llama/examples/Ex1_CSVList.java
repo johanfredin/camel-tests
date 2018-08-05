@@ -17,7 +17,7 @@ public class Ex1_CSVList extends LlamaRoute {
 
     @Override
     public void configure() {
-        CsvDataFormat format = new CsvDataFormat();
+        var format = new CsvDataFormat();
         format.setDelimiter(';');
         format.setUseMaps(true);
 
@@ -30,14 +30,14 @@ public class Ex1_CSVList extends LlamaRoute {
     }
 
     private void transformData(Exchange exchange) {
-        List<Map<String, String>> collect = ProcessorUtils.asList(exchange)
+        var collect = ProcessorUtils.asList(exchange)
                 .stream()
                 .filter(e -> ProcessorUtils.withinRange(e.get("age"), 0, 100))
                 .peek(e -> e.put("gender", e.get("gender").toUpperCase()))
                 .sorted(Comparator.comparing(e -> e.get("country")))
                 .collect(Collectors.toList());
 
-        Map<String, String> header = new HashMap<>();
+        var header = new HashMap<String, String>();
         for(String s : collect.get(0).keySet()) {
             header.put(s, s);
         }

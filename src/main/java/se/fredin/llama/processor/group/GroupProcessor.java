@@ -16,7 +16,6 @@ public abstract class GroupProcessor<T extends LlamaBean, R extends LlamaBean> e
     private List<R> resultList;
     private Function<T, R> groupFunction;
 
-
     public GroupProcessor(Exchange exchange) {
         super();
         this.exchange = exchange;
@@ -24,7 +23,7 @@ public abstract class GroupProcessor<T extends LlamaBean, R extends LlamaBean> e
 
     @Override
     public Exchange doExecuteTask() {
-        for (Map.Entry<Object, List<T>> entry : ProcessorUtils.<T>asMap(this.exchange).entrySet()) {
+        for (var entry : ProcessorUtils.<T>asMap(this.exchange).entrySet()) {
             addResult(entry);
         }
 

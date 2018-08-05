@@ -19,8 +19,8 @@ public class ProcessorUtils {
     }
 
     public static boolean isTrue(Operator operator, boolean... conditions) {
-        boolean trueStatementFound = false;
-        for (boolean condition : conditions) {
+        var trueStatementFound = false;
+        for (var condition : conditions) {
             if (!condition) {
                 if (operator == Operator.AND) {
                     return false;
@@ -58,16 +58,16 @@ public class ProcessorUtils {
                 .collect(Collectors.groupingBy(T::getId));
     }
 
-    public static String getTransformedUrl(String immUrl, String immUrlPrefix, String outputUrlPrefix) {
-        String url = immUrlPrefix.toLowerCase().replace("\\", "/");
-        immUrl = immUrl.toLowerCase().replace("\\", "/");
-        String outUrl = outputUrlPrefix.toLowerCase().replace("\\", "/");
+    public static String getTransformedUrl(String inUrl, String inUrlPrefix, String outputUrlPrefix) {
+        var url = inUrlPrefix.toLowerCase().replace("\\", "/");
+        inUrl = inUrl.toLowerCase().replace("\\", "/");
+        var outUrl = outputUrlPrefix.toLowerCase().replace("\\", "/");
 
-        return immUrl.replace(url, outUrl);
+        return inUrl.replace(url, outUrl);
     }
 
     public static JacksonXMLDataFormat toXml(boolean prettyPrint) {
-        JacksonXMLDataFormat dataFormat = new JacksonXMLDataFormat();
+        var dataFormat = new JacksonXMLDataFormat();
         dataFormat.setPrettyPrint(prettyPrint);
         return dataFormat;
     }
@@ -75,8 +75,8 @@ public class ProcessorUtils {
 
     @SafeVarargs
     public static<K, V> Map<K, V> getMergedMap(Map<K, V>... maps) {
-        Map<K, V> map = new HashMap<>();
-        for(Map<K, V> mapToAdd : maps) {
+        var map = new HashMap<K, V>();
+        for(var mapToAdd : maps) {
             if(mapToAdd != null) {
                 map.putAll(mapToAdd);
             }

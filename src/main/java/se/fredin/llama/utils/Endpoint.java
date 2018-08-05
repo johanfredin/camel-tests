@@ -18,14 +18,7 @@ public class Endpoint {
     }
 
     public static String fileSource(InputType inputType, String url, String fileName, InputOptions option) {
-        return new StringBuilder()
-                .append(inputType.getType()).append(':').append(url)
-                .append("/")
-                .append(ARGS)
-                .append("fileName").append(EQUALS).append(fileName)
-                .append(AND)
-                .append(option.getOption())
-                .toString();
+        return inputType.getType() + ":" + url + "/" + ARGS + "fileName" + EQUALS + fileName + AND + option.getOption();
     }
 
     public static String sql(String query) {
@@ -45,7 +38,7 @@ public class Endpoint {
     }
 
     public static String sql(String query, Class outputClass, boolean reuseQuery, SqlResultType resultType, String dataSource) {
-        StringBuilder uriBuilder = new StringBuilder()
+        var uriBuilder = new StringBuilder()
                 .append(InputType.SQL.getType()).append(':').append(query)
                 .append(ARGS)
                 .append("outputClass").append(EQUALS).append(outputClass.getCanonicalName())

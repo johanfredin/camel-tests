@@ -2,7 +2,6 @@ package se.fredin.llama.processor.join;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.processor.BaseProcessor;
-import se.fredin.llama.processor.Field;
 import se.fredin.llama.processor.Fields;
 import se.fredin.llama.utils.ProcessorUtils;
 
@@ -89,14 +88,14 @@ public class JoinProcessor extends BaseProcessor {
 
     @Override
     public Exchange doExecuteTask() {
-        List<Map<String, String>> main = ProcessorUtils.asList(this.mainExchange);
-        List<Map<String, String>> joining = ProcessorUtils.asList(this.joiningExchange);
+        var main = ProcessorUtils.<Map<String, String>>asList(this.mainExchange);
+        var joining = ProcessorUtils.<Map<String, String>>asList(this.joiningExchange);
 
         // Make sure keys exist
-        Set<String> mainKeys = main.get(0).keySet();
-        Set<String> joiningKeys = joining.get(0).keySet();
+        var mainKeys = main.get(0).keySet();
+        var joiningKeys = joining.get(0).keySet();
 
-        for (JoinKey joinKey : this.joinKeys) {
+        for (var joinKey : this.joinKeys) {
             if (!mainKeys.contains(joinKey.getKeyInMain())) {
                 throw new RuntimeException("Join key=" + joinKey.getKeyInMain() + " does not exist in main exchange! Available keys in main are: " + Arrays.toString(mainKeys.toArray()));
             } else if (!joiningKeys.contains(joinKey.getKeyInJoining())) {
@@ -105,7 +104,7 @@ public class JoinProcessor extends BaseProcessor {
         }
 
         // Proceed with join
-        List<Map<String, String>> result = join(main, joining);
+        var result = join(main, joining);
         this.mainExchange.getIn().setBody(result);
         super.setProcessedRecords(result.size());
         super.postExecute();
@@ -115,8 +114,8 @@ public class JoinProcessor extends BaseProcessor {
 
     public List<Map<String, String>> join(List<Map<String, String>> main, List<Map<String, String>> joining) {
         // Group the collections into maps for easier joining later.
-        Map<String, List<Map<String, String>>> mainMap = JoinUtils.groupCollection(this.joinKeys, JoinUtils.EXCHANGE_MAIN, main);
-        Map<String, List<Map<String, String>>> joiningMap = JoinUtils.groupCollection(this.joinKeys, JoinUtils.EXCHANGE_JOINING, joining);
+        var mainMap = JoinUtils.groupCollection(this.joinKeys, JoinUtils.EXCHANGE_MAIN, main);
+        var joiningMap = JoinUtils.groupCollection(this.joinKeys, JoinUtils.EXCHANGE_JOINING, joining);
 
         switch (this.joinType) {
             case OUTER:
@@ -140,18 +139,18 @@ public class JoinProcessor extends BaseProcessor {
      * @return an exchange containing the data found in both collections passed in
      */
     private List<Map<String, String>> innerJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
-        List<Map<String, String>> result = new ArrayList<>();
+        var result = new ArrayList<Map<String, String>>();
 
         // Iterate main map
         for (String mainKey : main.keySet()) {
 
-            List<Map<String, String>> joinList = joining.get(mainKey);
+            var joinList = joining.get(mainKey);
             if (joinList != null) {
 
-                List<Map<String, String>> mainList = main.get(mainKey);
+                var mainList = main.get(mainKey);
                 for (int i = 0; i < mainList.size(); i++) {
-                    Map<String, String> joinMap = joinList.get(i);
-                    Map<String, String> mainMap = mainList.get(i);
+                    var joinMap = joinList.get(i);
+                    var mainMap = mainList.get(i);
 
                     // Inner join requires values to exist in both
                     if (joinMap != null) {
@@ -168,15 +167,15 @@ public class JoinProcessor extends BaseProcessor {
     }
 
     private List<Map<String, String>> leftOrRightJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
-        List<Map<String, String>> result = new ArrayList<>();
-        Set<String> joiningHeaders = fetchHeader(joining);
+        var result = new ArrayList<Map<String, String>>();
+        var joiningHeaders = fetchHeader(joining);
 
         // Iterate main map
-        for (String mainKey : main.keySet()) {
+        for (var mainKey : main.keySet()) {
 
-            List<Map<String, String>> mainList = main.get(mainKey);
+            var mainList = main.get(mainKey);
+            var joinList = joining.get(mainKey);
 
-            List<Map<String, String>> joinList = joining.get(mainKey);
             if (joinList == null) {
 
                 // Create dummy list with blank values when joining list is null.
@@ -201,7 +200,7 @@ public class JoinProcessor extends BaseProcessor {
     }
 
     private Set<String> fetchHeader(Map<String, List<Map<String, String>>> map) {
-        for(Map.Entry<String, List<Map<String, String>>> entry : map.entrySet()) {
+        for(var entry : map.entrySet()) {
             if(entry.getValue() != null && !entry.getValue().isEmpty()) {
                 return entry.getValue().get(0).keySet();
             }
@@ -217,8 +216,8 @@ public class JoinProcessor extends BaseProcessor {
         }
 
         if (fields.hasFields()) {
-            Map<String, String> map = new HashMap<>();
-            for (Field mainField : fields.getFields()) {
+            var map = new HashMap<String, String>();
+            for (var mainField : fields.getFields()) {
                 map.put(mainField.getOutName(), mapToTakeFrom.get(mainField.getName()));
             }
             return map;
@@ -227,17 +226,17 @@ public class JoinProcessor extends BaseProcessor {
     }
 
     private Map<String, String> createDummyMap(Set<String> mapHeaders, Fields fields) {
-        Map<String, String> dummyMap = new HashMap<>();
+        var dummyMap = new HashMap<String, String>();
 
         // Add main fields
         if (fields.isAllFields()) {
-            for(String field : mapHeaders) {
+            for(var field : mapHeaders) {
                 dummyMap.put(field, "");
             }
         }
 
         if (fields.hasFields()) {
-            for (Field mainField : fields.getFields()) {
+            for (var mainField : fields.getFields()) {
                 dummyMap.put(mainField.getOutName(), "");
             }
         }

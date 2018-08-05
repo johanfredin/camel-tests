@@ -8,7 +8,6 @@ import se.fredin.llama.utils.Endpoint;
 import se.fredin.llama.utils.ProcessorUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -27,14 +26,14 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
                     List<Pet> pets = ProcessorUtils.asFxkBeanList(newExchange);
 
                     // Create map <k, list<v>> of pets
-                    Map<Long, List<Pet>> petMap = pets
+                    var petMap = pets
                             .stream()
                             .collect(Collectors.groupingBy(Pet::getId));
 
                     // Match the 2
-                    for(User u: users) {
-                        List<Pet> petList = petMap.get(u.getId());
-                        if(petList != null) {
+                    for (User u : users) {
+                        var petList = petMap.get(u.getId());
+                        if (petList != null) {
                             u.setPets(petList);
                         }
                     }

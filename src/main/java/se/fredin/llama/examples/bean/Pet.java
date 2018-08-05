@@ -19,7 +19,6 @@ public class Pet implements LlamaBean {
     @DataField(pos = 4)
     private String type;
 
-
     public Pet(long id, String name, String gender, String type) {
         this.id = id;
         this.name = name;

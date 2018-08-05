@@ -11,18 +11,18 @@ public class JoinUtils {
     public static final byte EXCHANGE_JOINING = 1;
 
     public static Map<String, List<Map<String, String>>> groupCollection(List<JoinKey> joinKeys, byte exchange, List<Map<String, String>> list) {
-        Map<String, List<Map<String, String>>> map = new HashMap<>();
-        for (Map<String, String> m : list) {
+        var map = new HashMap<String, List<Map<String, String>>>();
+        for (var m : list) {
 
             // First set the key
-            StringBuilder keyBuilder = new StringBuilder();
-            for (JoinKey joinKey : joinKeys) {
+            var keyBuilder = new StringBuilder();
+            for (var joinKey : joinKeys) {
                 keyBuilder.append(m.get(exchange == EXCHANGE_MAIN ? joinKey.getKeyInMain() : joinKey.getKeyInJoining()));
             }
-            String key = keyBuilder.toString();
+            var key = keyBuilder.toString();
 
             // Now group
-            List<Map<String, String>> value = map.get(key);
+            var value = map.get(key);
             if (value == null) {
                 value = new ArrayList<>();
             }
@@ -38,8 +38,8 @@ public class JoinUtils {
     }
 
     public static String keysAsString(List<JoinKey> joinKeys, byte exchange) {
-        StringBuilder keyBuilder = new StringBuilder();
-        for (JoinKey joinKey : joinKeys) {
+        var keyBuilder = new StringBuilder();
+        for (var joinKey : joinKeys) {
             keyBuilder.append(exchange == JoinUtils.EXCHANGE_MAIN ? joinKey.getKeyInMain() : joinKey.getKeyInJoining());
         }
         return keyBuilder.toString();

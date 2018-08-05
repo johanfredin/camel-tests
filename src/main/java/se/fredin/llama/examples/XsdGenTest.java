@@ -10,13 +10,13 @@ import java.io.IOException;
 public class XsdGenTest {
 
     public static void main(String... args) {
-        XsdGen gen = new XsdGen();
+        var gen = new XsdGen();
         try {
             gen.parse(new File("src/test/resources/input/foo.xml"));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-        File out = new File("src/test/resources/input/foo.xsd");
+        var out = new File("src/test/resources/input/foo.xsd");
         try {
             gen.write(new FileOutputStream(out));
         } catch (IOException e) {
