@@ -141,10 +141,10 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.springframework.boot</groupId>-->
+                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -167,6 +167,7 @@
         <repository>
             <id>llama-mvn-repo</id>
             <url>https://raw.github.com/johanfredin/llama/mvn-repo/</url>
+
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
