@@ -4,6 +4,6 @@ import java.io.Serializable;
 
 public interface LlamaBean extends Serializable {
 
-    Serializable getId();
+    Object getId();
 
 }

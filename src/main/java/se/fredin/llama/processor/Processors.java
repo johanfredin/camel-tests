@@ -4,7 +4,7 @@ import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.filter.CsvFilterProcessor;
 import se.fredin.llama.processor.join.JoinKey;
-import se.fredin.llama.processor.join.JoinProcessor;
+import se.fredin.llama.processor.join.JoinCollectionsProcessor;
 import se.fredin.llama.processor.join.JoinType;
 import se.fredin.llama.processor.transform.TransformProcessor;
 import se.fredin.llama.processor.union.UnionProcessor;
@@ -41,7 +41,7 @@ public class Processors {
     }
 
     public static Exchange join(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {
-        return new JoinProcessor(mainExchange, joiningExchange, keys, joinType, entity1Fields, entity2Fields).doExecuteTask();
+        return new JoinCollectionsProcessor(mainExchange, joiningExchange, keys, joinType, entity1Fields, entity2Fields).doExecuteTask();
     }
 
     public static <T extends LlamaBean> Exchange transform(Exchange exchange, Consumer<T> transformFunction) {

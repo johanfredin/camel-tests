@@ -14,7 +14,7 @@ import static se.fredin.llama.utils.ProcessorUtils.field;
 import static se.fredin.llama.utils.ProcessorUtils.fields;
 
 
-public class JoinProcessorTest {
+public class JoinCollectionsProcessorTest {
 
     private List<Map<String, String>> mainEntries;
     private List<Map<String, String>> joiningEntries;
@@ -35,7 +35,7 @@ public class JoinProcessorTest {
 
     @Test
     public void testInnerJoin() {
-        var joinProcessor = new JoinProcessor();
+        var joinProcessor = new JoinCollectionsProcessor();
         joinProcessor.setJoinType(JoinType.INNER);
         joinProcessor.setEntity1Fields(new Fields(fields(field("Id"), field("Name"))));
         joinProcessor.setEntity2Fields(new Fields(fields(field("Pet"), field("Color"))));

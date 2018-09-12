@@ -37,7 +37,7 @@ public class ProcessorUtils {
 
 
     @SuppressWarnings("unchecked")
-    public static <T extends LlamaBean> List<T> asFxkBeanList(Exchange e) {
+    public static <T extends LlamaBean> List<T> asLlamaBeanList(Exchange e) {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
@@ -51,9 +51,15 @@ public class ProcessorUtils {
         return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
+    /**
+     * Creates a map where key = {@link LlamaBean#getId()} and value a List of llama beans.
+      * @param e the exchange that is assumed to have a list of {@link LlamaBean} instances
+     * @param <T> the Type of the bean (must extend Llamabean
+     * @return a map of llama beans grouped by bean id.
+     */
     @SuppressWarnings("unchecked")
-    public static <T extends LlamaBean> Map<Object, List<T>> asMap(Exchange e) {
-        return ProcessorUtils.<T>asFxkBeanList(e)
+    public static <T extends LlamaBean> Map<Object, List<T>> asLlamaBeanMap(Exchange e) {
+        return ProcessorUtils.<T>asLlamaBeanList(e)
                 .stream()
                 .collect(Collectors.groupingBy(T::getId));
     }

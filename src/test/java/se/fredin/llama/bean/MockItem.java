@@ -5,10 +5,6 @@ public class MockItem implements LlamaBean {
     private String itemNo;
     private String name;
 
-    public MockItem(String id) {
-        this(id, null);
-    }
-
     public MockItem(String itemNo, String name) {
         this.itemNo = itemNo;
         this.name = name;

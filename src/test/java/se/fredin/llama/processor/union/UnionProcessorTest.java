@@ -18,7 +18,7 @@ public class UnionProcessorTest {
 //        UnionProcessor unionTask = new UnionProcessor(exchange1, exchange2);
 //        Exchange union = unionTask.union();
 //
-//        List<MockItem> result = ProcessorUtils.<MockItem>asFxkBeanList(union);
+//        List<MockItem> result = ProcessorUtils.<MockItem>asLlamaBeanList(union);
 //        assertEquals("There should be 2 items in resulting list", 2, result.size());
 //        assertTrue("Result contains item1", result.contains(mockItem1));
 //        assertTrue("Result contains item2", result.contains(mockItem2));

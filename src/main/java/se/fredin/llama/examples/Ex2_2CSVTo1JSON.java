@@ -40,12 +40,12 @@ public class Ex2_2CSVTo1JSON extends LlamaRoute {
     private Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 
         // Create map <k, list<v>> of pets
-        var petMap = ProcessorUtils.<Pet>asFxkBeanList(newExchange).stream()
+        var petMap = ProcessorUtils.<Pet>asLlamaBeanList(newExchange).stream()
                 .collect(Collectors.groupingBy(Pet::getId));
 
 
         // Match the 2 (JRE8 way)
-        var users = ProcessorUtils.<User>asFxkBeanList(oldExchange)
+        var users = ProcessorUtils.<User>asLlamaBeanList(oldExchange)
                 .stream()
                 .peek(u -> u.setPets(petMap.get(u.getId())))
                 .collect(Collectors.toList());

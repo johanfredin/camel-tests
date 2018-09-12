@@ -25,7 +25,7 @@ public abstract class SimpleProcessor<T extends LlamaBean> extends BaseProcessor
 
     @Override
     public Exchange doExecuteTask() {
-        var beans = ProcessorUtils.<T>asFxkBeanList(this.exchange);
+        var beans = ProcessorUtils.<T>asLlamaBeanList(this.exchange);
         this.exchange.getIn().setBody(transformData(beans));
         postExecute();
         return this.exchange;

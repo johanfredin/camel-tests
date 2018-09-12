@@ -1,7 +1,7 @@
 package se.fredin.llama.processor.join;
 
 /**
- * Used in {@link JoinProcessor}. Holds 2 fields representing key in main
+ * Used in {@link JoinCollectionsProcessor}. Holds 2 fields representing key in main
  * and key in joining where their values must match.
  */
 public class JoinKey {

@@ -22,8 +22,8 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
         from(Endpoint.file(prop("ex-input-directory"), "person.csv"))
                 .unmarshal(new BindyCsvDataFormat(User.class))
                 .pollEnrich("direct:pet", (oldExchange, newExchange) -> {
-                    List<User> users = ProcessorUtils.asFxkBeanList(oldExchange);
-                    List<Pet> pets = ProcessorUtils.asFxkBeanList(newExchange);
+                    List<User> users = ProcessorUtils.asLlamaBeanList(oldExchange);
+                    List<Pet> pets = ProcessorUtils.asLlamaBeanList(newExchange);
 
                     // Create map <k, list<v>> of pets
                     var petMap = pets

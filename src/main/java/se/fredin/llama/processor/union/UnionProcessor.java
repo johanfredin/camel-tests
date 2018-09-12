@@ -50,7 +50,7 @@ public class UnionProcessor extends BaseProcessor {
             return this.newExchange;
         }
 
-        beans = ProcessorUtils.asFxkBeanList(this.oldExchange);
+        beans = ProcessorUtils.asLlamaBeanList(this.oldExchange);
         beans.add(newBean);
         this.oldExchange.getIn().setBody(beans);
         return this.oldExchange;

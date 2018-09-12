@@ -8,7 +8,6 @@ import se.fredin.llama.utils.Endpoint;
 import se.fredin.llama.utils.ProcessorUtils;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -31,7 +30,7 @@ public class Ex1_CSV extends LlamaRoute {
     }
 
     private void processUsers(Exchange exchange) {
-        var users = ProcessorUtils.<CsvUser>asFxkBeanList(exchange)
+        var users = ProcessorUtils.<CsvUser>asLlamaBeanList(exchange)
                 .stream()                                                       // Iterate users
                 .filter(user -> user.getAge() > 0 && user.getAge() < 100)       // Filter out invalid age
                 .sorted(Comparator.comparing(CsvUser::getCountry))              // Sort on country

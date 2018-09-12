@@ -1,57 +1,31 @@
 package se.fredin.llama.processor.join;
 
 import org.apache.camel.Exchange;
-import se.fredin.llama.processor.BaseProcessor;
 import se.fredin.llama.processor.Fields;
 import se.fredin.llama.utils.ProcessorUtils;
 
 import java.util.*;
 
 /**
- * Used for joining 2 collections similar to how it was made in the fxk connector
+ * Used for joining 2 collections similar to how it is made in an sql join
  *
  * @author JFN
  */
-public class JoinProcessor extends BaseProcessor {
-
-    private Exchange mainExchange;
-    private Exchange joiningExchange;
-    private JoinType joinType;
+public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     private Fields entity1Fields;
     private Fields entity2Fields;
 
     private List<JoinKey> joinKeys;
 
-    public JoinProcessor() {
-        super();
-    }
+    public JoinCollectionsProcessor() {}
 
-    public JoinProcessor(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, JoinType joinType,
-                         Fields entity1Fields, Fields entity2Fields) {
-        super();
-        setMainExchange(mainExchange);
-        setJoiningExchange(joiningExchange);
+    public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, JoinType joinType,
+                                    Fields entity1Fields, Fields entity2Fields) {
+        super(mainExchange, joiningExchange, joinType);
         setJoinKeys(joinKeys);
-        setJoinType(joinType);
         setEntity1Fields(entity1Fields);
         setEntity2Fields(entity2Fields);
-    }
-
-    public Exchange getMainExchange() {
-        return mainExchange;
-    }
-
-    public void setMainExchange(Exchange mainExchange) {
-        this.mainExchange = mainExchange;
-    }
-
-    public Exchange getJoiningExchange() {
-        return joiningExchange;
-    }
-
-    public void setJoiningExchange(Exchange joiningExchange) {
-        this.joiningExchange = joiningExchange;
     }
 
     public JoinType getJoinType() {
@@ -88,8 +62,8 @@ public class JoinProcessor extends BaseProcessor {
 
     @Override
     public Exchange doExecuteTask() {
-        var main = ProcessorUtils.<Map<String, String>>asList(this.mainExchange);
-        var joining = ProcessorUtils.<Map<String, String>>asList(this.joiningExchange);
+        var main = ProcessorUtils.<Map<String, String>>asList(this.main);
+        var joining = ProcessorUtils.<Map<String, String>>asList(this.joining);
 
         // Make sure keys exist
         var mainKeys = main.get(0).keySet();
@@ -105,10 +79,10 @@ public class JoinProcessor extends BaseProcessor {
 
         // Proceed with join
         var result = join(main, joining);
-        this.mainExchange.getIn().setBody(result);
+        this.main.getIn().setBody(result);
         super.setProcessedRecords(result.size());
         super.postExecute();
-        return this.mainExchange;
+        return this.main;
     }
 
 
@@ -245,10 +219,14 @@ public class JoinProcessor extends BaseProcessor {
 
     @Override
     public String toString() {
-        return "JoinProcessor{" +
-                "mainExchange=" + mainExchange +
-                ", joiningExchange=" + joiningExchange +
+        return "JoinCollectionsProcessor{" +
+                "entity1Fields=" + entity1Fields +
+                ", entity2Fields=" + entity2Fields +
+                ", joinKeys=" + joinKeys +
+                ", main=" + main +
+                ", joining=" + joining +
                 ", joinType=" + joinType +
+                ", processedRecords=" + processedRecords +
                 '}';
     }
 }
