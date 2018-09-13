@@ -12,11 +12,11 @@ import static org.junit.Assert.*;
 
 public class JoinLlamaBeansProcessorTest {
 
-    public static final String MUTUAL_ID = TestFixture.getMockItem().getId();
-    public static final String UNIQUE_ID_ITEMS = "UNIQUE_ID_ITEMS";
-    public static final String UNIQUE_ID_ITEM_ASSETS = "UNIQUE_ID_ITEM_ASSETS";
+    private static final String MUTUAL_ID = TestFixture.getMockItem().getId();
+    private static final String UNIQUE_ID_ITEMS = "UNIQUE_ID_ITEMS";
+    private static final String UNIQUE_ID_ITEM_ASSETS = "UNIQUE_ID_ITEM_ASSETS";
 
-    private Map<Object, List<MockItem>> mocKitems = Map.of(
+    private Map<Object, List<MockItem>> mockItems = Map.of(
             MUTUAL_ID, List.of(TestFixture.getMockItem(), TestFixture.getMockItem(MUTUAL_ID, "Iphone")),
             UNIQUE_ID_ITEMS, List.of()
     );
@@ -29,10 +29,10 @@ public class JoinLlamaBeansProcessorTest {
     @Test
     public void testInnerJoinExchange1() {
         var joinBeansProcessor = getProcessor(JoinType.INNER, OutData.EXCHANGE_1);
-        Map<Object, List<MockItem>> resultMap = joinBeansProcessor.join(mocKitems, mockItemAssets);
+        Map<Object, List<MockItem>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
 
         assertFalse("ResultMap should not contain entry with key=" + UNIQUE_ID_ITEMS, resultMap.keySet().contains(UNIQUE_ID_ITEMS));
-        assertTrue("ResultMap contains all values associated with id", resultMap.get(MUTUAL_ID).size() == mocKitems.get(MUTUAL_ID).size());
+        assertTrue("ResultMap contains all values associated with id", resultMap.get(MUTUAL_ID).size() == mockItems.get(MUTUAL_ID).size());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class JoinLlamaBeansProcessorTest {
         assertEquals("mock assets size=2", 2, mockItemAssets.size());
 
         var joinBeansProcessor = getProcessor(JoinType.INNER, OutData.EXCHANGE_2);
-        Map<Object, List<MockItemAsset>> resultMap = joinBeansProcessor.join(mocKitems, mockItemAssets);
+        Map<Object, List<MockItemAsset>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
 
         assertFalse("ResultMap should NOT have same amount of entries as mockItems map", resultMap.size() == mockItemAssets.size());
         assertTrue("ResultMap contains key=" + MUTUAL_ID, resultMap.keySet().contains(MUTUAL_ID));
@@ -52,9 +52,9 @@ public class JoinLlamaBeansProcessorTest {
     public void testLeftJoinExchange1() {
 
         var joinBeansProcessor = getProcessor(JoinType.LEFT_EXCLUDING, OutData.EXCHANGE_1);
-        Map<Object, List<MockItem>> resultMap = joinBeansProcessor.join(mocKitems, mockItemAssets);
+        Map<Object, List<MockItem>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
 
-        assertFalse("ResultMap should NOT have same amount of entries as mockItems map", resultMap.size() == mocKitems.size());
+        assertFalse("ResultMap should NOT have same amount of entries as mockItems map", resultMap.size() == mockItems.size());
         assertTrue("ResultMap contains key=" + UNIQUE_ID_ITEMS, resultMap.keySet().contains(UNIQUE_ID_ITEMS));
         assertFalse("ResultMap does not contains key=" + MUTUAL_ID, resultMap.keySet().contains(MUTUAL_ID));
     }
@@ -63,10 +63,32 @@ public class JoinLlamaBeansProcessorTest {
     public void testLeftJoinExchange2() {
 
         var joinBeansProcessor = getProcessor(JoinType.LEFT_EXCLUDING, OutData.EXCHANGE_2);
-        Map<Object, List<MockItemAsset>> resultMap = joinBeansProcessor.join(mocKitems, mockItemAssets);
+        Map<Object, List<MockItemAsset>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
 
         assertFalse("ResultMap should NOT have same amount of entries as mockItems map", resultMap.size() == mockItemAssets.size());
         assertTrue("ResultMap contains key=" + UNIQUE_ID_ITEM_ASSETS, resultMap.keySet().contains(UNIQUE_ID_ITEM_ASSETS));
+        assertFalse("ResultMap does not contains key=" + MUTUAL_ID, resultMap.keySet().contains(MUTUAL_ID));
+    }
+
+    @Test
+    public void testRightJoinExchange1() {
+
+        var joinBeansProcessor = getProcessor(JoinType.RIGHT_EXCLUDING, OutData.EXCHANGE_1);
+        Map<Object, List<MockItemAsset>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
+
+        assertFalse("ResultMap should NOT have same amount of entries as mockItemAssetss map", resultMap.size() == mockItemAssets.size());
+        assertTrue("ResultMap contains key=" + UNIQUE_ID_ITEM_ASSETS, resultMap.keySet().contains(UNIQUE_ID_ITEM_ASSETS));
+        assertFalse("ResultMap does not contains key=" + MUTUAL_ID, resultMap.keySet().contains(MUTUAL_ID));
+    }
+
+    @Test
+    public void testRightJoinExchange2() {
+
+        var joinBeansProcessor = getProcessor(JoinType.RIGHT_EXCLUDING, OutData.EXCHANGE_2);
+        Map<Object, List<MockItem>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
+
+        assertFalse("ResultMap should NOT have same amount of entries as mockItems map", resultMap.size() == mockItems.size());
+        assertTrue("ResultMap contains key=" + UNIQUE_ID_ITEMS, resultMap.keySet().contains(UNIQUE_ID_ITEMS));
         assertFalse("ResultMap does not contains key=" + MUTUAL_ID, resultMap.keySet().contains(MUTUAL_ID));
     }
 

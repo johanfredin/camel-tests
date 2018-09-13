@@ -42,31 +42,25 @@ public class JoinLlamaBeansProcessor<T extends LlamaBean> extends AbstractJoinPr
     }
 
     protected Map<Object, List<T>> join(Map<Object, List<T>> mainMap, Map<Object, List<T>> joiningMap) {
-        if(joinType == )
+        var isExchange1 = this.outData == OutData.EXCHANGE_1;
+        var owning = isExchange1 ? mainMap : joiningMap;
+        var joining = isExchange1 ? joiningMap : mainMap;
 
         switch (this.joinType) {
             case INNER:
-                return innerJoin(mainMap, joiningMap);
+                return innerOrExcludingJoing(owning, joining, true);
             case LEFT_EXCLUDING:
-                return excludingJoin(mainMap, joiningMap);
+                return innerOrExcludingJoing(owning, joining, false);
             case RIGHT_EXCLUDING:
-                return excludingJoin(joiningMap, mainMap);
+                return innerOrExcludingJoing(joining, owning, false);
         }
-
         return Map.of();
     }
 
-    private Map<Object, List<T>> innerJoin(Map<Object, List<T>> mainMap, Map<Object, List<T>> joiningMap) {
+    private Map<Object, List<T>> innerOrExcludingJoing(Map<Object, List<T>> mainMap, Map<Object, List<T>> joiningMap, boolean isInnerJoin) {
         return mainMap.entrySet()
                 .stream()
-                .filter(entry -> joiningMap.containsKey(entry.getKey()))
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-    }
-
-    private Map<Object, List<T>> excludingJoin(Map<Object, List<T>> mainMap, Map<Object, List<T>> joiningMap) {
-        return mainMap.entrySet()
-                .stream()
-                .filter(entry -> !joiningMap.containsKey(entry.getKey()))
+                .filter(entry -> isInnerJoin ? joiningMap.containsKey(entry.getKey()) : !joiningMap.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
