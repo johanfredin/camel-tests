@@ -5,6 +5,7 @@ import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.Field;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,7 @@ public class ProcessorUtils {
      * @return a map of llama beans grouped by bean id.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends LlamaBean> Map<Object, List<T>> asLlamaBeanMap(Exchange e) {
+    public static <T extends LlamaBean> Map<Serializable, List<T>> asLlamaBeanMap(Exchange e) {
         return ProcessorUtils.<T>asLlamaBeanList(e)
                 .stream()
                 .collect(Collectors.groupingBy(T::getId));

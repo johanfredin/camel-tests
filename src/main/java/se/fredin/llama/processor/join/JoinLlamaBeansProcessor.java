@@ -4,6 +4,9 @@ import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.utils.ProcessorUtils;
 
+import java.io.Serializable;
+import java.lang.invoke.SerializedLambda;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,7 +16,7 @@ import java.util.stream.Collectors;
  * Join will be based on the {@link LlamaBean#getId()} property. We are not able to combine the data in this join. We can only keep
  * data from one of the exchanges.
  */
-public class JoinLlamaBeansProcessor<T extends LlamaBean> extends AbstractJoinProcessor {
+public class JoinLlamaBeansProcessor<M extends LlamaBean, J extends LlamaBean, R extends LlamaBean> extends AbstractJoinProcessor {
 
     private OutData outData;
 
@@ -41,7 +44,7 @@ public class JoinLlamaBeansProcessor<T extends LlamaBean> extends AbstractJoinPr
         return this.main;
     }
 
-    protected Map<Object, List<T>> join(Map<Object, List<T>> mainMap, Map<Object, List<T>> joiningMap) {
+    protected Map<Object, List<R>> join(Map<Serializable, List<M>> mainMap, Map<Serializable, List<J>> joiningMap) {
         var isExchange1 = this.outData == OutData.EXCHANGE_1;
         var owning = isExchange1 ? mainMap : joiningMap;
         var joining = isExchange1 ? joiningMap : mainMap;
@@ -57,11 +60,11 @@ public class JoinLlamaBeansProcessor<T extends LlamaBean> extends AbstractJoinPr
         return Map.of();
     }
 
-    private Map<Object, List<T>> innerOrExcludingJoing(Map<Object, List<T>> mainMap, Map<Object, List<T>> joiningMap, boolean isInnerJoin) {
-        return mainMap.entrySet()
+    private Map<Serializable, List<R>> innerOrExcludingJoing(Map<Serializable, List<M>> mainMap, Map<Serializable, List<J>> joiningMap, boolean isInnerJoin) {
+        return new HashMap(mainMap.entrySet()
                 .stream()
-                .filter(entry -> isInnerJoin ? joiningMap.containsKey(entry.getKey()) : !joiningMap.containsKey(entry.getKey()))
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                .filter(entry -> isInnerJoin == joiningMap.containsKey(entry.getKey()))
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
 }
