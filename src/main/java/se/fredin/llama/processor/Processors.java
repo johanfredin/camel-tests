@@ -3,6 +3,7 @@ package se.fredin.llama.processor;
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.filter.CsvFilterProcessor;
+import se.fredin.llama.processor.join.FilterValidateAgainstBeansProcessor;
 import se.fredin.llama.processor.join.JoinKey;
 import se.fredin.llama.processor.join.JoinCollectionsProcessor;
 import se.fredin.llama.processor.join.JoinType;
@@ -38,6 +39,14 @@ public class Processors {
 
     public static Exchange join(Exchange mainExchange, Exchange joiningExchange, JoinKey key, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {
         return join(mainExchange, joiningExchange, Collections.singletonList(key), joinType, entity1Fields, entity2Fields);
+    }
+
+    public static <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExhange) {
+        return filterValidateAgainst(mainExchange, joiningExhange, JoinType.INNER);
+    }
+
+    public static <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExhange, JoinType jointype) {
+        return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExhange, jointype).doExecuteTask();
     }
 
     public static Exchange join(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {

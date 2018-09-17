@@ -5,6 +5,7 @@ import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.BaseProcessor;
 import se.fredin.llama.utils.ProcessorUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +32,14 @@ public abstract class GroupProcessor<T extends LlamaBean, R extends LlamaBean> e
         return this.exchange;
     }
 
-    public void addResult(Map.Entry<Object, List<T>> entry) {
+    public void addResult(Map.Entry<Serializable, List<T>> entry) {
         if (this.resultList == null) {
             this.resultList = new ArrayList<>();
         }
         this.resultList.add(getResult(entry));
     }
 
-    protected abstract R getResult(Map.Entry<Object, List<T>> entry);
+    protected abstract R getResult(Map.Entry<Serializable, List<T>> entry);
 
     @Override
     public String toString() {
