@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends LlamaBean> extends AbstractJoinProcessor {
 
-    public FilterValidateAgainstBeansProcessor(JoinType joinType) {
+    protected FilterValidateAgainstBeansProcessor(JoinType joinType) {
         this.joinType = joinType;
     }
 
@@ -40,8 +40,7 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
             case LEFT_EXCLUDING:
                 return innerOrExcludingJoing(mainMap, joiningMap, false);
         }
-        log.error("Join type in task=" + getTaskName() + " must be one of either{" + JoinType.INNER + ", " + JoinType.LEFT_EXCLUDING + "}");
-        return Map.of();
+        throw new RuntimeException("Join type in task=" + getTaskName() + " must be one of either{" + JoinType.INNER + ", " + JoinType.LEFT_EXCLUDING + "}");
     }
 
     private Map<Serializable, List<T>> innerOrExcludingJoing(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap, boolean isInnerJoin) {

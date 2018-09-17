@@ -7,9 +7,7 @@ import se.fredin.llama.bean.MockItemAsset;
 import se.fredin.llama.mock.exchange.MockExchange;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TestFixture {
 
@@ -48,21 +46,5 @@ public class TestFixture {
         return mockExchange;
     }
 
-    @SafeVarargs
-    public static List<Map<String, String>> getList(Map<String, String>... maps) {
-        return Arrays.asList(maps);
-    }
-
-    public static Map<String, String> getTestObjects(KeyValuePair... entries) {
-        var map = new HashMap<String, String>();
-        for (var kvp : entries) {
-            map.put(kvp.getKey(), kvp.getValue());
-        }
-        return map;
-    }
-
-    public static KeyValuePair kvp(String key, String value) {
-        return new KeyValuePair(key, value);
-    }
 
 }

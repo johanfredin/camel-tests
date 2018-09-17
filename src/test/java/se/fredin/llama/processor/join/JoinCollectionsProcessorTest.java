@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static se.fredin.llama.TestFixture.*;
 import static se.fredin.llama.utils.ProcessorUtils.field;
 import static se.fredin.llama.utils.ProcessorUtils.fields;
 
@@ -21,15 +20,15 @@ public class JoinCollectionsProcessorTest {
 
     @Before
     public void innit() {
-        this.mainEntries = getList(
-                getTestObjects(kvp("Id", "1"), kvp("Name", "Jonas"), kvp("Age", "25")),
-                getTestObjects(kvp("Id", "2"), kvp("Name", "Leslie"), kvp("Age", "30")),
-                getTestObjects(kvp("Id", "3"), kvp("Name", "Nils"), kvp("Age", "12"))
+        this.mainEntries = List.of(
+                Map.of("Id", "1", "Name", "Jonas", "Age", "25"),
+                Map.of("Id", "2", "Name", "Leslie", "Age", "30"),
+                Map.of("Id", "3", "Name", "Nils", "Age", "12")
         );
-        this.joiningEntries = getList(
-                getTestObjects(kvp("Id", "1"), kvp("Pet", "Dog"), kvp("Color", "Blue")),
-                getTestObjects(kvp("Id", "2"), kvp("Pet", "Cat"), kvp("Color", "Green")),
-                getTestObjects(kvp("Id", "3"), kvp("Pet", "Lizard"), kvp("Color", "Yellow"))
+        this.joiningEntries = List.of(
+                Map.of("Id", "1", "Pet", "Dog", "Color", "Blue"),
+                Map.of("Id", "2", "Pet", "Cat", "Color", "Green"),
+                Map.of("Id", "3", "Pet", "Lizard", "Color", "Yellow")
         );
     }
 
