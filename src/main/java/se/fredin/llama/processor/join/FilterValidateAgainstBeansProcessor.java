@@ -2,6 +2,7 @@ package se.fredin.llama.processor.join;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
+import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.utils.ProcessorUtils;
 
 import java.io.Serializable;
@@ -22,28 +23,41 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
     protected FilterValidateAgainstBeansProcessor(JoinType joinType) {
         this.joinType = joinType;
     }
+    private Map<Serializable, List<T>> result;
 
-    public FilterValidateAgainstBeansProcessor(Exchange main, Exchange joining, JoinType joinType) {
-        super(main, joining, joinType);
+    public FilterValidateAgainstBeansProcessor(Exchange main, Exchange joining, JoinType joinType, ResultType resultType) {
+        super(main, joining, joinType, resultType);
     }
 
     @Override
-    public Exchange doExecuteTask() {
-        this.main.getIn().setBody(join(ProcessorUtils.asLlamaBeanMap(this.main), ProcessorUtils.asLlamaBeanMap(this.joining)));
+    protected void process() {
+        this.result = join(ProcessorUtils.asLlamaBeanMap(this.main), ProcessorUtils.asLlamaBeanMap(this.joining));
+    }
+
+    @Override
+    protected Exchange result() {
+        switch(getResultType()) {
+            case COLLECTION:
+                this.main.getIn().setBody(result.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+                break;
+            default:
+                this.main.getIn().setBody(this.result);
+                break;
+        }
         return this.main;
     }
 
     protected Map<Serializable, List<T>> join(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap) {
         switch (this.joinType) {
             case INNER:
-                return innerOrExcludingJoing(mainMap, joiningMap, true);
+                return innerOrExcludingJoin(mainMap, joiningMap, true);
             case LEFT_EXCLUDING:
-                return innerOrExcludingJoing(mainMap, joiningMap, false);
+                return innerOrExcludingJoin(mainMap, joiningMap, false);
         }
         throw new RuntimeException("Join type in task=" + getTaskName() + " must be one of either{" + JoinType.INNER + ", " + JoinType.LEFT_EXCLUDING + "}");
     }
 
-    private Map<Serializable, List<T>> innerOrExcludingJoing(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap, boolean isInnerJoin) {
+    private Map<Serializable, List<T>> innerOrExcludingJoin(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap, boolean isInnerJoin) {
         return mainMap.entrySet()
                 .stream()
                 .filter(entry -> isInnerJoin == joiningMap.containsKey(entry.getKey()))

@@ -7,22 +7,25 @@ import se.fredin.llama.bean.LlamaBean;
 @CsvRecord(separator = ";", generateHeaderColumns = true, skipFirstLine = true)
 public class CsvUser implements LlamaBean {
 
+    @DataField(pos = 1)
     private long id;
 
-    @DataField(pos = 1)
+    @DataField(pos = 2)
     private String firstName;
 
-    @DataField(pos = 2)
+    @DataField(pos = 3)
     private String lastName;
 
-    @DataField(pos = 3)
+    @DataField(pos = 4)
     private int age;
 
-    @DataField(pos = 4)
+    @DataField(pos = 5)
     private String gender;
 
-    @DataField(pos = 5)
+    @DataField(pos = 6)
     private String country;
+
+    public CsvUser() {}
 
     public CsvUser(long id, String firstName, String lastName, int age, String gender, String country) {
         this.id = id;

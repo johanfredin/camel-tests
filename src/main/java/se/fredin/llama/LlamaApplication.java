@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import se.fredin.llama.examples.Ex1_CSVList;
+import se.fredin.llama.examples.Ex3_FilterValidateAgainst;
 
 @SpringBootApplication
 @ComponentScan
@@ -14,10 +15,14 @@ public class LlamaApplication {
         SpringApplication.run(LlamaApplication.class, args);
     }
 
-    @Bean
+//    @Bean
     public Ex1_CSVList ex1_csvList() {
         return new Ex1_CSVList();
     }
 
+    @Bean
+    public Ex3_FilterValidateAgainst ex3_filterValidateAgainst() {
+        return new Ex3_FilterValidateAgainst();
+    }
 
 }

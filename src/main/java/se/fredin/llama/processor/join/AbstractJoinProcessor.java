@@ -2,6 +2,7 @@ package se.fredin.llama.processor.join;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.processor.BaseProcessor;
+import se.fredin.llama.processor.ResultType;
 
 public abstract class AbstractJoinProcessor extends BaseProcessor {
 
@@ -9,12 +10,14 @@ public abstract class AbstractJoinProcessor extends BaseProcessor {
     protected Exchange joining;
     protected JoinType joinType;
 
-    public AbstractJoinProcessor() {}
+    public AbstractJoinProcessor() {
+    }
 
-    public AbstractJoinProcessor(Exchange main, Exchange joining, JoinType joinType) {
+    public AbstractJoinProcessor(Exchange main, Exchange joining, JoinType joinType, ResultType resultType) {
         this.main = main;
         this.joining = joining;
         this.joinType = joinType;
+        this.resultType = resultType;
     }
 
     public Exchange getMain() {

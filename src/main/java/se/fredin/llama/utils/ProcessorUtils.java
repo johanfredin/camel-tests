@@ -1,6 +1,7 @@
 package se.fredin.llama.utils;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.Field;
@@ -39,7 +40,12 @@ public class ProcessorUtils {
 
     @SuppressWarnings("unchecked")
     public static <T extends LlamaBean> List<T> asLlamaBeanList(Exchange e) {
-        return new ArrayList<T>(e.getIn().getBody(List.class));
+        try {
+            return  new ArrayList<T>(e.getIn().getMandatoryBody(List.class));
+        } catch (InvalidPayloadException e1) {
+            e1.printStackTrace();
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -60,7 +66,8 @@ public class ProcessorUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T extends LlamaBean> Map<Serializable, List<T>> asLlamaBeanMap(Exchange e) {
-        return ProcessorUtils.<T>asLlamaBeanList(e)
+        List<T> list = asLlamaBeanList(e);
+        return list
                 .stream()
                 .collect(Collectors.groupingBy(T::getId));
     }

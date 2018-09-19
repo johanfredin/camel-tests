@@ -19,6 +19,11 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
     @Override
     public void configure() {
 
+        from(Endpoint.file(prop("ex-input-directory"), "pet.csv"))
+                .unmarshal(new BindyCsvDataFormat(Pet.class))
+                .to("direct:pet")
+                .startupOrder(1);
+
         from(Endpoint.file(prop("ex-input-directory"), "person.csv"))
                 .unmarshal(new BindyCsvDataFormat(User.class))
                 .pollEnrich("direct:pet", (oldExchange, newExchange) -> {
@@ -42,10 +47,9 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
                     return oldExchange;
                 })
                 .marshal(new BindyCsvDataFormat(User.class))
-                .to(Endpoint.file(prop("ex-output-directory"), "person-with-pets.csv"));
+                .to(Endpoint.file(prop("ex-output-directory"), "person-with-pets.csv"))
+                .startupOrder(2);
 
-        from(Endpoint.file(prop("ex-input-directory"), "pet.csv"))
-                .unmarshal(new BindyCsvDataFormat(Pet.class))
-                .to("direct:pet");
+
     }
 }

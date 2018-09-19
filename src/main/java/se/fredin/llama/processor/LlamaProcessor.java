@@ -14,4 +14,5 @@ public interface LlamaProcessor {
 
     String getTaskName();
 
+    ResultType getResultType();
 }
