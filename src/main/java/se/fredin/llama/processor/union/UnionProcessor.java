@@ -10,57 +10,74 @@ import java.util.List;
 
 public class UnionProcessor extends BaseProcessor {
 
-    private Exchange newExchange;
-    private Exchange oldExchange;
+    private Exchange mergingExchange;
+    private Exchange mainExchange;
+    private boolean isMainExchangeToReturn = true;
 
-    public UnionProcessor() {
-        super();
+    public UnionProcessor() {}
+
+    public UnionProcessor(Exchange mergingExchange, Exchange mainExchange) {
+        setMergingExchange(mergingExchange);
+        setMainExchange(mainExchange);
     }
 
-    public UnionProcessor(Exchange newExchange, Exchange oldExchange) {
-        super();
-        setNewExchange(newExchange);
-        setOldExchange(oldExchange);
+    public Exchange getMergingExchange() {
+        return mergingExchange;
     }
 
-    public Exchange getNewExchange() {
-        return newExchange;
+    public void setMergingExchange(Exchange mergingExchange) {
+        this.mergingExchange = mergingExchange;
     }
 
-    public void setNewExchange(Exchange newExchange) {
-        this.newExchange = newExchange;
+    public Exchange getMainExchange() {
+        return mainExchange;
     }
 
-    public Exchange getOldExchange() {
-        return oldExchange;
+    public void setMainExchange(Exchange mainExchange) {
+        this.mainExchange = mainExchange;
     }
 
-    public void setOldExchange(Exchange oldExchange) {
-        this.oldExchange = oldExchange;
+    public boolean isMainExchangeToReturn() {
+        return isMainExchangeToReturn;
+    }
+
+    public void setMainExchangeToReturn(boolean mainExhangeToReturn) {
+        isMainExchangeToReturn = mainExhangeToReturn;
     }
 
     @Override
-    public Exchange doExecuteTask() {
-        var newBean = getNewExchange().getIn().getBody(LlamaBean.class);
+    protected void process() {
+        var newBean = getMergingExchange().getIn().getBody(LlamaBean.class);
         List<LlamaBean> beans;
-        if (this.oldExchange == null) {
+        if (this.mainExchange == null) {
             beans = new ArrayList<>();
-            beans.add(newBean);
-            this.newExchange.getIn().setBody(beans);
-            return this.newExchange;
+
+            if(newBean != null) {
+                beans.add(newBean);
+            }
+
+            this.mergingExchange.getIn().setBody(beans);
+            setMainExchangeToReturn(false);
         }
 
-        beans = ProcessorUtils.asLlamaBeanList(this.oldExchange);
-        beans.add(newBean);
-        this.oldExchange.getIn().setBody(beans);
-        return this.oldExchange;
+        beans = ProcessorUtils.asLlamaBeanList(this.mainExchange);
+        if(newBean != null) {
+            beans.add(newBean);
+        }
+        super.incProcessedRecords();
+        this.mainExchange.getIn().setBody(beans);
+    }
+
+    @Override
+    protected Exchange result() {
+        return isMainExchangeToReturn ? this.mainExchange : this.mergingExchange;
     }
 
     @Override
     public String toString() {
         return "UnionProcessor{" +
-                "newExchange=" + newExchange +
-                ", oldExchange=" + oldExchange +
+                "mergingExchange=" + mergingExchange +
+                ", mainExchange=" + mainExchange +
                 '}';
     }
 }

@@ -10,14 +10,18 @@ public abstract class AbstractJoinProcessor extends BaseProcessor {
     protected Exchange joining;
     protected JoinType joinType;
 
-    public AbstractJoinProcessor() {
-    }
+    public AbstractJoinProcessor() {}
 
     public AbstractJoinProcessor(Exchange main, Exchange joining, JoinType joinType, ResultType resultType) {
         this.main = main;
         this.joining = joining;
         this.joinType = joinType;
         this.resultType = resultType;
+    }
+
+    @Override
+    protected Exchange result() {
+        return this.main;
     }
 
     public Exchange getMain() {

@@ -23,7 +23,7 @@ public abstract class GroupProcessor<T extends LlamaBean, R extends LlamaBean> e
     }
 
     @Override
-    public Exchange doExecuteTask() {
+    public Exchange doExecuteProcess() {
         for (var entry : ProcessorUtils.<T>asLlamaBeanMap(this.exchange).entrySet()) {
             addResult(entry);
         }

@@ -32,4 +32,10 @@ public class TransformProcessor<T extends LlamaBean> extends SimpleProcessor<T> 
                 .peek(this.function)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    protected void process() {
+
+    }
+
 }

@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 public class Processors {
 
     public static Exchange union(Exchange oldExchange, Exchange newExchange) {
-        return new UnionProcessor(newExchange, oldExchange).doExecuteTask();
+        return new UnionProcessor(newExchange, oldExchange).doExecuteProcess();
     }
 
     public static Exchange join(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> keys) {
@@ -42,15 +42,15 @@ public class Processors {
     }
 
     public static Exchange join(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {
-        return new JoinCollectionsProcessor(mainExchange, joiningExchange, keys, joinType, entity1Fields, entity2Fields).doExecuteTask();
+        return new JoinCollectionsProcessor(mainExchange, joiningExchange, keys, joinType, ResultType.AS_IS, entity1Fields, entity2Fields).doExecuteProcess();
     }
 
     public static <T extends LlamaBean> Exchange transform(Exchange exchange, Consumer<T> transformFunction) {
-        return new TransformProcessor<>(exchange, transformFunction).doExecuteTask();
+        return new TransformProcessor<>(exchange, transformFunction).doExecuteProcess();
     }
 
     public static Exchange filter(Exchange exchange, Predicate<List<String>> filterFunction) {
-        return new CsvFilterProcessor(exchange, filterFunction).doExecuteTask();
+        return new CsvFilterProcessor(exchange, filterFunction).doExecuteProcess();
     }
 
     public static <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange) {
@@ -58,7 +58,11 @@ public class Processors {
     }
 
     public static <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange, JoinType jointype) {
-        return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExchange, jointype).doExecuteTask();
+        return filterValidateAgainst(mainExchange, joiningExchange, jointype, ResultType.AS_IS);
+    }
+
+    public static <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange, JoinType jointype, ResultType resultType) {
+        return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExchange, jointype, resultType).doExecuteProcess();
     }
 
 }

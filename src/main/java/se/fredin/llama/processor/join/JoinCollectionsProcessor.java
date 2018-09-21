@@ -2,6 +2,7 @@ package se.fredin.llama.processor.join;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.processor.Fields;
+import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.utils.ProcessorUtils;
 
 import java.util.*;
@@ -20,9 +21,9 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     public JoinCollectionsProcessor() {}
 
-    public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, JoinType joinType,
+    public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, JoinType joinType, ResultType resultType,
                                     Fields entity1Fields, Fields entity2Fields) {
-        super(mainExchange, joiningExchange, joinType);
+        super(mainExchange, joiningExchange, joinType, resultType);
         setJoinKeys(joinKeys);
         setEntity1Fields(entity1Fields);
         setEntity2Fields(entity2Fields);
@@ -61,7 +62,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
     }
 
     @Override
-    public Exchange doExecuteTask() {
+    protected void process() {
         var main = ProcessorUtils.<Map<String, String>>asList(this.main);
         var joining = ProcessorUtils.<Map<String, String>>asList(this.joining);
 
@@ -81,10 +82,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         var result = join(main, joining);
         this.main.getIn().setBody(result);
         super.setProcessedRecords(result.size());
-        super.postExecute();
-        return this.main;
     }
-
 
     public List<Map<String, String>> join(List<Map<String, String>> main, List<Map<String, String>> joining) {
         // Group the collections into maps for easier joining later.

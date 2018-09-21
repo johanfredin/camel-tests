@@ -23,7 +23,6 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
     protected FilterValidateAgainstBeansProcessor(JoinType joinType) {
         this.joinType = joinType;
     }
-    private Map<Serializable, List<T>> result;
 
     public FilterValidateAgainstBeansProcessor(Exchange main, Exchange joining, JoinType joinType, ResultType resultType) {
         super(main, joining, joinType, resultType);
@@ -31,20 +30,18 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
 
     @Override
     protected void process() {
-        this.result = join(ProcessorUtils.asLlamaBeanMap(this.main), ProcessorUtils.asLlamaBeanMap(this.joining));
-    }
-
-    @Override
-    protected Exchange result() {
+        var result = join(ProcessorUtils.asLlamaBeanMap(this.main), ProcessorUtils.asLlamaBeanMap(this.joining));
         switch(getResultType()) {
-            case COLLECTION:
-                this.main.getIn().setBody(result.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+            case LIST:
+                this.main.getIn().setBody(result.values().
+                        stream().
+                        flatMap(List::stream).
+                        collect(Collectors.toList()));
                 break;
             default:
-                this.main.getIn().setBody(this.result);
+                this.main.getIn().setBody(result);
                 break;
         }
-        return this.main;
     }
 
     protected Map<Serializable, List<T>> join(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap) {

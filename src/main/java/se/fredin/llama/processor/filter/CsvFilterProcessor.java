@@ -16,11 +16,10 @@ public class CsvFilterProcessor extends BaseProcessor {
     private int filteredRecords;
 
     public CsvFilterProcessor() {
-        super();
+
     }
 
     public CsvFilterProcessor(Exchange exchange, Predicate<List<String>> filterFunction) {
-        super();
         this.exchange = exchange;
         this.filterFunction = filterFunction;
     }
@@ -50,7 +49,7 @@ public class CsvFilterProcessor extends BaseProcessor {
     }
 
     @Override
-    public Exchange doExecuteTask() {
+    protected void process() {
         var records = ProcessorUtils.<List<String>>asTypedList(this.exchange);
         setProcessedRecords(records.size());
 
@@ -61,6 +60,10 @@ public class CsvFilterProcessor extends BaseProcessor {
 
         this.filteredRecords = filteredRecords.size();
         this.exchange.getIn().setBody(filteredRecords);
+    }
+
+    @Override
+    protected Exchange result() {
         return this.exchange;
     }
 

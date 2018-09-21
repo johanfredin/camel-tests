@@ -33,4 +33,9 @@ public class GenericFilterProcessor<T extends LlamaBean> extends SimpleProcessor
                 .collect(Collectors.toList());
 
     }
+
+    @Override
+    protected void process() {
+
+    }
 }

@@ -4,7 +4,9 @@ import org.apache.camel.Exchange;
 
 public interface LlamaProcessor {
 
-    Exchange doExecuteTask();
+    Exchange doExecuteProcess();
+
+    int getInitialRecords();
 
     int getProcessedRecords();
 
