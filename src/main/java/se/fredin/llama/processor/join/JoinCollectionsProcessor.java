@@ -3,7 +3,7 @@ package se.fredin.llama.processor.join;
 import org.apache.camel.Exchange;
 import se.fredin.llama.processor.Fields;
 import se.fredin.llama.processor.ResultType;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.*;
 
@@ -63,8 +63,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     @Override
     protected void process() {
-        var main = ProcessorUtils.<Map<String, String>>asList(this.main);
-        var joining = ProcessorUtils.<Map<String, String>>asList(this.joining);
+        var main = LlamaUtils.<Map<String, String>>asList(this.main);
+        var joining = LlamaUtils.<Map<String, String>>asList(this.joining);
 
         // Make sure keys exist
         var mainKeys = main.get(0).keySet();
@@ -128,7 +128,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                     if (joinMap != null) {
 
                         // Add the joined map to the result list
-                        result.add(ProcessorUtils.getMergedMap(getFields(mainMap, this.entity1Fields), getFields(joinMap, this.entity2Fields)));
+                        result.add(LlamaUtils.getMergedMap(getFields(mainMap, this.entity1Fields), getFields(joinMap, this.entity2Fields)));
                     }
                 }
             }
@@ -158,7 +158,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
                 for (int i = 0; i < mainList.size(); i++) {
                     // Add the joined map to the result list
-                    result.add(ProcessorUtils.getMergedMap(getFields(mainList.get(i), this.entity1Fields), getFields(joinList.get(i), this.entity2Fields)));
+                    result.add(LlamaUtils.getMergedMap(getFields(mainList.get(i), this.entity1Fields), getFields(joinList.get(i), this.entity2Fields)));
                 }
             }
         }

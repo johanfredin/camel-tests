@@ -4,7 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.utils.Endpoint;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,18 +21,18 @@ public class Ex1_CSVList extends LlamaRoute {
         format.setDelimiter(';');
         format.setUseMaps(true);
 
-        from(Endpoint.file(prop("ex-input-directory"), "foo.csv"))
+        from(Endpoint.file(prop("input-directory"), "foo.csv"))
                 .routeId("read-csv")
                 .unmarshal(format)
                 .process(this::transformData)
                 .marshal(format)
-                .to(Endpoint.file(prop("ex-output-directory"), "foo-plain-modified.csv"));
+                .to(Endpoint.file(prop("output-directory"), "foo-plain-modified.csv"));
     }
 
     private void transformData(Exchange exchange) {
-        var collect = ProcessorUtils.asList(exchange)
+        var collect = LlamaUtils.asList(exchange)
                 .stream()
-                .filter(e -> ProcessorUtils.withinRange(e.get("age"), 0, 100))
+                .filter(e -> LlamaUtils.withinRange(e.get("age"), 0, 100))
                 .peek(e -> e.put("gender", e.get("gender").toUpperCase()))
                 .sorted(Comparator.comparing(e -> e.get("country")))
                 .collect(Collectors.toList());

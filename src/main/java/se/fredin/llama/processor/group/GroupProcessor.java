@@ -3,7 +3,7 @@ package se.fredin.llama.processor.group;
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.BaseProcessor;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public abstract class GroupProcessor<T extends LlamaBean, R extends LlamaBean> e
 
     @Override
     public Exchange doExecuteProcess() {
-        for (var entry : ProcessorUtils.<T>asLlamaBeanMap(this.exchange).entrySet()) {
+        for (var entry : LlamaUtils.<T>asLlamaBeanMap(this.exchange).entrySet()) {
             addResult(entry);
         }
 

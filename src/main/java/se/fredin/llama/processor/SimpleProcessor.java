@@ -2,7 +2,7 @@ package se.fredin.llama.processor;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public abstract class SimpleProcessor<T extends LlamaBean> extends BaseProcessor
 
     @Override
     public Exchange doExecuteProcess() {
-        var beans = ProcessorUtils.<T>asLlamaBeanList(this.exchange);
+        var beans = LlamaUtils.<T>asLlamaBeanList(this.exchange);
         this.exchange.getIn().setBody(transformData(beans));
         postExecute();
         return this.exchange;

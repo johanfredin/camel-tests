@@ -10,7 +10,7 @@ public class Ex1_CSVTest extends LlamaRouteTest {
 //                new MockRouteDefinition("read-foo-csv",
 //                        Arrays.asList(
 //                                new EndpointToMockEndpoint(
-//                                        ProcessorUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv"),
+//                                        LlamaUtils.file(getSettingsComponent().getOutputDirectory(), "foo_fixed.csv"),
 //                                        "mock:foo_fixed")
 //                        )));
 //    }

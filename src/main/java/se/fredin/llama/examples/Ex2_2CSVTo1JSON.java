@@ -7,7 +7,7 @@ import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.Pet;
 import se.fredin.llama.examples.bean.User;
 import se.fredin.llama.utils.Endpoint;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.stream.Collectors;
 
@@ -40,12 +40,12 @@ public class Ex2_2CSVTo1JSON extends LlamaRoute {
     private Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 
         // Create map <k, list<v>> of pets
-        var petMap = ProcessorUtils.<Pet>asLlamaBeanList(newExchange).stream()
+        var petMap = LlamaUtils.<Pet>asLlamaBeanList(newExchange).stream()
                 .collect(Collectors.groupingBy(Pet::getId));
 
 
         // Match the 2 (JRE8 way)
-        var users = ProcessorUtils.<User>asLlamaBeanList(oldExchange)
+        var users = LlamaUtils.<User>asLlamaBeanList(oldExchange)
                 .stream()
                 .peek(u -> u.setPets(petMap.get(u.getId())))
                 .collect(Collectors.toList());

@@ -1,9 +1,8 @@
 package se.fredin.llama;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 import se.fredin.llama.utils.Endpoint;
 
 public abstract class LlamaRoute extends RouteBuilder {
@@ -25,7 +24,7 @@ public abstract class LlamaRoute extends RouteBuilder {
     }
 
     protected String getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder) {
-        from(Endpoint.file(prop(directory), fileName))
+        from(Endpoint.file(directory, fileName))
                 .routeId(routeId)
                 .unmarshal()
                 .bindy(BindyType.Csv, clazz)

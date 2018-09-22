@@ -3,7 +3,7 @@ package se.fredin.llama.processor.join;
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.ResultType;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -29,8 +29,14 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
     }
 
     @Override
+    public void postCreate() {
+        super.postCreate();
+        log.info("Result type=" + this.resultType);
+    }
+
+    @Override
     protected void process() {
-        var result = join(ProcessorUtils.asLlamaBeanMap(this.main), ProcessorUtils.asLlamaBeanMap(this.joining));
+        var result = join(LlamaUtils.asLlamaBeanMap(this.main), LlamaUtils.asLlamaBeanMap(this.joining));
         switch(getResultType()) {
             case LIST:
                 this.main.getIn().setBody(result.values().
@@ -42,6 +48,7 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
                 this.main.getIn().setBody(result);
                 break;
         }
+        super.setProcessedRecords(result.size());
     }
 
     protected Map<Serializable, List<T>> join(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap) {

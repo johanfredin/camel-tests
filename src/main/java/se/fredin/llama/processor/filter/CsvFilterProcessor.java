@@ -2,7 +2,7 @@ package se.fredin.llama.processor.filter;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.processor.BaseProcessor;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -50,7 +50,7 @@ public class CsvFilterProcessor extends BaseProcessor {
 
     @Override
     protected void process() {
-        var records = ProcessorUtils.<List<String>>asTypedList(this.exchange);
+        var records = LlamaUtils.<List<String>>asTypedList(this.exchange);
         setProcessedRecords(records.size());
 
         var filteredRecords = records

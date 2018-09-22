@@ -3,7 +3,7 @@ package se.fredin.llama.processor.union;
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.BaseProcessor;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class UnionProcessor extends BaseProcessor {
             setMainExchangeToReturn(false);
         }
 
-        beans = ProcessorUtils.asLlamaBeanList(this.mainExchange);
+        beans = LlamaUtils.asLlamaBeanList(this.mainExchange);
         if(newBean != null) {
             beans.add(newBean);
         }

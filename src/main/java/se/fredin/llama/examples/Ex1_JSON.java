@@ -6,7 +6,7 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.CsvUser;
 import se.fredin.llama.utils.Endpoint;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ public class Ex1_JSON extends LlamaRoute {
     }
 
     private void processUsers(Exchange exchange) {
-        var users = ProcessorUtils.<CsvUser>asLlamaBeanList(exchange)
+        var users = LlamaUtils.<CsvUser>asLlamaBeanList(exchange)
                 .stream()                                                       // Iterate users
                 .filter(user -> user.getAge() > 0 && user.getAge() < 100)       // Filter out invalid age
                 .sorted(Comparator.comparing(CsvUser::getCountry))              // Sort on country

@@ -1,6 +1,7 @@
 package se.fredin.llama.examples;
 
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
+import org.apache.camel.model.dataformat.BindyType;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.CsvUser;
 import se.fredin.llama.examples.bean.Pet;

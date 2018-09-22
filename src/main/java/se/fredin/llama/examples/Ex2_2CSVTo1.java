@@ -5,7 +5,7 @@ import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.Pet;
 import se.fredin.llama.examples.bean.User;
 import se.fredin.llama.utils.Endpoint;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +27,8 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
         from(Endpoint.file(prop("ex-input-directory"), "person.csv"))
                 .unmarshal(new BindyCsvDataFormat(User.class))
                 .pollEnrich("direct:pet", (oldExchange, newExchange) -> {
-                    List<User> users = ProcessorUtils.asLlamaBeanList(oldExchange);
-                    List<Pet> pets = ProcessorUtils.asLlamaBeanList(newExchange);
+                    List<User> users = LlamaUtils.asLlamaBeanList(oldExchange);
+                    List<Pet> pets = LlamaUtils.asLlamaBeanList(newExchange);
 
                     // Create map <k, list<v>> of pets
                     var petMap = pets

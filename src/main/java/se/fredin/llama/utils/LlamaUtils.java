@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProcessorUtils {
+public class LlamaUtils {
 
     public static boolean isTrueAny(boolean... conditions) {
         return isTrue(Operator.OR, conditions);

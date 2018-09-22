@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static se.fredin.llama.utils.ProcessorUtils.field;
-import static se.fredin.llama.utils.ProcessorUtils.fields;
+import static se.fredin.llama.utils.LlamaUtils.field;
+import static se.fredin.llama.utils.LlamaUtils.fields;
 
 
 public class JoinCollectionsProcessorTest {

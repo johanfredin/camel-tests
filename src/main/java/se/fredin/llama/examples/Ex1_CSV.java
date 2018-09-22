@@ -5,7 +5,7 @@ import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.CsvUser;
 import se.fredin.llama.utils.Endpoint;
-import se.fredin.llama.utils.ProcessorUtils;
+import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -30,12 +30,12 @@ public class Ex1_CSV extends LlamaRoute {
     }
 
     private void processUsers(Exchange exchange) {
-        var users = ProcessorUtils.<CsvUser>asLlamaBeanList(exchange)
-                .stream()                                                       // Iterate users
-                .filter(user -> user.getAge() > 0 && user.getAge() < 100)       // Filter out invalid age
-                .sorted(Comparator.comparing(CsvUser::getCountry))              // Sort on country
-                .peek(user -> user.setGender(user.getGender().toUpperCase()))   // Set gender to be uppercase
-                .collect(Collectors.toList());                                  // Collect the update
+        var users = LlamaUtils.<CsvUser>asLlamaBeanList(exchange)
+                .stream()                                                                       // Iterate users
+                .filter(user -> LlamaUtils.withinRange(user.getAge(), 0, 100))    // Filter out invalid age
+                .sorted(Comparator.comparing(CsvUser::getCountry))                              // Sort on country
+                .peek(user -> user.setGender(user.getGender().toUpperCase()))                   // Set gender to be uppercase
+                .collect(Collectors.toList());                                                  // Collect the update
 
         // Update the body
         exchange.getIn().setBody(users);
