@@ -49,9 +49,11 @@ public class CsvFilterProcessor extends BaseProcessor {
     }
 
     @Override
-    protected void process() {
+    public Exchange doExecuteProcess() {
         var records = LlamaUtils.<List<String>>asTypedList(this.exchange);
-        setProcessedRecords(records.size());
+        this.initialRecords = records.size();
+
+        super.postCreate();
 
         var filteredRecords = records
                 .stream()
@@ -60,10 +62,9 @@ public class CsvFilterProcessor extends BaseProcessor {
 
         this.filteredRecords = filteredRecords.size();
         this.exchange.getIn().setBody(filteredRecords);
-    }
+        this.processedRecords = filteredRecords.size();
 
-    @Override
-    protected Exchange result() {
+        this.postExecute();
         return this.exchange;
     }
 

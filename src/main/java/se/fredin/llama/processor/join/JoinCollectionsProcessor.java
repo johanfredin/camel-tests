@@ -62,7 +62,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
     }
 
     @Override
-    protected void process() {
+    public Exchange doExecuteProcess() {
         var main = LlamaUtils.<Map<String, String>>asList(this.main);
         var joining = LlamaUtils.<Map<String, String>>asList(this.joining);
 
@@ -82,7 +82,9 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         var result = join(main, joining);
         this.main.getIn().setBody(result);
         super.setProcessedRecords(result.size());
+        return this.main;
     }
+
 
     public List<Map<String, String>> join(List<Map<String, String>> main, List<Map<String, String>> joining) {
         // Group the collections into maps for easier joining later.

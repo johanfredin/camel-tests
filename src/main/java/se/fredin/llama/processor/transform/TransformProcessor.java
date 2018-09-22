@@ -33,9 +33,5 @@ public class TransformProcessor<T extends LlamaBean> extends SimpleProcessor<T> 
                 .collect(Collectors.toList());
     }
 
-    @Override
-    protected void process() {
-
-    }
 
 }

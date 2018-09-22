@@ -33,8 +33,4 @@ public abstract class SimpleProcessor<T extends LlamaBean> extends BaseProcessor
 
     public abstract List<T> transformData(List<T> beans);
 
-    @Override
-    protected Exchange result() {
-        return this.exchange;
-    }
 }

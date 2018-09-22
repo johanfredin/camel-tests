@@ -34,8 +34,4 @@ public class GenericFilterProcessor<T extends LlamaBean> extends SimpleProcessor
 
     }
 
-    @Override
-    protected void process() {
-
-    }
 }

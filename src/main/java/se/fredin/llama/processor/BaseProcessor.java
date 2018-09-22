@@ -1,37 +1,26 @@
 package se.fredin.llama.processor;
 
-import org.apache.camel.Exchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Base implementation for {@link LlamaProcessor} interface. Holds a Log4J instance and some helper methods
+ */
 public abstract class BaseProcessor implements LlamaProcessor {
 
     protected Logger log = LogManager.getLogger(this.getClass());
-    protected ResultType resultType = ResultType.AS_IS;
+    protected ResultType resultType;
     protected int initialRecords;
     protected int processedRecords;
-
-    @Override
-    public Exchange doExecuteProcess() {
-        postCreate();
-        process();
-        postExecute();
-        return result();
-    }
-
-    protected abstract void process();
-    protected abstract Exchange result();
 
     public void setInitialRecords(int initialRecords) {
         this.initialRecords = initialRecords;
     }
 
-    @Override
     public int getInitialRecords() {
         return initialRecords;
     }
 
-    @Override
     public int getProcessedRecords() {
         return processedRecords;
     }
@@ -46,18 +35,20 @@ public abstract class BaseProcessor implements LlamaProcessor {
 
     @Override
     public void postCreate() {
-        log.info(getTaskName() + " initiated");
-        log.info("Initial records to proces=" + getInitialRecords());
+        log.info("=======================================");
+        log.info(getProcessorName() + " initiated");
+        log.info("Initial records=" + this.initialRecords);
     }
 
     @Override
     public void postExecute() {
-        log.info(getTaskName() + " completed");
-        log.info(getProcessedRecords() + " records processed");
+        log.info(getProcessorName() + " completed");
+        log.info("Resulting records=" + getProcessedRecords());
+        log.info("=======================================");
     }
 
     @Override
-    public String getTaskName() {
+    public String getProcessorName() {
         return this.getClass().getSimpleName();
     }
 

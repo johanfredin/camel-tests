@@ -12,7 +12,6 @@ public class UnionProcessor extends BaseProcessor {
 
     private Exchange mergingExchange;
     private Exchange mainExchange;
-    private boolean isMainExchangeToReturn = true;
 
     public UnionProcessor() {}
 
@@ -37,16 +36,8 @@ public class UnionProcessor extends BaseProcessor {
         this.mainExchange = mainExchange;
     }
 
-    public boolean isMainExchangeToReturn() {
-        return isMainExchangeToReturn;
-    }
-
-    public void setMainExchangeToReturn(boolean mainExhangeToReturn) {
-        isMainExchangeToReturn = mainExhangeToReturn;
-    }
-
     @Override
-    protected void process() {
+    public Exchange doExecuteProcess() {
         var newBean = getMergingExchange().getIn().getBody(LlamaBean.class);
         List<LlamaBean> beans;
         if (this.mainExchange == null) {
@@ -57,7 +48,7 @@ public class UnionProcessor extends BaseProcessor {
             }
 
             this.mergingExchange.getIn().setBody(beans);
-            setMainExchangeToReturn(false);
+            return this.mergingExchange;
         }
 
         beans = LlamaUtils.asLlamaBeanList(this.mainExchange);
@@ -66,12 +57,9 @@ public class UnionProcessor extends BaseProcessor {
         }
         super.incProcessedRecords();
         this.mainExchange.getIn().setBody(beans);
+        return this.mainExchange;
     }
 
-    @Override
-    protected Exchange result() {
-        return isMainExchangeToReturn ? this.mainExchange : this.mergingExchange;
-    }
 
     @Override
     public String toString() {
