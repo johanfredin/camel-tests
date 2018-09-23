@@ -118,19 +118,30 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         // Iterate main map
         for (String mainKey : main.keySet()) {
 
+            // Fetch the matching group in the joining map (if any)
             var joinList = joining.get(mainKey);
             if (joinList != null) {
 
+                // Fetch the list connected to the current id in the main map
                 var mainList = main.get(mainKey);
                 for (int i = 0; i < mainList.size(); i++) {
-                    var joinMap = joinList.get(i);
+                    // Get the map at given list index
                     var mainMap = mainList.get(i);
 
-                    // Inner join requires values to exist in both
-                    if (joinMap != null) {
+                    /*
+                     * Now iterate the group of maps in the joining list
+                     * and enrich the main map with those entries.
+                     */
+                    for(int j = 0; j < joinList.size(); j++) {
 
-                        // Add the joined map to the result list
-                        result.add(LlamaUtils.getMergedMap(getFields(mainMap, this.entity1Fields), getFields(joinMap, this.entity2Fields)));
+                        var joinMap = joinList.get(j);
+
+                        // Inner join requires values to exist in both
+                        if (joinMap != null) {
+
+                            // Merge the 2 maps and add it to the result list.
+                            result.add(LlamaUtils.getMergedMap(getFields(mainMap, this.entity1Fields), getFields(joinMap, this.entity2Fields)));
+                        }
                     }
                 }
             }
@@ -176,6 +187,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
     private Set<String> fetchHeader(Map<String, List<Map<String, String>>> map) {
         for(var entry : map.entrySet()) {
             if(entry.getValue() != null && !entry.getValue().isEmpty()) {
+                // The keys are the same for all maps in the collection so simply returning the first entry is good enough.
                 return entry.getValue().get(0).keySet();
             }
         }

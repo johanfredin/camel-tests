@@ -11,6 +11,15 @@ public class JoinKey {
     private String keyInJoining;
 
     /**
+     * Create a new instance. Simplified version where we will assume that
+     * the passed in key exists in both exchanges with the same name.
+     * @param key the field that will be used as key in both exchanges.
+     */
+    public JoinKey(String key) {
+        this(key, key);
+    }
+
+    /**
      * Create a new instance
      * @param keyInMain the representation of the key in the main exchange
      * @param keyInJoining the representation of the key in the joining exchange

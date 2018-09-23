@@ -72,7 +72,7 @@ public class LlamaUtils {
                 .collect(Collectors.groupingBy(T::getId));
     }
 
-    public static String getTransformedUrl(String inUrl, String inUrlPrefix, String outputUrlPrefix) {
+   public static String getTransformedUrl(String inUrl, String inUrlPrefix, String outputUrlPrefix) {
         var url = inUrlPrefix.toLowerCase().replace("\\", "/");
         inUrl = inUrl.toLowerCase().replace("\\", "/");
         var outUrl = outputUrlPrefix.toLowerCase().replace("\\", "/");
