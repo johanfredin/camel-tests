@@ -2,6 +2,7 @@ package se.fredin.llama.examples;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
+import org.springframework.stereotype.Component;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.CsvUser;
 import se.fredin.llama.utils.Endpoint;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Doing ex.1 where input/output is csv
  */
+@Component
 public class Ex1_CSV extends LlamaRoute {
 
     @Override
@@ -25,8 +27,8 @@ public class Ex1_CSV extends LlamaRoute {
                 .unmarshal(bindyCsvDataFormat)                                                  // Unmarshal CSV to POJO
                 .process(this::processUsers)                                                    // Do transformation
                 .marshal(bindyCsvDataFormat)                                                    // Marshal POJO back to CSV
-                .to(Endpoint.file(defaultOutputDir(), "foo_fixed.csv")).stop();        // Write output file
-
+                .to(Endpoint.file(defaultOutputDir(), "foo_fixed.csv"))                // Write output file
+                .onCompletion().log("Done").end();
     }
 
     private void processUsers(Exchange exchange) {
