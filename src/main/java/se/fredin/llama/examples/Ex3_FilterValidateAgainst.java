@@ -17,13 +17,7 @@ public class Ex3_FilterValidateAgainst extends LlamaRoute {
         from(Endpoint.file(defaultInputDir(), "person.csv"))
                 .routeId("read-persons")
                 .unmarshal(new BindyCsvDataFormat(CsvUser.class))
-                .pollEnrich(
-                        petRoute,
-                        (mainExchange, joiningExchange) ->
-                                Processors.<CsvUser, Pet>filterValidateAgainst(
-                                        mainExchange, joiningExchange, JoinType.INNER, ResultType.LIST
-                                )
-                )
+                .pollEnrich(petRoute, (mainExchange, joiningExchange) -> Processors.<CsvUser, Pet>filterValidateAgainst(mainExchange, joiningExchange, JoinType.INNER, ResultType.LIST))
                 .marshal(new BindyCsvDataFormat(CsvUser.class))
                 .to(Endpoint.file(defaultOutputDir(), "person-validated.csv"))
                 .startupOrder(2)

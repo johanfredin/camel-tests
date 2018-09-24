@@ -5,7 +5,10 @@ import se.fredin.llama.processor.Fields;
 import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.utils.LlamaUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Used for joining 2 collections similar to how it is made in an sql join
@@ -20,6 +23,14 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
     private List<JoinKey> joinKeys;
 
     public JoinCollectionsProcessor() {}
+
+    public JoinCollectionsProcessor(List<JoinKey> joinKeys, JoinType joinType, ResultType resultType, Fields entity1Fields, Fields entity2Fields) {
+        setJoinType(joinType);
+        setResultType(resultType);
+        setJoinKeys(joinKeys);
+        setEntity1Fields(entity1Fields);
+        setEntity2Fields(entity2Fields);
+    }
 
     public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, JoinType joinType, ResultType resultType,
                                     Fields entity1Fields, Fields entity2Fields) {
@@ -100,6 +111,10 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                 return leftOrRightJoin(mainMap, joiningMap);
             case RIGHT:
                 return leftOrRightJoin(joiningMap, mainMap);
+            case LEFT_EXCLUDING:
+                return leftOrRightExcludingJoin(mainMap, joiningMap);
+            case RIGHT_EXCLUDING:
+                return leftOrRightExcludingJoin(joiningMap, mainMap);
         }
         return null;
     }
@@ -124,23 +139,19 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
                 // Fetch the list connected to the current id in the main map
                 var mainList = main.get(mainKey);
-                for (int i = 0; i < mainList.size(); i++) {
-                    // Get the map at given list index
-                    var mainMap = mainList.get(i);
+                for (var mainMap : mainList) {
 
                     /*
                      * Now iterate the group of maps in the joining list
                      * and enrich the main map with those entries.
                      */
-                    for(int j = 0; j < joinList.size(); j++) {
-
-                        var joinMap = joinList.get(j);
+                    for(var joinMap : joinList) {
 
                         // Inner join requires values to exist in both
                         if (joinMap != null) {
 
                             // Merge the 2 maps and add it to the result list.
-                            result.add(LlamaUtils.getMergedMap(getFields(mainMap, this.entity1Fields), getFields(joinMap, this.entity2Fields)));
+                            result.add(LlamaUtils.getMergedMap(JoinUtils.getFields(mainMap, this.entity1Fields), JoinUtils.getFields(joinMap, this.entity2Fields)));
                         }
                     }
                 }
@@ -153,7 +164,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     private List<Map<String, String>> leftOrRightJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
         var result = new ArrayList<Map<String, String>>();
-        var joiningHeaders = fetchHeader(joining);
+        var joiningHeaders = JoinUtils.fetchHeader(joining);
 
         // Iterate main map
         for (var mainKey : main.keySet()) {
@@ -165,13 +176,36 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
                 // Create dummy list with blank values when joining list is null.
                 joinList = new ArrayList<>();
-                for(int i = 0; i < main.size(); i++) {
-                    joinList.add(createDummyMap(joiningHeaders, this.entity2Fields));
+                for(int i = 0; i < mainList.size(); i++) {
+                    joinList.add(JoinUtils.createDummyMap(joiningHeaders, this.entity2Fields));
                 }
+            }
 
-                for (int i = 0; i < mainList.size(); i++) {
-                    // Add the joined map to the result list
-                    result.add(LlamaUtils.getMergedMap(getFields(mainList.get(i), this.entity1Fields), getFields(joinList.get(i), this.entity2Fields)));
+            for (var mainMap : mainList) {
+                // Add the joined map to the result list
+                for(var joinMap : joinList) {
+                    result.add(LlamaUtils.getMergedMap(JoinUtils.getFields(mainMap, this.entity1Fields), JoinUtils.getFields(joinMap, this.entity2Fields)));
+                }
+            }
+        }
+
+        // Add to the exchange
+        return result;
+    }
+
+    private List<Map<String, String>> leftOrRightExcludingJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
+        var result = new ArrayList<Map<String, String>>();
+        var joiningHeaders = JoinUtils.fetchHeader(joining);
+
+        // Iterate main map
+        for (var mainKey : main.keySet()) {
+
+            var mainList = main.get(mainKey);
+
+            if (joining.get(mainKey) == null) {
+
+                for (var mainMap : mainList) {
+                    result.add(JoinUtils.getFields(mainMap, this.entity1Fields));
                 }
             }
         }
@@ -182,51 +216,6 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     private List<Map<String, String>> fullJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
         return null;
-    }
-
-    private Set<String> fetchHeader(Map<String, List<Map<String, String>>> map) {
-        for(var entry : map.entrySet()) {
-            if(entry.getValue() != null && !entry.getValue().isEmpty()) {
-                // The keys are the same for all maps in the collection so simply returning the first entry is good enough.
-                return entry.getValue().get(0).keySet();
-            }
-        }
-        throw new RuntimeException("No map keys could be found in list");
-    }
-
-    private Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields) {
-
-        // Add main fields
-        if (fields.isAllFields()) {
-            return mapToTakeFrom;
-        }
-
-        if (fields.hasFields()) {
-            var map = new HashMap<String, String>();
-            for (var mainField : fields.getFields()) {
-                map.put(mainField.getOutName(), mapToTakeFrom.get(mainField.getName()));
-            }
-            return map;
-        }
-        return null;
-    }
-
-    private Map<String, String> createDummyMap(Set<String> mapHeaders, Fields fields) {
-        var dummyMap = new HashMap<String, String>();
-
-        // Add main fields
-        if (fields.isAllFields()) {
-            for(var field : mapHeaders) {
-                dummyMap.put(field, "");
-            }
-        }
-
-        if (fields.hasFields()) {
-            for (var mainField : fields.getFields()) {
-                dummyMap.put(mainField.getOutName(), "");
-            }
-        }
-        return dummyMap;
     }
 
     @Override
