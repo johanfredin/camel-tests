@@ -166,6 +166,10 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         var result = new ArrayList<Map<String, String>>();
         var joiningHeaders = JoinUtils.fetchHeader(joining);
 
+        // Determine what to pass in as main and joining field headers.
+        var mainFields = this.joinType == JoinType.LEFT ? this.entity1Fields : this.entity2Fields;
+        var joiningFields = this.joinType == JoinType.LEFT ? this.entity2Fields : this.entity1Fields;
+
         // Iterate main map
         for (var mainKey : main.keySet()) {
 
@@ -177,14 +181,14 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                 // Create dummy list with blank values when joining list is null.
                 joinList = new ArrayList<>();
                 for(int i = 0; i < mainList.size(); i++) {
-                    joinList.add(JoinUtils.createDummyMap(joiningHeaders, this.entity2Fields));
+                    joinList.add(JoinUtils.createDummyMap(joiningHeaders, joiningFields));
                 }
             }
 
             for (var mainMap : mainList) {
                 // Add the joined map to the result list
                 for(var joinMap : joinList) {
-                    result.add(LlamaUtils.getMergedMap(JoinUtils.getFields(mainMap, this.entity1Fields), JoinUtils.getFields(joinMap, this.entity2Fields)));
+                    result.add(LlamaUtils.getMergedMap(JoinUtils.getFields(mainMap, mainFields), JoinUtils.getFields(joinMap, joiningFields)));
                 }
             }
         }

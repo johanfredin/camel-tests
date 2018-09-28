@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static se.fredin.llama.utils.LlamaUtils.field;
 
 
 public class JoinCollectionsProcessorTest {
@@ -58,8 +57,8 @@ public class JoinCollectionsProcessorTest {
 
     @Test
     public void testLeftJoin() {
-        var joinProcessor = getProcessor(JoinType.LEFT);
 
+        var joinProcessor = getProcessor(JoinType.LEFT);
         var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
 
         // Make sure that there are 2 entries associated with id=1
@@ -115,13 +114,36 @@ public class JoinCollectionsProcessorTest {
         }
     }
 
+    @Test
+    public void testInnerJoinMultipleKeys() {
+        var main = List.of(
+                Map.of("Id", "1", "Name", "Anders", "Age", "15"),
+                Map.of("Id", "1", "Name", "Anders", "Age", "12"));
+        var joining = List.of(
+                Map.of("Id", "1", "Name", "Anders", "Age", "33"),
+                Map.of("Id", "1", "Name", "Lena", "Age", "25"));
+
+        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id", "Name"));
+        joinProcessor.setEntity1Fields(Fields.ALL);
+        joinProcessor.setEntity2Fields(Fields.ALL);
+        var result = joinProcessor.join(main, joining);
+
+        // The record with name=Lena should not exist now.
+        System.out.println(result);
+
+    }
+
     private JoinCollectionsProcessor getProcessor(JoinType joinType) {
+        return getProcessor(joinType, JoinUtils.joinKeys("Id"));
+    }
+
+    private JoinCollectionsProcessor getProcessor(JoinType joinType, List<JoinKey> joinKeys) {
         return new JoinCollectionsProcessor(
-                List.of(new JoinKey("Id", "Id")),
+                joinKeys,
                 joinType,
                 ResultType.AS_IS,
-                new Fields(field("Id"), field("Name")),
-                new Fields(field("Pet"), field("Color")));
+                JoinUtils.createFields("Id", "Name"),
+                JoinUtils.createFields("Pet", "Color"));
     }
 
     private void verifyCommonFields(Map<String, String> map) {

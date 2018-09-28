@@ -1,5 +1,6 @@
 package se.fredin.llama.processor.join;
 
+import se.fredin.llama.processor.Field;
 import se.fredin.llama.processor.Fields;
 
 import java.util.*;
@@ -91,5 +92,63 @@ public class JoinUtils {
             }
         }
         return dummyMap;
+    }
+
+    /**
+     * Create a list of join keys based on passed in parameters.
+     * A new join key will be created for each key.
+     * Name in main and joining will be the same here.
+     * @param keys the keys to create join key objects of
+     * @return a list of join keys based on passed in parameters
+     */
+    public static List<JoinKey> joinKeys(String... keys) {
+        var joinKeys = new ArrayList<JoinKey>();
+        for(var key : keys) {
+            joinKeys.add(new JoinKey(key));
+        }
+        return joinKeys;
+    }
+
+    /**
+     * Create a list of join keys based on passed in map.
+     * Join key objects will be created for each map entry where map key={@link JoinKey#getKeyInMain()} and value={@link JoinKey#getKeyInJoining()}
+     * @param keys the key-value pairs to create join key objects of.
+     * @return a list of join keys based on passed in map.
+     */
+    public static List<JoinKey> joinKeys(Map<String, String> keys) {
+        var joinKeys = new ArrayList<JoinKey>();
+        for(var entry : keys.entrySet()) {
+            joinKeys.add(new JoinKey(entry.getKey(), entry.getValue()));
+        }
+        return joinKeys;
+    }
+
+    /**
+     * Create a fields object based on passed in parameters.
+     * A new field will be created for each key.
+     * Name in main and joining will be the same here.
+     * @param fields the fields to create a fields objects of
+     * @return a fields object based on passed in parameters
+     */
+    public static Fields createFields(String... fields) {
+        var fieldsObject = new Fields();
+        for(var key : fields) {
+            fieldsObject.addField(new Field(key));
+        }
+        return fieldsObject;
+    }
+
+    /**
+     * Create a list of fields based on passed in map.
+     * fields objects will be created for each map entry where map key={@link Field#getName()} and value={@link Field#getOutName()}
+     * @param fields the key-value pairs to create field objects of.
+     * @return a fields object based on passed in map.
+     */
+    public static Fields createFields(Map<String, String> fields) {
+        var fieldsObject = new Fields();
+        for(var entry : fields.entrySet()) {
+            fieldsObject.addField(new Field(entry.getKey(), entry.getValue()));
+        }
+        return fieldsObject;
     }
 }

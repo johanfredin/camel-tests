@@ -28,12 +28,12 @@ public class Fields {
         return isAllFields;
     }
 
-    public void setAllFields(boolean allFields) {
-        isAllFields = allFields;
-    }
-
     public List<Field> getFields() {
         return fields;
+    }
+
+    public void setAllFields(boolean allFields) {
+        isAllFields = allFields;
     }
 
     public void setFields(List<Field> fields) {
