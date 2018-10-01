@@ -159,7 +159,9 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                         if (joinMap != null) {
 
                             // Merge the 2 maps and add it to the result list.
-                            result.add(LlamaUtils.getMergedMap(JoinUtils.getFields(mainMap, this.entity1Fields), JoinUtils.getFields(joinMap, this.entity2Fields)));
+                            var recordsMain = JoinUtils.getFields(mainMap, this.entity1Fields);
+                            var recordsJoining = JoinUtils.getFields(joinMap, this.entity2Fields);
+                            result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining));
                         }
                     }
                 }

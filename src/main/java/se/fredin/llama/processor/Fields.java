@@ -17,7 +17,7 @@ public class Fields {
     }
 
     public Fields(Field... fields) {
-        setFields(Arrays.asList(fields));
+        setFields(new ArrayList<>(List.of(fields)));
     }
 
     public Fields(List<Field> fields) {

@@ -5,6 +5,7 @@ import org.junit.Test;
 import se.fredin.llama.processor.Fields;
 import se.fredin.llama.processor.ResultType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -120,16 +121,22 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "1", "Name", "Anders", "Age", "15"),
                 Map.of("Id", "1", "Name", "Anders", "Age", "12"));
         var joining = List.of(
-                Map.of("Id", "1", "Name", "Anders", "Age", "33"),
-                Map.of("Id", "1", "Name", "Lena", "Age", "25"));
+                Map.of("Id", "1", "Name", "Anders", "Profession", "Developer"),
+                Map.of("Id", "1", "Name", "Lena", "Profession", "Scrum Master"));
 
         var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id", "Name"));
         joinProcessor.setEntity1Fields(Fields.ALL);
         joinProcessor.setEntity2Fields(Fields.ALL);
         var result = joinProcessor.join(main, joining);
 
-        // The record with name=Lena should not exist now.
-        System.out.println(result);
+        // The record with name=Lena should not exist now
+        assertEquals("There should be 2 entries in the result when using Id and Name as keys", 2, result.size());
+
+        // Verify Lena is toast :)
+        result.forEach(m -> {
+            assertNotEquals("There should not be a Lena in here", "Lena", m.get("Name"));
+            assertEquals("There should only be developer proffessions here", "Developer", m.get("Profession"));
+        });
 
     }
 

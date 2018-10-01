@@ -41,7 +41,7 @@ public class LlamaUtils {
     @SuppressWarnings("unchecked")
     public static <T extends LlamaBean> List<T> asLlamaBeanList(Exchange e) {
         try {
-            return  new ArrayList<T>(e.getIn().getMandatoryBody(List.class));
+            return new ArrayList<T>(e.getIn().getMandatoryBody(List.class));
         } catch (InvalidPayloadException e1) {
             e1.printStackTrace();
         }
@@ -60,7 +60,8 @@ public class LlamaUtils {
 
     /**
      * Creates a map where key = {@link LlamaBean#getId()} and value a List of llama beans.
-      * @param e the exchange that is assumed to have a list of {@link LlamaBean} instances
+     *
+     * @param e   the exchange that is assumed to have a list of {@link LlamaBean} instances
      * @param <T> the Type of the bean (must extend Llamabean
      * @return a map of llama beans grouped by bean id.
      */
@@ -72,7 +73,7 @@ public class LlamaUtils {
                 .collect(Collectors.groupingBy(T::getId));
     }
 
-   public static String getTransformedUrl(String inUrl, String inUrlPrefix, String outputUrlPrefix) {
+    public static String getTransformedUrl(String inUrl, String inUrlPrefix, String outputUrlPrefix) {
         var url = inUrlPrefix.toLowerCase().replace("\\", "/");
         inUrl = inUrl.toLowerCase().replace("\\", "/");
         var outUrl = outputUrlPrefix.toLowerCase().replace("\\", "/");
@@ -88,14 +89,25 @@ public class LlamaUtils {
 
 
     @SafeVarargs
-    public static<K, V> Map<K, V> getMergedMap(Map<K, V>... maps) {
-        var map = new HashMap<K, V>();
-        for(var mapToAdd : maps) {
-            if(mapToAdd != null) {
-                map.putAll(mapToAdd);
+    public static <K, V> Map<K, V> getMergedMap(Map<K, V>... maps) {
+        return getMergedMap(Arrays.asList(maps), false);
+    }
+
+    public static <K, V> Map<K, V> getMergedMap(Collection<Map<K, V>> maps, boolean overrideDuplicates) {
+        var result = new HashMap<K, V>();
+        for (var mapToAdd : maps) {
+            if (overrideDuplicates) {
+                mapToAdd.entrySet()
+                        .forEach(e -> {
+                           if(!result.containsKey(e.getKey())) {
+                               result.put(e.getKey(), e.getValue());
+                           }
+                        });
+            } else {
+                result.putAll(mapToAdd);
             }
         }
-        return map;
+        return result;
     }
 
     public static List<Field> fields(Field... fields) {
