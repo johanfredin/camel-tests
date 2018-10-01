@@ -19,8 +19,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     private Fields entity1Fields;
     private Fields entity2Fields;
-
     private List<JoinKey> joinKeys;
+    private boolean includeKeysAsOutFields = true;
 
     public JoinCollectionsProcessor() {}
 
@@ -70,6 +70,14 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     public void setJoinKeys(List<JoinKey> joinKeys) {
         this.joinKeys = joinKeys;
+    }
+
+    public boolean isIncludeKeysAsOutFields() {
+        return includeKeysAsOutFields;
+    }
+
+    public void setIncludeKeysAsOutFields(boolean includeKeysAsOutFields) {
+        this.includeKeysAsOutFields = includeKeysAsOutFields;
     }
 
     @Override

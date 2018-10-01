@@ -34,7 +34,7 @@ public class Ex1_CSV extends LlamaRoute {
     private void processUsers(Exchange exchange) {
         var users = LlamaUtils.<CsvUser>asLlamaBeanList(exchange)
                 .stream()                                                                       // Iterate users
-                .filter(user -> LlamaUtils.withinRange(user.getAge(), 0, 100))    // Filter out invalid age
+                .filter(user -> LlamaUtils.withinRange(user.getAge(), 0, 100))        // Filter out invalid age
                 .sorted(Comparator.comparing(CsvUser::getCountry))                              // Sort on country
                 .peek(user -> user.setGender(user.getGender().toUpperCase()))                   // Set gender to be uppercase
                 .collect(Collectors.toList());                                                  // Collect the update
