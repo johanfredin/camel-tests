@@ -159,9 +159,9 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                         if (joinMap != null) {
 
                             // Merge the 2 maps and add it to the result list.
-                            var recordsMain = JoinUtils.getFields(mainMap, this.entity1Fields);
-                            var recordsJoining = JoinUtils.getFields(joinMap, this.entity2Fields);
-                            result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining));
+                            var recordsMain = JoinUtils.getFields(mainMap, this.entity1Fields, this.joinKeys);
+                            var recordsJoining = JoinUtils.getFields(joinMap, this.entity2Fields, this.joinKeys);
+                            result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining, this.joinKeys));
                         }
                     }
                 }
@@ -198,7 +198,9 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
             for (var mainMap : mainList) {
                 // Add the joined map to the result list
                 for(var joinMap : joinList) {
-                    result.add(LlamaUtils.getMergedMap(JoinUtils.getFields(mainMap, mainFields), JoinUtils.getFields(joinMap, joiningFields)));
+                    var recordsMain = JoinUtils.getFields(mainMap, mainFields, this.joinKeys);
+                    var recordsJoining = JoinUtils.getFields(joinMap, joiningFields, this.joinKeys);
+                    result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining, this.joinKeys));
                 }
             }
         }
@@ -219,7 +221,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
             if (joining.get(mainKey) == null) {
 
                 for (var mainMap : mainList) {
-                    result.add(JoinUtils.getFields(mainMap, this.entity1Fields));
+                    result.add(JoinUtils.getFields(mainMap, this.entity1Fields, this.joinKeys));
                 }
             }
         }

@@ -59,7 +59,7 @@ public class JoinUtils {
         throw new RuntimeException("No map keys could be found in list");
     }
 
-    public static Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields) {
+    public static Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields, List<JoinKey> joinKeys) {
 
         // Add main fields
         if (fields.isAllFields()) {
@@ -101,10 +101,13 @@ public class JoinUtils {
      * main map will be ignored.
      * @param main the main map.
      * @param joining the map with the entries we want to add to the main map.
+     * @param joinKeys
      * @return a map containing all the entries from the passed in map (main is the owner when there are duplicate keys)
      */
-    public static Map<String, String> createMergedMap(Map<String, String> main, Map<String, String> joining) {
+    public static Map<String, String> createMergedMap(Map<String, String> main, Map<String, String> joining, List<JoinKey> joinKeys) {
         var result = new LinkedHashMap<String, String>();
+
+        // First delete all
 
         main.entrySet().
                 forEach(e -> result.put(e.getKey(), e.getValue()));
