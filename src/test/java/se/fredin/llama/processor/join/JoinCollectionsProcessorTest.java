@@ -386,6 +386,126 @@ public class JoinCollectionsProcessorTest {
                         JoinUtils.createFields("Id", "Name", "Identifier", "Nombre", "Age")));
     }
 
+    /*
+    Perform an inner join where there are fields with the same names in both
+    collections. When this happens the main collection should be the owner of
+    those fields.
+     */
+    @Test
+    public void testInnerJoinSameFieldNames() {
+        var main = List.of(
+                Map.of("Id", "1", "Name", "Lars", "Age", "300"),
+                Map.of("Id", "2", "Name", "Bert", "Age", "400")
+        );
+
+        var joining = List.of(
+                Map.of("Id", "1", "Name", "Kurt", "Age", "25"),
+                Map.of("Id", "2", "Name", "Krist", "Age", "25")
+        );
+
+        var result = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.ALL)
+                .join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        result.forEach(map -> {
+                verifyFields(map, JoinUtils.createFields("Id", "Name", "Age"), JoinUtils.createFields());
+                switch(map.get("Id")) {
+                    case "1":
+                        assertEquals("Name=Lars", "Lars", map.get("Name"));
+                        assertEquals("Age=300", "300", map.get("Age"));
+                        break;
+                    case "2":
+                        assertEquals("Name=Bert", "Bert", map.get("Name"));
+                        assertEquals("Age=400", "400", map.get("Age"));
+                        break;
+                }
+        });
+    }
+
+    /*
+    Perform an right join where there are fields with the same names in both
+    collections. When this in a right join, the joining collection should be the owner of
+    those fields.
+     */
+    @Test
+    public void testRightJoinSameFieldNames() {
+        var main = List.of(
+                Map.of("Id", "1", "Name", "Lars", "Age", "300"),
+                Map.of("Id", "2", "Name", "Bert", "Age", "400")
+        );
+
+        var joining = List.of(
+                Map.of("Id", "1", "Name", "Kurt", "Age", "25"),
+                Map.of("Id", "2", "Name", "Krist", "Age", "25")
+        );
+
+        var result = getProcessor(JoinType.RIGHT, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.ALL)
+                .join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        result.forEach(map -> {
+            verifyFields(map, JoinUtils.createFields("Id", "Name", "Age"), JoinUtils.createFields());
+            switch(map.get("Id")) {
+                case "1":
+                    assertEquals("Name=Kurt", "Kurt", map.get("Name"));
+                    assertEquals("Age=25", "25", map.get("Age"));
+                    break;
+                case "2":
+                    assertEquals("Name=Krist", "Krist", map.get("Name"));
+                    assertEquals("Age=25", "25", map.get("Age"));
+                    break;
+            }
+        });
+    }
+
+    /*
+    Perform an inner join where there are fields with the same names in both
+    collections. But this time give the fields new output names in the joining collection.
+    Then we should get all fields in the result and no field should have been overridden.
+    those fields.
+     */
+    @Test
+    public void testInnerJoinSameFieldNamesNewOutputNamesInJoining() {
+        var main = List.of(
+                Map.of("Id", "1", "Name", "Lars", "Age", "300"),
+                Map.of("Id", "2", "Name", "Bert", "Age", "400")
+        );
+
+        var joining = List.of(
+                Map.of("Id", "1", "Name", "Kurt", "Age", "25"),
+                Map.of("Id", "2", "Name", "Krist", "Age", "25")
+        );
+
+        var result = getProcessor(
+                JoinType.INNER,
+                JoinUtils.joinKeys("Id"),
+                Fields.ALL,
+                JoinUtils.createFields(Map.of("Id", "Joining Id", "Name", "Joining Name", "Age", "Joining Age"))
+        ).join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        result.forEach(map -> {
+            verifyFields(map, JoinUtils.createFields("Id", "Name", "Age", "Joining Id", "Joining Name", "Joining Age"), JoinUtils.createFields());
+            switch(map.get("Id")) {
+                case "1":
+                    assertEquals("Name=Lars", "Lars", map.get("Name"));
+                    assertEquals("Age=300", "300", map.get("Age"));
+                    assertEquals("Joining Name=Kurt", "Kurt", map.get("Joining Name"));
+                    assertEquals("Joining Age=25", "25", map.get("Joining Age"));
+                    break;
+                case "2":
+                    assertEquals("Name=Bert", "Bert", map.get("Name"));
+                    assertEquals("Age=400", "400", map.get("Age"));
+                    assertEquals("Joining Name=Krist", "Krist", map.get("Joining Name"));
+                    assertEquals("Joining Age=25", "25", map.get("Joining Age"));
+                    break;
+            }
+        });
+    }
+
     private JoinCollectionsProcessor getProcessor(JoinType joinType) {
         return getProcessor(joinType, JoinUtils.joinKeys("Id"));
     }
