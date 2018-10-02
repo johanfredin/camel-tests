@@ -20,7 +20,6 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
     private Fields entity1Fields;
     private Fields entity2Fields;
     private List<JoinKey> joinKeys;
-    private boolean includeKeysAsOutFields = true;
 
     public JoinCollectionsProcessor() {}
 
@@ -70,14 +69,6 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     public void setJoinKeys(List<JoinKey> joinKeys) {
         this.joinKeys = joinKeys;
-    }
-
-    public boolean isIncludeKeysAsOutFields() {
-        return includeKeysAsOutFields;
-    }
-
-    public void setIncludeKeysAsOutFields(boolean includeKeysAsOutFields) {
-        this.includeKeysAsOutFields = includeKeysAsOutFields;
     }
 
     @Override
@@ -159,8 +150,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                         if (joinMap != null) {
 
                             // Merge the 2 maps and add it to the result list.
-                            var recordsMain = JoinUtils.getFields(mainMap, this.entity1Fields, this.joinKeys);
-                            var recordsJoining = JoinUtils.getFields(joinMap, this.entity2Fields, this.joinKeys);
+                            var recordsMain = JoinUtils.getFields(mainMap, this.entity1Fields);
+                            var recordsJoining = JoinUtils.getFields(joinMap, this.entity2Fields);
                             result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining, this.joinKeys));
                         }
                     }
@@ -198,8 +189,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
             for (var mainMap : mainList) {
                 // Add the joined map to the result list
                 for(var joinMap : joinList) {
-                    var recordsMain = JoinUtils.getFields(mainMap, mainFields, this.joinKeys);
-                    var recordsJoining = JoinUtils.getFields(joinMap, joiningFields, this.joinKeys);
+                    var recordsMain = JoinUtils.getFields(mainMap, mainFields);
+                    var recordsJoining = JoinUtils.getFields(joinMap, joiningFields);
                     result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining, this.joinKeys));
                 }
             }
@@ -209,9 +200,21 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         return result;
     }
 
+    /**
+     * Used with Join types {@link JoinType#LEFT_EXCLUDING}, {@link JoinType#RIGHT_EXCLUDING} meaning
+     * only records that exist in one of the two exchanges will be kept in the result. Only records
+     * from the main map passed in are kept regardless of whether we told the processor to include fields
+     * in the joining map. Then again that would be pointless since they would always be null
+     * @param main the map containing the data we need to verify is unique.
+     * @param joining the joining map to check against the main map.
+     * @return a collection of maps containing records that only exists in the main map.
+     */
     private List<Map<String, String>> leftOrRightExcludingJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
+        // Determine what to pass in as main and joining field headers.
+        var mainFields = this.joinType == JoinType.LEFT_EXCLUDING ? this.entity1Fields : this.entity2Fields;
+        var joiningFields = this.joinType == JoinType.LEFT_EXCLUDING ? this.entity2Fields : this.entity1Fields;
+
         var result = new ArrayList<Map<String, String>>();
-        var joiningHeaders = JoinUtils.fetchHeader(joining);
 
         // Iterate main map
         for (var mainKey : main.keySet()) {
@@ -221,7 +224,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
             if (joining.get(mainKey) == null) {
 
                 for (var mainMap : mainList) {
-                    result.add(JoinUtils.getFields(mainMap, this.entity1Fields, this.joinKeys));
+                    result.add(JoinUtils.getFields(mainMap, mainFields));
                 }
             }
         }

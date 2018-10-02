@@ -59,7 +59,7 @@ public class JoinUtils {
         throw new RuntimeException("No map keys could be found in list");
     }
 
-    public static Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields, List<JoinKey> joinKeys) {
+    public static Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields) {
 
         // Add main fields
         if (fields.isAllFields()) {

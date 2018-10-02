@@ -5,7 +5,6 @@ import org.junit.Test;
 import se.fredin.llama.processor.Fields;
 import se.fredin.llama.processor.ResultType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,70 +48,10 @@ public class JoinCollectionsProcessorTest {
         assertEquals("Result size should be 4", 4, result.size());
 
         // Test keys
-        for (var map : result) {
+        result.forEach(map -> {
             verifyFields(map);
             verifyCommonFields(map);
-
-        }
-    }
-
-    @Test
-    public void testLeftJoin() {
-
-        var joinProcessor = getProcessor(JoinType.LEFT);
-        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
-
-        // Make sure that there are 2 entries associated with id=1
-        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Id"), JoinUtils.EXCHANGE_MAIN, result);
-        assertEquals("There should be 2 records associated with Id=1", 2, mapOfLists.get("1").size());
-        assertNull("There should not be a record with id=4", mapOfLists.get("4"));
-
-        // Test results
-        assertEquals("Result size should be 5", 5, result.size());
-
-        // Test keys
-        for (var map : result) {
-            verifyFields(map);
-
-            verifyCommonFields(map);
-            switch (map.get("Id")) {
-                case "5":
-                    assertEquals("Name=Eddie", "Eddie", map.get("Name"));
-                    assertEquals("Pet=\"\"", "", map.get("Pet"));
-                    assertEquals("Color=\"\"", "", map.get("Color"));
-                    break;
-            }
-        }
-    }
-
-    @Test
-    public void testRightJoin() {
-        var joinProcessor = getProcessor(JoinType.RIGHT);
-
-        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
-
-        // Make sure that there are 2 entries associated with id=1
-        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Id"), JoinUtils.EXCHANGE_MAIN, result);
-        assertEquals("There should be 2 records associated with Id=1", 2, mapOfLists.get("1").size());
-        assertNotNull("There should be a record with id=4", mapOfLists.get("4"));
-        assertNull("There should not be a record with id=5", mapOfLists.get("5"));
-
-        // Test results
-        assertEquals("Result size should be 5", 5, result.size());
-
-        // Test keys
-        for (var map : result) {
-            verifyFields(map);
-
-            verifyCommonFields(map);
-            switch (map.get("Id")) {
-                case "4":
-                    assertEquals("Name=\"\"", "", map.get("Name"));
-                    assertEquals("Pet=Iguana", "Iguana", map.get("Pet"));
-                    assertEquals("Color=Orange", "Orange", map.get("Color"));
-                    break;
-            }
-        }
+        });
     }
 
     @Test
@@ -129,13 +68,149 @@ public class JoinCollectionsProcessorTest {
         joinProcessor.setEntity2Fields(Fields.ALL);
         var result = joinProcessor.join(main, joining);
 
-        // The record with name=Lena should not exist now
+        // Joining on Id and Name should result in 2 entries
         assertEquals("There should be 2 entries in the result when using Id and Name as keys", 2, result.size());
 
-        // Verify Lena is toast :)
+        // The record with name=Lena should not exist now
         result.forEach(m -> {
             assertNotEquals("There should not be a Lena in here", "Lena", m.get("Name"));
             assertEquals("There should only be developer proffessions here", "Developer", m.get("Profession"));
+        });
+    }
+
+    @Test
+    public void testLeftJoin() {
+        var joinProcessor = getProcessor(JoinType.LEFT);
+        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
+
+        // Make sure that there are 2 entries associated with id=1
+        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Id"), JoinUtils.EXCHANGE_MAIN, result);
+        assertEquals("There should be 2 records associated with Id=1", 2, mapOfLists.get("1").size());
+        assertNull("There should not be a record with id=4", mapOfLists.get("4"));
+
+        // Test results
+        assertEquals("Result size should be 5", 5, result.size());
+
+        // Test keys
+        result.forEach(map -> {
+            verifyFields(map);
+
+            verifyCommonFields(map);
+            switch (map.get("Id")) {
+                case "5":
+                    assertEquals("Name=Eddie", "Eddie", map.get("Name"));
+                    assertEquals("Pet=\"\"", "", map.get("Pet"));
+                    assertEquals("Color=\"\"", "", map.get("Color"));
+                    break;
+            }
+        });
+    }
+
+    @Test
+    public void testRightJoin() {
+        var joinProcessor = getProcessor(JoinType.RIGHT, JoinUtils.joinKeys("Id"), JoinUtils.createFields("Name"), JoinUtils.createFields("Id", "Pet", "Color"));
+
+        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
+
+        // Make sure that there are 2 entries associated with id=1
+        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Id"), JoinUtils.EXCHANGE_MAIN, result);
+        assertEquals("There should be 2 records associated with Id=1", 2, mapOfLists.get("1").size());
+        assertNotNull("There should be a record with id=4", mapOfLists.get("4"));
+        assertNull("There should not be a record with id=5", mapOfLists.get("5"));
+
+        // Test results
+        assertEquals("Result size should be 5", 5, result.size());
+
+        // Test keys
+        result.forEach(map -> {
+            verifyFields(map);
+
+            verifyCommonFields(map);
+            switch (map.get("Id")) {
+                case "4":
+                    assertEquals("Id=4", "4", map.get("Id"));
+                    assertEquals("Name=\"\"", "", map.get("Name"));
+                    assertEquals("Pet=Iguana", "Iguana", map.get("Pet"));
+                    assertEquals("Color=Orange", "Orange", map.get("Color"));
+                    break;
+            }
+        });
+    }
+
+    @Test
+    public void testLeftExcludingJoin() {
+        var joinProcessor = getProcessor(JoinType.LEFT_EXCLUDING);
+        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
+
+        assertEquals("There should only be 1 record where the key does not exist in the other", 1, result.size());
+
+        // Test keys
+        result.forEach(map -> {
+            verifyFields(map, joinProcessor.getEntity1Fields(), joinProcessor.getEntity2Fields());
+            assertEquals("Id=5", "5", map.get("Id"));
+            assertEquals("Name=Eddie", "Eddie", map.get("Name"));
+        });
+    }
+
+    @Test
+    public void testRightExcludingJoin() {
+        var joinProcessor = getProcessor(JoinType.RIGHT_EXCLUDING);
+        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
+
+        assertEquals("There should only be 1 record where the key does not exist in the other", 1, result.size());
+
+        // Test keys
+        result.forEach(map -> {
+            /*
+             * Pass in the fields expected to exist and not to exist in reverse order here
+             * since they will have been swapped when the join is of type right_excluding.
+             */
+            verifyFields(map, joinProcessor.getEntity2Fields(), joinProcessor.getEntity1Fields());
+
+            // Only one entry in map
+            assertEquals("Pet=Iguana", "Iguana", map.get("Pet"));
+            assertEquals("Color=Orange", "Orange", map.get("Color"));
+        });
+    }
+
+    @Test
+    public void testInnerJoinNewOutputFieldNames() {
+        var joinProcessor = getProcessor(
+                JoinType.INNER,
+                JoinUtils.joinKeys("Id"),
+                JoinUtils.createFields(Map.of("Id", "Identifier", "Name", "User Name")),
+                JoinUtils.createFields(Map.of("Pet", "Animal", "Color", "Color")));
+
+        var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
+
+        // Verify join logic works just as well when there are optional output field names.
+        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Identifier"), JoinUtils.EXCHANGE_MAIN, result);
+        assertEquals("There should be 2 records associated with Identifier=1", 2, mapOfLists.get("1").size());
+        assertNull("There should not be a record with Identifier=4", mapOfLists.get("4"));
+
+        // Test results
+        assertEquals("Result size should be 4", 4, result.size());
+
+        result.forEach(map -> {
+            verifyFields(map,
+                    JoinUtils.createFields("Identifier", "User Name", "Animal", "Color"), // Verify fields are renamed
+                    JoinUtils.createFields("Id", "Name", "Pet"));   // Verify original field names no longer exist
+
+            // Verify logic is the same with different output field names as before
+            switch (map.get("Identifier")) {
+                case "1": // There should be 2 records with Id=1
+                    assertTrue("User Name=Jonas||Lena", map.get("User Name").equals("Jonas") || map.get("User Name").equals("Lena"));
+                    break;
+                case "2":
+                    assertEquals("Use Name=Leslie", "Leslie", map.get("User Name"));
+                    assertEquals("Animal=Cat", "Cat", map.get("Animal"));
+                    assertEquals("Color=Green", "Green", map.get("Color"));
+                    break;
+                case "3":
+                    assertEquals("User Name=Nils", "Nils", map.get("User Name"));
+                    assertEquals("Animal=Lizard", "Lizard", map.get("Animal"));
+                    assertEquals("Color=Yellow", "Yellow", map.get("Color"));
+            }
         });
 
     }
@@ -145,16 +220,27 @@ public class JoinCollectionsProcessorTest {
     }
 
     private JoinCollectionsProcessor getProcessor(JoinType joinType, List<JoinKey> joinKeys) {
+        return getProcessor(joinType, joinKeys, JoinUtils.createFields("Id", "Name"), JoinUtils.createFields("Pet", "Color"));
+    }
+
+    /**
+     * @param joinType what type of join this is
+     * @param joinKeys the keys to join on
+     * @param mainFields the fields we want out from the main collection.
+     * @param joiningFields the fields we want from the joining collection.
+     * @return a new join processor instance with the passed in params
+     */
+    private JoinCollectionsProcessor getProcessor(JoinType joinType, List<JoinKey> joinKeys, Fields mainFields, Fields joiningFields) {
         return new JoinCollectionsProcessor(
                 joinKeys,
                 joinType,
                 ResultType.AS_IS,
-                JoinUtils.createFields("Id", "Name"),
-                JoinUtils.createFields("Pet", "Color"));
+                mainFields,
+                joiningFields);
     }
 
     private void verifyCommonFields(Map<String, String> map) {
-        switch(map.get("Id")) {
+        switch (map.get("Id")) {
             case "1": // There should be 2 records with Id=1
                 assertTrue("Name=Jonas||Lena", map.get("Name").equals("Jonas") || map.get("Name").equals("Lena"));
                 break;
@@ -170,14 +256,27 @@ public class JoinCollectionsProcessorTest {
         }
     }
 
+    /**
+     * Expects fields <b>Id, Name, Pet, Color</b> to exist and field <b>Age</b> to not exist in passed in map
+     * @param map map to verify
+     */
     private void verifyFields(Map<String, String> map) {
-        assertTrue("Keys contains Id", map.keySet().contains("Id"));
-        assertTrue("Keys contains Name", map.keySet().contains("Name"));
-        assertTrue("Keys contains Pet", map.keySet().contains("Pet"));
-        assertTrue("Keys contains Color", map.keySet().contains("Color"));
+        verifyFields(map, JoinUtils.createFields("Id", "Name", "Pet", "Color"), JoinUtils.createFields("Age"));
+    }
 
-        // Make sure we didn't get these
-        assertFalse("Keys does not contain Age", map.keySet().contains("Age"));
+    /**
+     * Helper method to verify the fields returned from a join.
+     * @param mapWithTheFields the map that contains with the fields to verify
+     * @param fieldsToCheckExistsInMap the fields we expect to exist as keys in the passed in map.
+     * @param fieldsToVerifyDoesNotExistInMap the fields we expect to not exist as keys in the passed map
+     */
+    private void verifyFields(Map<String, String> mapWithTheFields, Fields fieldsToCheckExistsInMap, Fields fieldsToVerifyDoesNotExistInMap) {
+        fieldsToCheckExistsInMap.getFields()
+                .forEach(e -> assertTrue("Map contains key=" + e.getOutName(), mapWithTheFields.containsKey(e.getOutName())));
+
+        fieldsToVerifyDoesNotExistInMap.getFields()
+                .forEach(e -> assertFalse("Map does not contains key=" + e.getOutName(), mapWithTheFields.containsKey(e.getOutName())));
+
     }
 
 
