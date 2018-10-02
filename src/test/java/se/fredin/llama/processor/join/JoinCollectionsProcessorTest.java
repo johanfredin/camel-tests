@@ -33,6 +33,9 @@ public class JoinCollectionsProcessorTest {
         );
     }
 
+    /*
+     *  Test an inner join with the field collections.
+     */
     @Test
     public void testInnerJoin() {
         var joinProcessor = getProcessor(JoinType.INNER);
@@ -54,6 +57,9 @@ public class JoinCollectionsProcessorTest {
         });
     }
 
+    /*
+    Test an inner join where we have multiple keys
+     */
     @Test
     public void testInnerJoinMultipleKeys() {
         var main = List.of(
@@ -78,6 +84,9 @@ public class JoinCollectionsProcessorTest {
         });
     }
 
+    /*
+    Test the left join
+     */
     @Test
     public void testLeftJoin() {
         var joinProcessor = getProcessor(JoinType.LEFT);
@@ -106,6 +115,9 @@ public class JoinCollectionsProcessorTest {
         });
     }
 
+    /*
+    Test the right join
+     */
     @Test
     public void testRightJoin() {
         var joinProcessor = getProcessor(JoinType.RIGHT, JoinUtils.joinKeys("Id"), JoinUtils.createFields("Name"), JoinUtils.createFields("Id", "Pet", "Color"));
@@ -137,6 +149,9 @@ public class JoinCollectionsProcessorTest {
         });
     }
 
+    /*
+    Test a left excluding join.
+     */
     @Test
     public void testLeftExcludingJoin() {
         var joinProcessor = getProcessor(JoinType.LEFT_EXCLUDING);
@@ -152,6 +167,9 @@ public class JoinCollectionsProcessorTest {
         });
     }
 
+    /*
+    Test right excluding join
+     */
     @Test
     public void testRightExcludingJoin() {
         var joinProcessor = getProcessor(JoinType.RIGHT_EXCLUDING);
@@ -173,6 +191,10 @@ public class JoinCollectionsProcessorTest {
         });
     }
 
+    /*
+    Redo the same logic as in the first testInnerJoin method
+    except specify new output field names
+     */
     @Test
     public void testInnerJoinNewOutputFieldNames() {
         var joinProcessor = getProcessor(
@@ -212,7 +234,156 @@ public class JoinCollectionsProcessorTest {
                     assertEquals("Color=Yellow", "Yellow", map.get("Color"));
             }
         });
+    }
 
+    /*
+    Test an inner join with Fields.ALL specified for both the collections
+     */
+    @Test
+    public void testInnerJoinAllFields() {
+        var main = List.of(
+                Map.of("Id", "1", "First Name", "Lars"),
+                Map.of("Id", "2", "First Name", "Bert")
+        );
+
+        var joining = List.of(
+                Map.of("Id", "1", "Last Name", "Larsson"),
+                Map.of("Id", "2", "Last Name", "Karlsson")
+        );
+
+        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.ALL);
+        var result = joinProcessor.join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        // Verify all fields were added (Id overridden)
+        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "First Name", "Last Name"), JoinUtils.createFields()));
+    }
+
+    /*
+    Test an inner join with Fields.ALL from main collection and Fields.NONE from joining collection
+     */
+    @Test
+    public void testInnerJoinOnlyFieldsFromMain() {
+        var main = List.of(
+                Map.of("Id", "1", "First Name", "Lars"),
+                Map.of("Id", "2", "First Name", "Bert")
+        );
+
+        var joining = List.of(
+                Map.of("Id", "1", "Last Name", "Larsson", "Age", "25"),
+                Map.of("Id", "2", "Last Name", "Karlsson", "Age", "25")
+        );
+
+        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.NONE);
+        var result = joinProcessor.join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        // Verify no fields from entity 2 added (minus Id)
+        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "First Name"), JoinUtils.createFields("Last Name", "Age")));
+    }
+
+    /*
+    Test an inner join with Fields.NONE from main collection and Fields.ALL from joining collection.
+     */
+    @Test
+    public void testInnerJoinOnlyFieldsFromJoining() {
+        var main = List.of(
+                Map.of("Id", "1", "First Name", "Lars"),
+                Map.of("Id", "2", "First Name", "Bert")
+        );
+
+        var joining = List.of(
+                Map.of("Id", "1", "Last Name", "Larsson", "Age", "25"),
+                Map.of("Id", "2", "Last Name", "Karlsson", "Age", "25")
+        );
+
+        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.NONE, Fields.ALL);
+        var result = joinProcessor.join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "Last Name", "Age"), JoinUtils.createFields("First Name")));
+    }
+
+    /*
+    Test an inner join where we are matching on a key that that has different names in the collections.
+     */
+    @Test
+    public void testInnerJoinDifferentKeyNames() {
+        var main = List.of(
+                Map.of("Id", "1", "First Name", "Lars"),
+                Map.of("Id", "2", "First Name", "Bert")
+        );
+
+        var joining = List.of(
+                Map.of("Identifier", "1", "Last Name", "Larsson", "Age", "25"),
+                Map.of("Identifier", "2", "Last Name", "Karlsson", "Age", "25")
+        );
+
+        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys(Map.of("Id", "Identifier")), Fields.ALL, Fields.ALL);
+        var result = joinProcessor.join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "First Name", "Identifier", "Last Name"), JoinUtils.createFields()));
+    }
+
+    /*
+    Test an inner join with multiple keys where they all have different names in the collections.
+     */
+    @Test
+    public void testInnerJoinMultipleKeysDifferentKeyNames() {
+        var main = List.of(
+                Map.of("Id", "1", "Name", "Lars"),
+                Map.of("Id", "2", "Name", "Bert")
+        );
+
+        var joining = List.of(
+                Map.of("Identifier", "1", "Nombre", "Lars", "Age", "25"),
+                Map.of("Identifier", "2", "Nombre", "Bert", "Age", "25"),
+                Map.of("Identifier", "3", "Nombre", "Karlsson", "Age", "35")
+        );
+
+        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys(Map.of("Id", "Identifier", "Name", "Nombre")), Fields.ALL, Fields.ALL);
+        var result = joinProcessor.join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "Name", "Identifier", "Nombre", "Age"), JoinUtils.createFields()));
+    }
+
+    /*
+    Test an inner join with multiple keys where they all have different names in the collections
+    and we want the output field names to be different.
+     */
+    @Test
+    public void testInnerJoinMultipleKeysDifferentKeyNamesAndNewOutputFieldNames() {
+        var main = List.of(
+                Map.of("Id", "1", "Name", "Lars"),
+                Map.of("Id", "2", "Name", "Bert")
+        );
+
+        var joining = List.of(
+                Map.of("Identifier", "1", "Nombre", "Lars", "Age", "25"),
+                Map.of("Identifier", "2", "Nombre", "Bert", "Age", "25"),
+                Map.of("Identifier", "3", "Nombre", "Karlsson", "Age", "35")
+        );
+
+        var joinProcessor = getProcessor(
+                JoinType.INNER,
+                JoinUtils.joinKeys(Map.of("Id", "Identifier", "Name", "Nombre")),
+                JoinUtils.createFields(Map.of("Id", "ID", "Name", "NAME")),
+                JoinUtils.createFields(Map.of("Identifier", "IDENTIFIER", "Nombre", "NOMBRE", "Age", "AGE")));
+        var result = joinProcessor.join(main, joining);
+
+        assertEquals("Result size=2", 2, result.size());
+
+        result.forEach(map ->
+                verifyFields(map,
+                        JoinUtils.createFields("ID", "NAME", "IDENTIFIER", "NOMBRE", "AGE"),
+                        JoinUtils.createFields("Id", "Name", "Identifier", "Nombre", "Age")));
     }
 
     private JoinCollectionsProcessor getProcessor(JoinType joinType) {

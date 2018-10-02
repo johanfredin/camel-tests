@@ -4,6 +4,7 @@ import se.fredin.llama.processor.Field;
 import se.fredin.llama.processor.Fields;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JoinUtils {
 
@@ -60,7 +61,6 @@ public class JoinUtils {
     }
 
     public static Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields) {
-
         // Add main fields
         if (fields.isAllFields()) {
             return mapToTakeFrom;
@@ -73,7 +73,7 @@ public class JoinUtils {
             }
             return map;
         }
-        return null;
+        return Map.of();
     }
 
     public static Map<String, String> createDummyMap(Set<String> mapHeaders, Fields fields) {
@@ -101,23 +101,18 @@ public class JoinUtils {
      * main map will be ignored.
      * @param main the main map.
      * @param joining the map with the entries we want to add to the main map.
-     * @param joinKeys
+     * @param joinKeys the keys used for joining
      * @return a map containing all the entries from the passed in map (main is the owner when there are duplicate keys)
      */
     public static Map<String, String> createMergedMap(Map<String, String> main, Map<String, String> joining, List<JoinKey> joinKeys) {
-        var result = new LinkedHashMap<String, String>();
+        var result = main.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
 
-        // First delete all
-
-        main.entrySet().
-                forEach(e -> result.put(e.getKey(), e.getValue()));
-
-        joining.entrySet().
-                forEach(e -> {
-                    if(!result.containsKey(e.getKey())) {
-                        result.put(e.getKey(), e.getValue());
-                    }
-                });
+        joining.entrySet()
+                .stream()
+                .filter(e -> !result.containsKey(e.getKey()))
+                .forEach(e -> result.put(e.getKey(), e.getValue()));
 
         return result;
     }
