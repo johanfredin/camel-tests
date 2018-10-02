@@ -12,7 +12,7 @@ import se.fredin.llama.utils.LlamaUtils;
 import java.util.stream.Collectors;
 
 /**
- * Read 2 csv files and join them into one json file
+ * Read 2 csv files and filterValidateAgainst them into one json file
  */
 public class Ex2_2CSVTo1JSON extends LlamaRoute {
 

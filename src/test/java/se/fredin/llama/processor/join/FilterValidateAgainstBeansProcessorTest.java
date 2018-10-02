@@ -31,7 +31,7 @@ public class FilterValidateAgainstBeansProcessorTest {
     @Test
     public void testInnerJoin() {
         var joinBeansProcessor = new <MockItem>FilterValidateAgainstBeansProcessor(JoinType.INNER);
-        Map<Serializable, List<MockItem>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
+        Map<Serializable, List<MockItem>> resultMap = joinBeansProcessor.filterValidateAgainst(mockItems, mockItemAssets);
 
         assertFalse("ResultMap should not contain entry with key=" + UNIQUE_ID_ITEMS, resultMap.keySet().contains(UNIQUE_ID_ITEMS));
         assertTrue("ResultMap contains all values associated with id", resultMap.get(MUTUAL_ID).size() == mockItems.get(MUTUAL_ID).size());
@@ -40,7 +40,7 @@ public class FilterValidateAgainstBeansProcessorTest {
     @Test
     public void testInnerJoinReversedExchanges() {
         var joinBeansProcessor = getProcessor(JoinType.INNER);
-        Map<Serializable, List<MockItemAsset>> resultMap = joinBeansProcessor.join(mockItemAssets, mockItems);
+        Map<Serializable, List<MockItemAsset>> resultMap = joinBeansProcessor.filterValidateAgainst(mockItemAssets, mockItems);
 
         assertFalse("ResultMap should not contain entry with key=" + UNIQUE_ID_ITEM_ASSETS, resultMap.keySet().contains(UNIQUE_ID_ITEM_ASSETS));
         assertTrue("ResultMap contains all values associated with id", resultMap.get(MUTUAL_ID).size() == mockItemAssets.get(MUTUAL_ID).size());
@@ -50,7 +50,7 @@ public class FilterValidateAgainstBeansProcessorTest {
     public void testLeftJoin() {
 
         var joinBeansProcessor = getProcessor(JoinType.LEFT_EXCLUDING);
-        Map<Serializable, List<MockItem>> resultMap = joinBeansProcessor.join(mockItems, mockItemAssets);
+        Map<Serializable, List<MockItem>> resultMap = joinBeansProcessor.filterValidateAgainst(mockItems, mockItemAssets);
 
         assertFalse("ResultMap should NOT have same amount of entries as mockItems map", resultMap.size() == mockItems.size());
         assertTrue("ResultMap contains key=" + UNIQUE_ID_ITEMS, resultMap.keySet().contains(UNIQUE_ID_ITEMS));
@@ -61,7 +61,7 @@ public class FilterValidateAgainstBeansProcessorTest {
     public void testLeftJoinReversedExchanges() {
 
         var joinBeansProcessor = getProcessor(JoinType.LEFT_EXCLUDING);
-        Map<Serializable, List<MockItemAsset>> resultMap = joinBeansProcessor.join(mockItemAssets, mockItems);
+        Map<Serializable, List<MockItemAsset>> resultMap = joinBeansProcessor.filterValidateAgainst(mockItemAssets, mockItems);
 
         assertFalse("ResultMap should NOT have same amount of entries as mockItemAssets map", resultMap.size() == mockItemAssets.size());
         assertTrue("ResultMap contains key=" + UNIQUE_ID_ITEM_ASSETS, resultMap.keySet().contains(UNIQUE_ID_ITEM_ASSETS));

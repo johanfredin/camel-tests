@@ -6,10 +6,18 @@ import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.List;
 
+/**
+ * Superclass for "simple" processors that modifies a singe exchange.
+ * @param <T> any class extending {@link LlamaBean}
+ */
 public abstract class SimpleProcessor<T extends LlamaBean> extends BaseProcessor {
 
     protected Exchange exchange;
 
+    /**
+     * Create a new instance calling super first.
+     * @param exchange the exchange to process.
+     */
     public SimpleProcessor(Exchange exchange) {
         super();
         setExchange(exchange);

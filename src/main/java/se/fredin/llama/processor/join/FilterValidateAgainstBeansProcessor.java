@@ -22,10 +22,22 @@ import java.util.stream.Collectors;
  */
 public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends LlamaBean> extends AbstractJoinProcessor {
 
+    /**
+     * Create a new instance. Declared protected so should only be used with unit tests or
+     * other testing purposes.
+     * @param joinType that type of filterValidateAgainst to use.
+     */
     protected FilterValidateAgainstBeansProcessor(JoinType joinType) {
         this.joinType = joinType;
     }
 
+    /**
+     * Create a new instance.
+     * @param main the main exchange.
+     * @param joining the joining exchange we want to compare the main exchange with.
+     * @param joinType what type of filterValidateAgainst to use (one of #INNER, #LEFT_EXCLUDING)
+     * @param resultType the type we want the result to be returned as.
+     */
     public FilterValidateAgainstBeansProcessor(Exchange main, Exchange joining, JoinType joinType, ResultType resultType) {
         super(main, joining, joinType, resultType);
     }
@@ -41,7 +53,7 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
         Map<Serializable, List<T>> mainMap = LlamaUtils.asLlamaBeanMap(this.main);
         setInitialRecords(mainMap.size());
         postCreate();
-        var result = join(mainMap, LlamaUtils.asLlamaBeanMap(this.joining));
+        var result = filterValidateAgainst(mainMap, LlamaUtils.asLlamaBeanMap(this.joining));
 
         switch(getResultType()) {
             case LIST:
@@ -59,17 +71,30 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
         return this.main;
     }
 
-    protected Map<Serializable, List<T>> join(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap) {
+    /**
+     * Determines the join type and calls internal {@link #filterValidateAgainst(Map, Map, boolean)} method.
+     * @param mainMap the map with the data from the main exchange.
+     * @param joiningMap the map with the data from the joining exchange.
+     * @return the main map validated against the joining map.
+     */
+    protected Map<Serializable, List<T>> filterValidateAgainst(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap) {
         switch (this.joinType) {
             case INNER:
-                return innerOrExcludingJoin(mainMap, joiningMap, true);
+                return filterValidateAgainst(mainMap, joiningMap, true);
             case LEFT_EXCLUDING:
-                return innerOrExcludingJoin(mainMap, joiningMap, false);
+                return filterValidateAgainst(mainMap, joiningMap, false);
         }
         throw new RuntimeException("Join type in task=" + getProcessorName() + " must be one of either{" + JoinType.INNER + ", " + JoinType.LEFT_EXCLUDING + "}");
     }
 
-    private Map<Serializable, List<T>> innerOrExcludingJoin(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap, boolean isInnerJoin) {
+    /**
+     * Validates the main data against the joining based on the join type this processor was given.
+     * @param mainMap the map with the data from the main exchange.
+     * @param joiningMap the map with the data from the joining exchange.
+     * @param isInnerJoin if true then inner join logic is applied. #LEFT_EXCLUDING otherwise.
+     * @return the main map validated against the joining map.
+     */
+    private Map<Serializable, List<T>> filterValidateAgainst(Map<Serializable, List<T>> mainMap, Map<Serializable, List<T2>> joiningMap, boolean isInnerJoin) {
         return mainMap.entrySet()
                 .stream()
                 .filter(entry -> isInnerJoin == joiningMap.containsKey(entry.getKey()))

@@ -3,6 +3,7 @@ package se.fredin.llama.processor.join;
 import org.junit.Before;
 import org.junit.Test;
 import se.fredin.llama.processor.Fields;
+import se.fredin.llama.processor.Keys;
 import se.fredin.llama.processor.ResultType;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "3", "Name", "Nils", "Age", "12"),
                 Map.of("Id", "5", "Name", "Eddie", "Age", "56")
         );
+
         this.joiningEntries = List.of(
                 Map.of("Id", "1", "Pet", "Dog", "Color", "Blue"),
                 Map.of("Id", "2", "Pet", "Cat", "Color", "Green"),
@@ -34,7 +36,7 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-     *  Test an inner join with the field collections.
+     *  Test an inner filterValidateAgainst with the field collections.
      */
     @Test
     public void testInnerJoin() {
@@ -43,7 +45,7 @@ public class JoinCollectionsProcessorTest {
         var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
 
         // Make sure that there are 2 entries associated with id=1
-        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Id"), JoinUtils.EXCHANGE_MAIN, result);
+        var mapOfLists = JoinUtils.groupCollection(Keys.of("Id"), JoinUtils.EXCHANGE_MAIN, result);
         assertEquals("There should be 2 records associated with Id=1", 2, mapOfLists.get("1").size());
         assertNull("There should not be a record with id=4", mapOfLists.get("4"));
 
@@ -58,7 +60,7 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Test an inner join where we have multiple keys
+    Test an inner filterValidateAgainst where we have multiple keys
      */
     @Test
     public void testInnerJoinMultipleKeys() {
@@ -69,7 +71,7 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "1", "Name", "Anders", "Profession", "Developer"),
                 Map.of("Id", "1", "Name", "Lena", "Profession", "Scrum Master"));
 
-        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id", "Name"));
+        var joinProcessor = getProcessor(JoinType.INNER, Keys.of("Id", "Name"));
         joinProcessor.setEntity1Fields(Fields.ALL);
         joinProcessor.setEntity2Fields(Fields.ALL);
         var result = joinProcessor.join(main, joining);
@@ -85,7 +87,7 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Test the left join
+    Test the left filterValidateAgainst
      */
     @Test
     public void testLeftJoin() {
@@ -93,7 +95,7 @@ public class JoinCollectionsProcessorTest {
         var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
 
         // Make sure that there are 2 entries associated with id=1
-        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Id"), JoinUtils.EXCHANGE_MAIN, result);
+        var mapOfLists = JoinUtils.groupCollection(Keys.of("Id"), JoinUtils.EXCHANGE_MAIN, result);
         assertEquals("There should be 2 records associated with Id=1", 2, mapOfLists.get("1").size());
         assertNull("There should not be a record with id=4", mapOfLists.get("4"));
 
@@ -116,16 +118,16 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Test the right join
+    Test the right filterValidateAgainst
      */
     @Test
     public void testRightJoin() {
-        var joinProcessor = getProcessor(JoinType.RIGHT, JoinUtils.joinKeys("Id"), JoinUtils.createFields("Name"), JoinUtils.createFields("Id", "Pet", "Color"));
+        var joinProcessor = getProcessor(JoinType.RIGHT, Keys.of("Id"), Fields.of("Name"), Fields.of("Id", "Pet", "Color"));
 
         var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
 
         // Make sure that there are 2 entries associated with id=1
-        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Id"), JoinUtils.EXCHANGE_MAIN, result);
+        var mapOfLists = JoinUtils.groupCollection(Keys.of("Id"), JoinUtils.EXCHANGE_MAIN, result);
         assertEquals("There should be 2 records associated with Id=1", 2, mapOfLists.get("1").size());
         assertNotNull("There should be a record with id=4", mapOfLists.get("4"));
         assertNull("There should not be a record with id=5", mapOfLists.get("5"));
@@ -150,7 +152,7 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Test a left excluding join.
+    Test a left excluding filterValidateAgainst.
      */
     @Test
     public void testLeftExcludingJoin() {
@@ -168,7 +170,7 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Test right excluding join
+    Test right excluding filterValidateAgainst
      */
     @Test
     public void testRightExcludingJoin() {
@@ -181,7 +183,7 @@ public class JoinCollectionsProcessorTest {
         result.forEach(map -> {
             /*
              * Pass in the fields expected to exist and not to exist in reverse order here
-             * since they will have been swapped when the join is of type right_excluding.
+             * since they will have been swapped when the filterValidateAgainst is of type right_excluding.
              */
             verifyFields(map, joinProcessor.getEntity2Fields(), joinProcessor.getEntity1Fields());
 
@@ -199,14 +201,14 @@ public class JoinCollectionsProcessorTest {
     public void testInnerJoinNewOutputFieldNames() {
         var joinProcessor = getProcessor(
                 JoinType.INNER,
-                JoinUtils.joinKeys("Id"),
-                JoinUtils.createFields(Map.of("Id", "Identifier", "Name", "User Name")),
-                JoinUtils.createFields(Map.of("Pet", "Animal", "Color", "Color")));
+                Keys.of("Id"),
+                Fields.of(Map.of("Id", "Identifier", "Name", "User Name")),
+                Fields.of(Map.of("Pet", "Animal", "Color", "Color")));
 
         var result = joinProcessor.join(this.mainEntries, this.joiningEntries);
 
-        // Verify join logic works just as well when there are optional output field names.
-        var mapOfLists = JoinUtils.groupCollection(new JoinKey("Identifier"), JoinUtils.EXCHANGE_MAIN, result);
+        // Verify filterValidateAgainst logic works just as well when there are optional output field names.
+        var mapOfLists = JoinUtils.groupCollection(Keys.of("Identifier"), JoinUtils.EXCHANGE_MAIN, result);
         assertEquals("There should be 2 records associated with Identifier=1", 2, mapOfLists.get("1").size());
         assertNull("There should not be a record with Identifier=4", mapOfLists.get("4"));
 
@@ -215,8 +217,8 @@ public class JoinCollectionsProcessorTest {
 
         result.forEach(map -> {
             verifyFields(map,
-                    JoinUtils.createFields("Identifier", "User Name", "Animal", "Color"), // Verify fields are renamed
-                    JoinUtils.createFields("Id", "Name", "Pet"));   // Verify original field names no longer exist
+                    Fields.of("Identifier", "User Name", "Animal", "Color"), // Verify fields are renamed
+                    Fields.of("Id", "Name", "Pet"));   // Verify original field names no longer exist
 
             // Verify logic is the same with different output field names as before
             switch (map.get("Identifier")) {
@@ -237,7 +239,7 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Test an inner join with Fields.ALL specified for both the collections
+    Test an inner filterValidateAgainst with Fields.ALL specified for both the collections
      */
     @Test
     public void testInnerJoinAllFields() {
@@ -251,17 +253,17 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "2", "Last Name", "Karlsson")
         );
 
-        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.ALL);
+        var joinProcessor = getProcessor(JoinType.INNER, Keys.of("Id"), Fields.ALL, Fields.ALL);
         var result = joinProcessor.join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
         // Verify all fields were added (Id overridden)
-        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "First Name", "Last Name"), JoinUtils.createFields()));
+        result.forEach(map -> verifyFields(map, Fields.of("Id", "First Name", "Last Name"), Fields.of()));
     }
 
     /*
-    Test an inner join with Fields.ALL from main collection and Fields.NONE from joining collection
+    Test an inner filterValidateAgainst with Fields.ALL from main collection and Fields.NONE from joining collection
      */
     @Test
     public void testInnerJoinOnlyFieldsFromMain() {
@@ -275,17 +277,17 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "2", "Last Name", "Karlsson", "Age", "25")
         );
 
-        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.NONE);
+        var joinProcessor = getProcessor(JoinType.INNER, Keys.of("Id"), Fields.ALL, Fields.NONE);
         var result = joinProcessor.join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
         // Verify no fields from entity 2 added (minus Id)
-        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "First Name"), JoinUtils.createFields("Last Name", "Age")));
+        result.forEach(map -> verifyFields(map, Fields.of("Id", "First Name"), Fields.of("Last Name", "Age")));
     }
 
     /*
-    Test an inner join with Fields.NONE from main collection and Fields.ALL from joining collection.
+    Test an inner filterValidateAgainst with Fields.NONE from main collection and Fields.ALL from joining collection.
      */
     @Test
     public void testInnerJoinOnlyFieldsFromJoining() {
@@ -299,16 +301,16 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "2", "Last Name", "Karlsson", "Age", "25")
         );
 
-        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.NONE, Fields.ALL);
+        var joinProcessor = getProcessor(JoinType.INNER, Keys.of("Id"), Fields.NONE, Fields.ALL);
         var result = joinProcessor.join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
-        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "Last Name", "Age"), JoinUtils.createFields("First Name")));
+        result.forEach(map -> verifyFields(map, Fields.of("Id", "Last Name", "Age"), Fields.of("First Name")));
     }
 
     /*
-    Test an inner join where we are matching on a key that that has different names in the collections.
+    Test an inner filterValidateAgainst where we are matching on a key that that has different names in the collections.
      */
     @Test
     public void testInnerJoinDifferentKeyNames() {
@@ -322,16 +324,16 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Identifier", "2", "Last Name", "Karlsson", "Age", "25")
         );
 
-        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys(Map.of("Id", "Identifier")), Fields.ALL, Fields.ALL);
+        var joinProcessor = getProcessor(JoinType.INNER, Keys.of(Map.of("Id", "Identifier")), Fields.ALL, Fields.ALL);
         var result = joinProcessor.join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
-        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "First Name", "Identifier", "Last Name"), JoinUtils.createFields()));
+        result.forEach(map -> verifyFields(map, Fields.of("Id", "First Name", "Identifier", "Last Name"), Fields.of()));
     }
 
     /*
-    Test an inner join with multiple keys where they all have different names in the collections.
+    Test an inner filterValidateAgainst with multiple keys where they all have different names in the collections.
      */
     @Test
     public void testInnerJoinMultipleKeysDifferentKeyNames() {
@@ -346,16 +348,16 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Identifier", "3", "Nombre", "Karlsson", "Age", "35")
         );
 
-        var joinProcessor = getProcessor(JoinType.INNER, JoinUtils.joinKeys(Map.of("Id", "Identifier", "Name", "Nombre")), Fields.ALL, Fields.ALL);
+        var joinProcessor = getProcessor(JoinType.INNER, Keys.of(Map.of("Id", "Identifier", "Name", "Nombre")), Fields.ALL, Fields.ALL);
         var result = joinProcessor.join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
-        result.forEach(map -> verifyFields(map, JoinUtils.createFields("Id", "Name", "Identifier", "Nombre", "Age"), JoinUtils.createFields()));
+        result.forEach(map -> verifyFields(map, Fields.of("Id", "Name", "Identifier", "Nombre", "Age"), Fields.of()));
     }
 
     /*
-    Test an inner join with multiple keys where they all have different names in the collections
+    Test an inner filterValidateAgainst with multiple keys where they all have different names in the collections
     and we want the output field names to be different.
      */
     @Test
@@ -373,21 +375,21 @@ public class JoinCollectionsProcessorTest {
 
         var joinProcessor = getProcessor(
                 JoinType.INNER,
-                JoinUtils.joinKeys(Map.of("Id", "Identifier", "Name", "Nombre")),
-                JoinUtils.createFields(Map.of("Id", "ID", "Name", "NAME")),
-                JoinUtils.createFields(Map.of("Identifier", "IDENTIFIER", "Nombre", "NOMBRE", "Age", "AGE")));
+                Keys.of(Map.of("Id", "Identifier", "Name", "Nombre")),
+                Fields.of(Map.of("Id", "ID", "Name", "NAME")),
+                Fields.of(Map.of("Identifier", "IDENTIFIER", "Nombre", "NOMBRE", "Age", "AGE")));
         var result = joinProcessor.join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
         result.forEach(map ->
                 verifyFields(map,
-                        JoinUtils.createFields("ID", "NAME", "IDENTIFIER", "NOMBRE", "AGE"),
-                        JoinUtils.createFields("Id", "Name", "Identifier", "Nombre", "Age")));
+                        Fields.of("ID", "NAME", "IDENTIFIER", "NOMBRE", "AGE"),
+                        Fields.of("Id", "Name", "Identifier", "Nombre", "Age")));
     }
 
     /*
-    Perform an inner join where there are fields with the same names in both
+    Perform an inner filterValidateAgainst where there are fields with the same names in both
     collections. When this happens the main collection should be the owner of
     those fields.
      */
@@ -403,13 +405,13 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "2", "Name", "Krist", "Age", "25")
         );
 
-        var result = getProcessor(JoinType.INNER, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.ALL)
+        var result = getProcessor(JoinType.INNER, Keys.of("Id"), Fields.ALL, Fields.ALL)
                 .join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
         result.forEach(map -> {
-                verifyFields(map, JoinUtils.createFields("Id", "Name", "Age"), JoinUtils.createFields());
+                verifyFields(map, Fields.of("Id", "Name", "Age"), Fields.of());
                 switch(map.get("Id")) {
                     case "1":
                         assertEquals("Name=Lars", "Lars", map.get("Name"));
@@ -424,8 +426,8 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Perform an right join where there are fields with the same names in both
-    collections. When this in a right join, the joining collection should be the owner of
+    Perform an right filterValidateAgainst where there are fields with the same names in both
+    collections. When this in a right filterValidateAgainst, the joining collection should be the owner of
     those fields.
      */
     @Test
@@ -440,13 +442,13 @@ public class JoinCollectionsProcessorTest {
                 Map.of("Id", "2", "Name", "Krist", "Age", "25")
         );
 
-        var result = getProcessor(JoinType.RIGHT, JoinUtils.joinKeys("Id"), Fields.ALL, Fields.ALL)
+        var result = getProcessor(JoinType.RIGHT, Keys.of("Id"), Fields.ALL, Fields.ALL)
                 .join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
         result.forEach(map -> {
-            verifyFields(map, JoinUtils.createFields("Id", "Name", "Age"), JoinUtils.createFields());
+            verifyFields(map, Fields.of("Id", "Name", "Age"), Fields.of());
             switch(map.get("Id")) {
                 case "1":
                     assertEquals("Name=Kurt", "Kurt", map.get("Name"));
@@ -461,7 +463,7 @@ public class JoinCollectionsProcessorTest {
     }
 
     /*
-    Perform an inner join where there are fields with the same names in both
+    Perform an inner filterValidateAgainst where there are fields with the same names in both
     collections. But this time give the fields new output names in the joining collection.
     Then we should get all fields in the result and no field should have been overridden.
     those fields.
@@ -480,15 +482,15 @@ public class JoinCollectionsProcessorTest {
 
         var result = getProcessor(
                 JoinType.INNER,
-                JoinUtils.joinKeys("Id"),
+                Keys.of("Id"),
                 Fields.ALL,
-                JoinUtils.createFields(Map.of("Id", "Joining Id", "Name", "Joining Name", "Age", "Joining Age"))
+                Fields.of(Map.of("Id", "Joining Id", "Name", "Joining Name", "Age", "Joining Age"))
         ).join(main, joining);
 
         assertEquals("Result size=2", 2, result.size());
 
         result.forEach(map -> {
-            verifyFields(map, JoinUtils.createFields("Id", "Name", "Age", "Joining Id", "Joining Name", "Joining Age"), JoinUtils.createFields());
+            verifyFields(map, Fields.of("Id", "Name", "Age", "Joining Id", "Joining Name", "Joining Age"), Fields.of());
             switch(map.get("Id")) {
                 case "1":
                     assertEquals("Name=Lars", "Lars", map.get("Name"));
@@ -507,21 +509,21 @@ public class JoinCollectionsProcessorTest {
     }
 
     private JoinCollectionsProcessor getProcessor(JoinType joinType) {
-        return getProcessor(joinType, JoinUtils.joinKeys("Id"));
+        return getProcessor(joinType, Keys.of("Id"));
     }
 
-    private JoinCollectionsProcessor getProcessor(JoinType joinType, List<JoinKey> joinKeys) {
-        return getProcessor(joinType, joinKeys, JoinUtils.createFields("Id", "Name"), JoinUtils.createFields("Pet", "Color"));
+    private JoinCollectionsProcessor getProcessor(JoinType joinType, Keys joinKeys) {
+        return getProcessor(joinType, joinKeys, Fields.of("Id", "Name"), Fields.of("Pet", "Color"));
     }
 
     /**
-     * @param joinType what type of join this is
-     * @param joinKeys the keys to join on
+     * @param joinType what type of filterValidateAgainst this is
+     * @param joinKeys the keys to filterValidateAgainst on
      * @param mainFields the fields we want out from the main collection.
      * @param joiningFields the fields we want from the joining collection.
-     * @return a new join processor instance with the passed in params
+     * @return a new filterValidateAgainst processor instance with the passed in params
      */
-    private JoinCollectionsProcessor getProcessor(JoinType joinType, List<JoinKey> joinKeys, Fields mainFields, Fields joiningFields) {
+    private JoinCollectionsProcessor getProcessor(JoinType joinType, Keys joinKeys, Fields mainFields, Fields joiningFields) {
         return new JoinCollectionsProcessor(
                 joinKeys,
                 joinType,
@@ -552,11 +554,11 @@ public class JoinCollectionsProcessorTest {
      * @param map map to verify
      */
     private void verifyFields(Map<String, String> map) {
-        verifyFields(map, JoinUtils.createFields("Id", "Name", "Pet", "Color"), JoinUtils.createFields("Age"));
+        verifyFields(map, Fields.of("Id", "Name", "Pet", "Color"), Fields.of("Age"));
     }
 
     /**
-     * Helper method to verify the fields returned from a join.
+     * Helper method to verify the fields returned from a filterValidateAgainst.
      * @param mapWithTheFields the map that contains with the fields to verify
      * @param fieldsToCheckExistsInMap the fields we expect to exist as keys in the passed in map.
      * @param fieldsToVerifyDoesNotExistInMap the fields we expect to not exist as keys in the passed map

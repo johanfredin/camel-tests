@@ -1,7 +1,7 @@
 package se.fredin.llama.processor.join;
 
-import se.fredin.llama.processor.Field;
 import se.fredin.llama.processor.Fields;
+import se.fredin.llama.processor.Keys;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,15 +11,11 @@ public class JoinUtils {
     public static final byte EXCHANGE_MAIN = 0;
     public static final byte EXCHANGE_JOINING = 1;
 
-    public static Map<String, List<Map<String, String>>> groupCollection(JoinKey joinKey, List<Map<String, String>> list) {
-        return groupCollection(List.of(joinKey), EXCHANGE_MAIN, list);
+    public static Map<String, List<Map<String, String>>> groupCollection(Keys joinKey, List<Map<String, String>> list) {
+        return groupCollection(joinKey, EXCHANGE_MAIN, list);
     }
 
-    public static Map<String, List<Map<String, String>>> groupCollection(JoinKey joinKey, byte exchange, List<Map<String, String>> list) {
-        return groupCollection(List.of(joinKey), exchange, list);
-    }
-
-    public static Map<String, List<Map<String, String>>> groupCollection(List<JoinKey> joinKeys, byte exchange, List<Map<String, String>> list) {
+    public static Map<String, List<Map<String, String>>> groupCollection(Keys joinKeys, byte exchange, List<Map<String, String>> list) {
         var mapOfLists = new HashMap<String, List<Map<String, String>>>();
         for (var map : list) {
 
@@ -42,9 +38,9 @@ public class JoinUtils {
         return mapOfLists;
     }
 
-    public static String keysAsString(Map<String, String> mapWithKeyValues, List<JoinKey> joinKeys, byte exchange) {
+    public static String keysAsString(Map<String, String> mapWithKeyValues, Keys joinKeys, byte exchange) {
         var keyBuilder = new StringBuilder();
-        for (var joinKey : joinKeys) {
+        for (var joinKey : joinKeys.getKeys()) {
             keyBuilder.append(mapWithKeyValues.get(exchange == JoinUtils.EXCHANGE_MAIN ? joinKey.getKeyInMain() : joinKey.getKeyInJoining()));
         }
         return keyBuilder.toString();
@@ -101,10 +97,9 @@ public class JoinUtils {
      * main map will be ignored.
      * @param main the main map.
      * @param joining the map with the entries we want to add to the main map.
-     * @param joinKeys the keys used for joining
      * @return a map containing all the entries from the passed in map (main is the owner when there are duplicate keys)
      */
-    public static Map<String, String> createMergedMap(Map<String, String> main, Map<String, String> joining, List<JoinKey> joinKeys) {
+    public static Map<String, String> createMergedMap(Map<String, String> main, Map<String, String> joining) {
         var result = main.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
@@ -117,65 +112,5 @@ public class JoinUtils {
         return result;
     }
 
-    /**
-     * Create a list of join keys based on passed in parameters.
-     * A new join key will be created for each key.
-     * Name in main and joining will be the same here.
-     *
-     * @param keys the keys to create join key objects of
-     * @return a list of join keys based on passed in parameters
-     */
-    public static List<JoinKey> joinKeys(String... keys) {
-        var joinKeys = new ArrayList<JoinKey>();
-        for (var key : keys) {
-            joinKeys.add(new JoinKey(key));
-        }
-        return joinKeys;
-    }
 
-    /**
-     * Create a list of join keys based on passed in map.
-     * Join key objects will be created for each map entry where map key={@link JoinKey#getKeyInMain()} and value={@link JoinKey#getKeyInJoining()}
-     *
-     * @param keys the key-value pairs to create join key objects of.
-     * @return a list of join keys based on passed in map.
-     */
-    public static List<JoinKey> joinKeys(Map<String, String> keys) {
-        var joinKeys = new ArrayList<JoinKey>();
-        for (var entry : keys.entrySet()) {
-            joinKeys.add(new JoinKey(entry.getKey(), entry.getValue()));
-        }
-        return joinKeys;
-    }
-
-    /**
-     * Create a fields object based on passed in parameters.
-     * A new field will be created for each key.
-     * Name in main and joining will be the same here.
-     *
-     * @param fields the fields to create a fields objects of
-     * @return a fields object based on passed in parameters
-     */
-    public static Fields createFields(String... fields) {
-        var fieldsObject = new Fields();
-        for (var key : fields) {
-            fieldsObject.addField(new Field(key));
-        }
-        return fieldsObject;
-    }
-
-    /**
-     * Create a list of fields based on passed in map.
-     * fields objects will be created for each map entry where map key={@link Field#getName()} and value={@link Field#getOutName()}
-     *
-     * @param fields the key-value pairs to create field objects of.
-     * @return a fields object based on passed in map.
-     */
-    public static Fields createFields(Map<String, String> fields) {
-        var fieldsObject = new Fields();
-        for (var entry : fields.entrySet()) {
-            fieldsObject.addField(new Field(entry.getKey(), entry.getValue()));
-        }
-        return fieldsObject;
-    }
 }

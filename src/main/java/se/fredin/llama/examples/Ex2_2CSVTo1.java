@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Read 2 csv files and join them into one
+ * Read 2 csv files and filterValidateAgainst them into one
  */
 public class Ex2_2CSVTo1 extends LlamaRoute {
-
 
     @Override
     public void configure() {
@@ -36,12 +35,12 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
                             .collect(Collectors.groupingBy(Pet::getId));
 
                     // Match the 2
-                    for (User u : users) {
+                    users.forEach(u -> {
                         var petList = petMap.get(u.getId());
                         if (petList != null) {
                             u.setPets(petList);
                         }
-                    }
+                    });
 
                     oldExchange.getIn().setBody(users);
                     return oldExchange;

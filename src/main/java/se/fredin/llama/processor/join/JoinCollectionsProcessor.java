@@ -2,6 +2,7 @@ package se.fredin.llama.processor.join;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.processor.Fields;
+import se.fredin.llama.processor.Keys;
 import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.utils.LlamaUtils;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Used for joining 2 collections similar to how it is made in an sql join
+ * Used for joining 2 collections similar to how it is made in an sql filterValidateAgainst
  *
  * @author JFN
  */
@@ -19,11 +20,11 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     private Fields entity1Fields;
     private Fields entity2Fields;
-    private List<JoinKey> joinKeys;
+    private Keys joinKeys;
 
     public JoinCollectionsProcessor() {}
 
-    public JoinCollectionsProcessor(List<JoinKey> joinKeys, JoinType joinType, ResultType resultType, Fields entity1Fields, Fields entity2Fields) {
+    public JoinCollectionsProcessor(Keys joinKeys, JoinType joinType, ResultType resultType, Fields entity1Fields, Fields entity2Fields) {
         setJoinType(joinType);
         setResultType(resultType);
         setJoinKeys(joinKeys);
@@ -31,7 +32,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         setEntity2Fields(entity2Fields);
     }
 
-    public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, List<JoinKey> joinKeys, JoinType joinType, ResultType resultType,
+    public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, Keys joinKeys, JoinType joinType, ResultType resultType,
                                     Fields entity1Fields, Fields entity2Fields) {
         super(mainExchange, joiningExchange, joinType, resultType);
         setJoinKeys(joinKeys);
@@ -63,11 +64,11 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         this.entity2Fields = entity2Fields;
     }
 
-    public List<JoinKey> getJoinKeys() {
+    public Keys getJoinKeys() {
         return joinKeys;
     }
 
-    public void setJoinKeys(List<JoinKey> joinKeys) {
+    public void setJoinKeys(Keys joinKeys) {
         this.joinKeys = joinKeys;
     }
 
@@ -80,7 +81,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         var mainKeys = main.get(0).keySet();
         var joiningKeys = joining.get(0).keySet();
 
-        for (var joinKey : this.joinKeys) {
+        for (var joinKey : this.joinKeys.getKeys()) {
             if (!mainKeys.contains(joinKey.getKeyInMain())) {
                 throw new RuntimeException("Join key=" + joinKey.getKeyInMain() + " does not exist in main exchange! Available keys in main are: " + Arrays.toString(mainKeys.toArray()));
             } else if (!joiningKeys.contains(joinKey.getKeyInJoining())) {
@@ -88,7 +89,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
             }
         }
 
-        // Proceed with join
+        // Proceed with filterValidateAgainst
         var result = join(main, joining);
         this.main.getIn().setBody(result);
         super.setProcessedRecords(result.size());
@@ -146,13 +147,13 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                      */
                     for(var joinMap : joinList) {
 
-                        // Inner join requires values to exist in both
+                        // Inner filterValidateAgainst requires values to exist in both
                         if (joinMap != null) {
 
                             // Merge the 2 maps and add it to the result list.
                             var recordsMain = JoinUtils.getFields(mainMap, this.entity1Fields);
                             var recordsJoining = JoinUtils.getFields(joinMap, this.entity2Fields);
-                            result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining, this.joinKeys));
+                            result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining));
                         }
                     }
                 }
@@ -191,7 +192,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                 for(var joinMap : joinList) {
                     var recordsMain = JoinUtils.getFields(mainMap, mainFields);
                     var recordsJoining = JoinUtils.getFields(joinMap, joiningFields);
-                    result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining, this.joinKeys));
+                    result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining));
                 }
             }
         }

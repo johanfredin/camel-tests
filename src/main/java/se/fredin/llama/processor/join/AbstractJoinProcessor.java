@@ -23,7 +23,7 @@ public abstract class AbstractJoinProcessor extends BaseProcessor {
      * Create a new instance
      * @param main the main exchange from the route that called this processor
      * @param joining the joining exchange from another route
-     * @param joinType how to join the two exchanges
+     * @param joinType how to filterValidateAgainst the two exchanges
      * @param resultType what data type the result should be part of.
      */
     public AbstractJoinProcessor(Exchange main, Exchange joining, JoinType joinType, ResultType resultType) {
@@ -62,14 +62,14 @@ public abstract class AbstractJoinProcessor extends BaseProcessor {
     }
 
     /**
-     * @return how to join the two exchanges
+     * @return how to filterValidateAgainst the two exchanges
      */
     public JoinType getJoinType() {
         return joinType;
     }
 
     /**
-     * @param joinType how to join the two exchanges
+     * @param joinType how to filterValidateAgainst the two exchanges
      */
     public void setJoinType(JoinType joinType) {
         this.joinType = joinType;

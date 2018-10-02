@@ -6,7 +6,8 @@ import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.utils.Endpoint;
 import se.fredin.llama.utils.LlamaUtils;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**

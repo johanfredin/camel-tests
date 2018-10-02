@@ -13,22 +13,41 @@ public abstract class BaseProcessor implements LlamaProcessor {
     protected int initialRecords;
     protected int processedRecords;
 
+    /**
+     * Used when wanting to keep track of processed records.
+     * Should be called before execution to determine amount of records to process.
+     * @param initialRecords the initial amount of records to process.
+     */
     public void setInitialRecords(int initialRecords) {
         this.initialRecords = initialRecords;
     }
 
+    /**
+     * @return the initial records to process.
+     */
     public int getInitialRecords() {
         return initialRecords;
     }
 
+    /**
+     * @return the amount of processed records.
+     */
     public int getProcessedRecords() {
         return processedRecords;
     }
 
+    /**
+     * Should be called after execution of process to tell how many records were processed.
+     * @param processedRecords the amount of records processed.
+     */
     public void setProcessedRecords(int processedRecords) {
         this.processedRecords = processedRecords;
     }
 
+    /**
+     * Increments the amount of processed records by one.
+     * @return #getProcessedRecords+1
+     */
     public int incProcessedRecords() {
         return this.processedRecords++;
     }
