@@ -6,10 +6,9 @@ import se.fredin.llama.processor.Keys;
 import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.utils.LlamaUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Used for joining 2 collections similar to how it is made in an sql filterValidateAgainst
@@ -22,7 +21,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
     private Fields entity2Fields;
     private Keys joinKeys;
 
-    public JoinCollectionsProcessor() {}
+    public JoinCollectionsProcessor() {
+    }
 
     public JoinCollectionsProcessor(Keys joinKeys, JoinType joinType, ResultType resultType, Fields entity1Fields, Fields entity2Fields) {
         setJoinType(joinType);
@@ -77,6 +77,9 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         var main = LlamaUtils.<Map<String, String>>asList(this.main);
         var joining = LlamaUtils.<Map<String, String>>asList(this.joining);
 
+        setInitialRecords(main.size());
+        postCreate();
+
         // Make sure keys exist
         var mainKeys = main.get(0).keySet();
         var joiningKeys = joining.get(0).keySet();
@@ -90,9 +93,25 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         }
 
         // Proceed with filterValidateAgainst
-        var result = join(main, joining);
+        var result = new LinkedList<>(join(main, joining));
+
+        switch (this.resultType) {
+            case LIST:
+                result = new LinkedList<>(result);
+
+                // Give the keys to the first entry
+                var header = result.get(0).keySet()
+                        .stream()
+                        .collect(Collectors.toMap(Function.identity(), Function.identity(), (a, b) -> b, LinkedHashMap::new));
+
+                // Now populate the list with the result
+                result.add(0, header);
+                break;
+        }
+
         this.main.getIn().setBody(result);
         super.setProcessedRecords(result.size());
+        postExecute();
         return this.main;
     }
 
@@ -145,7 +164,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
                      * Now iterate the group of maps in the joining list
                      * and enrich the main map with those entries.
                      */
-                    for(var joinMap : joinList) {
+                    for (var joinMap : joinList) {
 
                         // Inner filterValidateAgainst requires values to exist in both
                         if (joinMap != null) {
@@ -182,14 +201,14 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
                 // Create dummy list with blank values when joining list is null.
                 joinList = new ArrayList<>();
-                for(int i = 0; i < mainList.size(); i++) {
+                for (int i = 0; i < mainList.size(); i++) {
                     joinList.add(JoinUtils.createDummyMap(joiningHeaders, joiningFields));
                 }
             }
 
             for (var mainMap : mainList) {
                 // Add the joined map to the result list
-                for(var joinMap : joinList) {
+                for (var joinMap : joinList) {
                     var recordsMain = JoinUtils.getFields(mainMap, mainFields);
                     var recordsJoining = JoinUtils.getFields(joinMap, joiningFields);
                     result.add(JoinUtils.createMergedMap(recordsMain, recordsJoining));
@@ -206,7 +225,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
      * only records that exist in one of the two exchanges will be kept in the result. Only records
      * from the main map passed in are kept regardless of whether we told the processor to include fields
      * in the joining map. Then again that would be pointless since they would always be null
-     * @param main the map containing the data we need to verify is unique.
+     *
+     * @param main    the map containing the data we need to verify is unique.
      * @param joining the joining map to check against the main map.
      * @return a collection of maps containing records that only exists in the main map.
      */

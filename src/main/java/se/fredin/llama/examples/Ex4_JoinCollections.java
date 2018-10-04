@@ -17,7 +17,7 @@ public class Ex4_JoinCollections extends LlamaRoute {
     @Override
     public void configure() {
         var csvToMapsFormat = csvToCollectionOfMaps();
-        var mapCollectionToFileFormat = csvToCollection();
+        var mapCollectionToFileFormat = csvToListOfLists();
 
         var petRoute = getRoute("pet-route", prop("input-directory"), "pet.csv", ResultType.MAP, "pets", 1);
 
@@ -27,6 +27,7 @@ public class Ex4_JoinCollections extends LlamaRoute {
                 .pollEnrich(petRoute, (me, je) -> Processors.join(me, je, Keys.of("id"), JoinType.INNER, Fields.ALL, Fields.of(Map.of("type", "animal")), ResultType.LIST))
                 .marshal(mapCollectionToFileFormat)
                 .to(Endpoint.file(prop("output-directory"), "join-collections-result.csv"))
-                .startupOrder(2);
+                .startupOrder(2)
+                .onCompletion().log("Person route is finished!");
     }
 }

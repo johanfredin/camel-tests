@@ -43,22 +43,22 @@
             <scope>test</scope>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-core</artifactId>-->
+            <!--<version>RELEASE</version>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test</artifactId>
             <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-test</artifactId>
-            <version>LATEST</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring-boot</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
@@ -69,13 +69,13 @@
         <dependency>
             <groupId>com.github.wiztools</groupId>
             <artifactId>xsd-gen</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
@@ -87,26 +87,26 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jacksonxml</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jackson</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-xstream</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jaxb</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
