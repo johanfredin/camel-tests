@@ -1,7 +1,11 @@
 package se.fredin.llama;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.dataformat.csv.CsvDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
+import org.apache.commons.csv.CSVFormat;
+import org.springframework.stereotype.Component;
+import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.utils.Endpoint;
 
 /**
@@ -10,6 +14,7 @@ import se.fredin.llama.utils.Endpoint;
  * properties and some deault methods for getting a route up and running.
  * @author johan
  */
+@Component
 public abstract class LlamaRoute extends RouteBuilder {
 
     /**
@@ -74,6 +79,39 @@ public abstract class LlamaRoute extends RouteBuilder {
                 .startupOrder(startupOrder);
 
         return "seda:" + endpoint;
+    }
+
+    protected String getRoute(String routeId, String directory, String fileName, ResultType resultType, String endpoint, int startupOrder) {
+        from(Endpoint.file(directory, fileName))
+                .routeId(routeId)
+                .unmarshal(resultType == ResultType.LIST ? csvToCollection() : csvToCollectionOfMaps())
+                .to("seda:" + endpoint)
+                .startupOrder(startupOrder);
+
+        return "seda:" + endpoint;
+    }
+
+    protected CsvDataFormat csvToCollection() {
+        return csvToCollection(';', false);
+    }
+
+    protected CsvDataFormat csvToCollection(char delimiter, boolean skipHeader) {
+        var format = new CsvDataFormat();
+        format.setDelimiter(delimiter);
+        format.setSkipHeaderRecord(skipHeader);
+        return format;
+    }
+
+    protected CsvDataFormat csvToCollectionOfMaps() {
+        return csvToCollectionOfMaps(';', false);
+    }
+
+    protected CsvDataFormat csvToCollectionOfMaps(char delimiter, boolean skipHeader) {
+        var format = new CsvDataFormat();
+        format.setDelimiter(delimiter);
+        format.setSkipHeaderRecord(skipHeader);
+        format.setUseMaps(true);
+        return format;
     }
 }
 

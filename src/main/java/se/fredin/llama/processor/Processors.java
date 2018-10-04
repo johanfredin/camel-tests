@@ -79,7 +79,21 @@ public class Processors {
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()}
      */
     public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {
-        return new JoinCollectionsProcessor(mainExchange, joiningExchange, keys, joinType, ResultType.AS_IS, entity1Fields, entity2Fields).doExecuteProcess();
+        return join(mainExchange, joiningExchange, keys, joinType, entity1Fields, entity2Fields, ResultType.AS_IS);
+    }
+
+    /**
+     * Create a new {@link JoinCollectionsProcessor} with the passed in params and return its <b>doExecuteProcess</b> method.
+     * @param mainExchange the main exchange.
+     * @param joiningExchange the exchange we are joining in.
+     * @param keys the keys. Must exist as fields in both exchanges.
+     * @param joinType what type of filterValidateAgainst to use.
+     * @param entity1Fields the fields we want to include from the main exchange in the resulting exchange.
+     * @param entity2Fields the fields we want to include from the joining exchange in the resulting exchange.
+     * @return {@link JoinCollectionsProcessor#doExecuteProcess()}
+     */
+    public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields, ResultType resultType) {
+        return new JoinCollectionsProcessor(mainExchange, joiningExchange, keys, joinType, resultType, entity1Fields, entity2Fields).doExecuteProcess();
     }
 
     /**

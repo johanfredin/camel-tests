@@ -2,7 +2,6 @@ package se.fredin.llama;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import se.fredin.llama.examples.Ex1_CSVList;
 import se.fredin.llama.examples.Ex3_FilterValidateAgainst;
@@ -20,9 +19,14 @@ public class LlamaApplication {
         return new Ex1_CSVList();
     }
 
-    @Bean
+//    @Bean
     public Ex3_FilterValidateAgainst ex3_filterValidateAgainst() {
         return new Ex3_FilterValidateAgainst();
     }
+
+//    @Bean
+//    public Ex4_JoinCollections ex4_joinCollections() {
+//        return new Ex4_JoinCollections();
+//    }
 
 }
