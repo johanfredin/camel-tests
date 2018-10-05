@@ -1,5 +1,6 @@
 package se.fredin.llama.processor;
 
+import org.apache.camel.Exchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,10 +9,14 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class BaseProcessor implements LlamaProcessor {
 
+    // Lazy way to tell post create and post process methods if these fields were altered or not.
+    protected final byte UN_ALTERED_VALUE = -1;
+
     protected Logger log = LogManager.getLogger(this.getClass());
     protected ResultType resultType;
-    protected int initialRecords;
-    protected int processedRecords;
+
+    protected int initialRecords = UN_ALTERED_VALUE;
+    protected int processedRecords = UN_ALTERED_VALUE;
 
     /**
      * Used when wanting to keep track of processed records.
@@ -53,16 +58,28 @@ public abstract class BaseProcessor implements LlamaProcessor {
     }
 
     @Override
+    public Exchange doExecuteProcess() {
+        postCreate();
+        process();
+        postExecute();
+        return getResult();
+    }
+
+    @Override
     public void postCreate() {
         log.info("=======================================");
         log.info(getProcessorName() + " initiated");
-        log.info("Initial records=" + this.initialRecords);
+        if(this.initialRecords != UN_ALTERED_VALUE) {
+            log.info("Initial records=" + this.initialRecords);
+        }
     }
 
     @Override
     public void postExecute() {
         log.info(getProcessorName() + " completed");
-        log.info("Resulting records=" + getProcessedRecords());
+        if(this.processedRecords != UN_ALTERED_VALUE) {
+            log.info("Resulting records=" + getProcessedRecords());
+        }
         log.info("=======================================");
     }
 
@@ -79,6 +96,10 @@ public abstract class BaseProcessor implements LlamaProcessor {
     public ResultType getResultType() {
         return this.resultType;
     }
+
+    public abstract Exchange getResult();
+
+    public abstract void process();
 
     @Override
     public String toString() {

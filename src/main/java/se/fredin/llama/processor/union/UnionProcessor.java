@@ -13,6 +13,8 @@ public class UnionProcessor extends BaseProcessor {
     private Exchange mergingExchange;
     private Exchange mainExchange;
 
+    private Exchange resultingExchange;
+
     public UnionProcessor() {}
 
     public UnionProcessor(Exchange mergingExchange, Exchange mainExchange) {
@@ -37,7 +39,7 @@ public class UnionProcessor extends BaseProcessor {
     }
 
     @Override
-    public Exchange doExecuteProcess() {
+    public void process() {
         var newBean = getMergingExchange().getIn().getBody(LlamaBean.class);
         List<LlamaBean> beans;
         if (this.mainExchange == null) {
@@ -48,7 +50,7 @@ public class UnionProcessor extends BaseProcessor {
             }
 
             this.mergingExchange.getIn().setBody(beans);
-            return this.mergingExchange;
+            this.resultingExchange = this.mergingExchange;
         }
 
         beans = LlamaUtils.asLlamaBeanList(this.mainExchange);
@@ -57,9 +59,13 @@ public class UnionProcessor extends BaseProcessor {
         }
         super.incProcessedRecords();
         this.mainExchange.getIn().setBody(beans);
-        return this.mainExchange;
+        this.resultingExchange = this.mainExchange;
     }
 
+    @Override
+    public Exchange getResult() {
+        return this.resultingExchange;
+    }
 
     @Override
     public String toString() {

@@ -49,10 +49,9 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
     }
 
     @Override
-    public Exchange doExecuteProcess() {
+    public void process() {
         Map<Serializable, List<T>> mainMap = LlamaUtils.asLlamaBeanMap(this.main);
         setInitialRecords(mainMap.size());
-        postCreate();
         var result = filterValidateAgainst(mainMap, LlamaUtils.asLlamaBeanMap(this.joining));
 
         switch(getResultType()) {
@@ -67,8 +66,6 @@ public class FilterValidateAgainstBeansProcessor<T extends LlamaBean, T2 extends
                 break;
         }
         super.setProcessedRecords(result.size());
-        postExecute();
-        return this.main;
     }
 
     /**

@@ -32,11 +32,14 @@ public abstract class SimpleProcessor<T extends LlamaBean> extends BaseProcessor
     }
 
     @Override
-    public Exchange doExecuteProcess() {
+    public Exchange getResult() {
+        return this.exchange;
+    }
+
+    @Override
+    public void process() {
         var beans = LlamaUtils.<T>asLlamaBeanList(this.exchange);
         this.exchange.getIn().setBody(transformData(beans));
-        postExecute();
-        return this.exchange;
     }
 
     public abstract List<T> transformData(List<T> beans);

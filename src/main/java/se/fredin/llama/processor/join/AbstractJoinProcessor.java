@@ -76,6 +76,11 @@ public abstract class AbstractJoinProcessor extends BaseProcessor {
     }
 
     @Override
+    public Exchange getResult() {
+        return this.main;
+    }
+
+    @Override
     public String toString() {
         return "AbstractJoinProcessor{" +
                 "main=" + main +
