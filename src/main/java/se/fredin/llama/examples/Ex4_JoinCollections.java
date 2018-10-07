@@ -19,7 +19,7 @@ public class Ex4_JoinCollections extends LlamaRoute {
         var csvToMapsFormat = csvToCollectionOfMaps();
         var mapCollectionToFileFormat = csvToListOfLists();
 
-        var petRoute = getRoute("pet-route", prop("input-directory"), "pet.csv", ResultType.MAP, "pets", 1);
+        var petRoute = getRoute("pet-route", prop("input-directory"), "pet.csv", ResultType.MAP, "pets", nextAvailableStartup());
 
         from(Endpoint.file(prop("input-directory"), "person.csv"))
                 .routeId("person-route")
@@ -27,7 +27,7 @@ public class Ex4_JoinCollections extends LlamaRoute {
                 .pollEnrich(petRoute, (me, je) -> Processors.join(me, je, Keys.of("id"), JoinType.INNER, Fields.ALL, Fields.of(Map.of("type", "animal")), ResultType.LIST))
                 .marshal(mapCollectionToFileFormat)
                 .to(Endpoint.file(prop("output-directory"), "join-collections-result.csv"))
-                .startupOrder(2)
+                .startupOrder(nextAvailableStartup())
                 .onCompletion().log("Person route is finished!");
     }
 }

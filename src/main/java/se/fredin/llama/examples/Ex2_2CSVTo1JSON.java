@@ -3,6 +3,7 @@ package se.fredin.llama.examples;
 import org.apache.camel.Exchange;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.springframework.stereotype.Component;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.Pet;
 import se.fredin.llama.examples.bean.User;
@@ -14,25 +15,26 @@ import java.util.stream.Collectors;
 /**
  * Read 2 csv files and filterValidateAgainst them into one json file
  */
+@Component
 public class Ex2_2CSVTo1JSON extends LlamaRoute {
 
 
     @Override
     public void configure() {
 
-        from(Endpoint.file(prop("ex-input-directory"), "pet.csv"))
+        from(Endpoint.file(prop("input-directory"), "pet.csv"))
                 .routeId("pets")
                 .unmarshal(new BindyCsvDataFormat(Pet.class))
                 .to("direct:pet")
-                .setStartupOrder(1);
+                .setStartupOrder(nextAvailableStartup());
 
-        from(Endpoint.file(prop("ex-input-directory"), "person.csv"))
+        from(Endpoint.file(prop("input-directory"), "person.csv"))
                 .routeId("users")
                 .unmarshal(new BindyCsvDataFormat(User.class))
                 .pollEnrich("direct:pet", this::aggregate)
                 .marshal().json(JsonLibrary.Jackson)
-                .to(Endpoint.file(prop("ex-output-directory"), "person-with-pets.json"))
-                .setStartupOrder(2);
+                .to(Endpoint.file(prop("output-directory"), "person-with-pets.json"))
+                .setStartupOrder(nextAvailableStartup());
 
     }
 

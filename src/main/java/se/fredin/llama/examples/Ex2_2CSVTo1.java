@@ -1,6 +1,7 @@
 package se.fredin.llama.examples;
 
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
+import org.springframework.stereotype.Component;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.Pet;
 import se.fredin.llama.examples.bean.User;
@@ -13,17 +14,18 @@ import java.util.stream.Collectors;
 /**
  * Read 2 csv files and filterValidateAgainst them into one
  */
+@Component
 public class Ex2_2CSVTo1 extends LlamaRoute {
 
     @Override
     public void configure() {
 
-        from(Endpoint.file(prop("ex-input-directory"), "pet.csv"))
+        from(Endpoint.file(prop("input-directory"), "pet.csv"))
                 .unmarshal(new BindyCsvDataFormat(Pet.class))
                 .to("direct:pet")
-                .startupOrder(1);
+                .startupOrder(nextAvailableStartup());
 
-        from(Endpoint.file(prop("ex-input-directory"), "person.csv"))
+        from(Endpoint.file(prop("input-directory"), "person.csv"))
                 .unmarshal(new BindyCsvDataFormat(User.class))
                 .pollEnrich("direct:pet", (oldExchange, newExchange) -> {
                     List<User> users = LlamaUtils.asLlamaBeanList(oldExchange);
@@ -46,8 +48,8 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
                     return oldExchange;
                 })
                 .marshal(new BindyCsvDataFormat(User.class))
-                .to(Endpoint.file(prop("ex-output-directory"), "person-with-pets.csv"))
-                .startupOrder(2);
+                .to(Endpoint.file(prop("output-directory"), "person-with-pets.csv"))
+                .startupOrder(nextAvailableStartup());
 
 
     }

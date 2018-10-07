@@ -3,6 +3,7 @@ package se.fredin.llama.examples;
 import org.apache.camel.Exchange;
 import org.apache.camel.component.jackson.ListJacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.springframework.stereotype.Component;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.CsvUser;
 import se.fredin.llama.utils.Endpoint;
@@ -14,15 +15,16 @@ import java.util.stream.Collectors;
 /**
  * Doing ex.1 where input/output is JSON
  */
+@Component
 public class Ex1_JSON extends LlamaRoute {
 
     @Override
     public void configure() {
-        from(Endpoint.file(prop("ex-input-directory"), "foo.json"))
+        from(Endpoint.file(prop("input-directory"), "foo.json"))
                 .unmarshal(new ListJacksonDataFormat(CsvUser.class))
                 .process(this::processUsers)
                 .marshal().json(JsonLibrary.Jackson)
-                .to(Endpoint.file(prop("ex-output-directory"), "foo_fixed.json"));
+                .to(Endpoint.file(prop("output-directory"), "foo_fixed.json"));
     }
 
     private void processUsers(Exchange exchange) {

@@ -15,6 +15,12 @@ import se.fredin.llama.utils.Endpoint;
  */
 public abstract class LlamaRoute extends RouteBuilder {
 
+    public static int startupOrder = 1;
+
+    public static int nextAvailableStartup() {
+        return startupOrder++;
+    }
+
     /**
      * Access a property from <b>application.properties</b> by passing in the name of the property.
      *

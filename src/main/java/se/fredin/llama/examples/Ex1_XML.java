@@ -1,6 +1,7 @@
 package se.fredin.llama.examples;
 
 import org.apache.camel.Exchange;
+import org.springframework.stereotype.Component;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.jaxb.Users;
 import se.fredin.llama.utils.Endpoint;
@@ -11,15 +12,16 @@ import java.util.stream.Collectors;
 /**
  * Doing ex.1 where input/output is xml
  */
+@Component
 public class Ex1_XML extends LlamaRoute {
 
     @Override
     public void configure() {
-        from(Endpoint.file(prop("ex-input-directory"), "foo.xml"))
+        from(Endpoint.file(prop("input-directory"), "foo.xml"))
                 .convertBodyTo(Users.class)
                 .process(this::processUsers)
                 .marshal().jaxb()
-                .to(Endpoint.file(prop("ex-output-directory"), "foo_fixed.xml"))
+                .to(Endpoint.file(prop("output-directory"), "foo_fixed.xml"))
                 .end();
     }
 

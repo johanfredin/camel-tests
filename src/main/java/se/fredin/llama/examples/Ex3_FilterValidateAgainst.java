@@ -1,6 +1,7 @@
 package se.fredin.llama.examples;
 
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
+import org.springframework.stereotype.Component;
 import se.fredin.llama.LlamaRoute;
 import se.fredin.llama.examples.bean.CsvUser;
 import se.fredin.llama.examples.bean.Pet;
@@ -9,10 +10,11 @@ import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.processor.join.JoinType;
 import se.fredin.llama.utils.Endpoint;
 
+@Component
 public class Ex3_FilterValidateAgainst extends LlamaRoute {
 
     public void configure() {
-        String petRoute = getRoute("read-pets", "pet.csv", Pet.class, "pets", 1);
+        String petRoute = getRoute("read-pets", "pet.csv", Pet.class, "pets", nextAvailableStartup());
 
         from(Endpoint.file(defaultInputDir(), "person.csv"))
                 .routeId("read-persons")
@@ -20,7 +22,7 @@ public class Ex3_FilterValidateAgainst extends LlamaRoute {
                 .pollEnrich(petRoute, (mainExchange, joiningExchange) -> Processors.<CsvUser, Pet>filterValidateAgainst(mainExchange, joiningExchange, JoinType.INNER, ResultType.LIST))
                 .marshal(new BindyCsvDataFormat(CsvUser.class))
                 .to(Endpoint.file(defaultOutputDir(), "person-validated.csv"))
-                .startupOrder(2)
+                .startupOrder(nextAvailableStartup())
                 .onCompletion().log("Done!");
 
     }
