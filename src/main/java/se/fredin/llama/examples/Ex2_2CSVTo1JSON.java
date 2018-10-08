@@ -16,26 +16,26 @@ import java.util.stream.Collectors;
  * Read 2 csv files and filterValidateAgainst them into one json file
  */
 @Component
-public class Ex2_2CSVTo1JSON extends LlamaRoute {
+public class Ex2_2CSVTo1JSON extends LlamaRoute implements LlamaExamples {
 
 
     @Override
     public void configure() {
 
-        from(Endpoint.file(prop("input-directory"), "pet.csv"))
+        from(Endpoint.file(exInputDir(), "pet.csv"))
                 .routeId("pets")
                 .unmarshal(new BindyCsvDataFormat(Pet.class))
-                .to("direct:pet")
-                .setStartupOrder(nextAvailableStartup());
+                .to("direct:ex-2-2-csv-to1JSON-pet")
+                .startupOrder(nextAvailableStartup());
 
-        from(Endpoint.file(prop("input-directory"), "person.csv"))
+        from(Endpoint.file(exInputDir(), "person.csv"))
                 .routeId("users")
                 .unmarshal(new BindyCsvDataFormat(User.class))
-                .pollEnrich("direct:pet", this::aggregate)
+                .pollEnrich("direct:ex-2-2-csv-to1JSON-pet", this::aggregate)
                 .marshal().json(JsonLibrary.Jackson)
-                .to(Endpoint.file(prop("output-directory"), "person-with-pets.json"))
-                .setStartupOrder(nextAvailableStartup());
-
+                .to(Endpoint.file(exOutputDir(), resultingFileName("json")))
+                .startupOrder(nextAvailableStartup())
+                .onCompletion().log(getCompletionMessage());
     }
 
 
@@ -56,4 +56,13 @@ public class Ex2_2CSVTo1JSON extends LlamaRoute {
         return oldExchange;
     }
 
+    @Override
+    public String exInputDir() {
+        return prop("in-ex-2-2csv-to1JSON");
+    }
+
+    @Override
+    public String exOutputDir() {
+        return prop("out-ex-2-2csv-to1JSON");
+    }
 }

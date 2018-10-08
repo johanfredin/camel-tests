@@ -13,16 +13,16 @@ import java.util.stream.Collectors;
  * Doing ex.1 where input/output is xml
  */
 @Component
-public class Ex1_XML extends LlamaRoute {
+public class Ex1_XML extends LlamaRoute implements LlamaExamples {
 
     @Override
     public void configure() {
-        from(Endpoint.file(prop("input-directory"), "foo.xml"))
+        from(Endpoint.file(exInputDir(), "foo.xml"))
                 .convertBodyTo(Users.class)
                 .process(this::processUsers)
                 .marshal().jaxb()
-                .to(Endpoint.file(prop("output-directory"), "foo_fixed.xml"))
-                .end();
+                .to(Endpoint.file(exOutputDir(), resultingFileName("xml")))
+                .onCompletion().log(getCompletionMessage());
     }
 
     private void processUsers(Exchange exchange) {
@@ -38,4 +38,13 @@ public class Ex1_XML extends LlamaRoute {
         exchange.getIn().setBody(users);
     }
 
+    @Override
+    public String exInputDir() {
+        return prop("in-ex-1-xml");
+    }
+
+    @Override
+    public String exOutputDir() {
+        return prop("out-ex-1-xml");
+    }
 }

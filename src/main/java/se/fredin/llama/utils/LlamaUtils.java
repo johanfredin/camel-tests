@@ -1,7 +1,6 @@
 package se.fredin.llama.utils;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.processor.Field;
@@ -40,12 +39,7 @@ public class LlamaUtils {
 
     @SuppressWarnings("unchecked")
     public static <T extends LlamaBean> List<T> asLlamaBeanList(Exchange e) {
-        try {
-            return new ArrayList<T>(e.getIn().getMandatoryBody(List.class));
-        } catch (InvalidPayloadException e1) {
-            e1.printStackTrace();
-        }
-        return null;
+        return new ArrayList<T>(e.getIn().getBody(List.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -97,12 +91,11 @@ public class LlamaUtils {
         var result = new HashMap<K, V>();
         for (var mapToAdd : maps) {
             if (overrideDuplicates) {
-                mapToAdd.entrySet()
-                        .forEach(e -> {
-                           if(!result.containsKey(e.getKey())) {
-                               result.put(e.getKey(), e.getValue());
-                           }
-                        });
+                mapToAdd.forEach((key, value) -> {
+                    if (!result.containsKey(key)) {
+                        result.put(key, value);
+                    }
+                });
             } else {
                 result.putAll(mapToAdd);
             }

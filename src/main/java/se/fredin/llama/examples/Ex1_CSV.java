@@ -15,20 +15,20 @@ import java.util.stream.Collectors;
  * Doing ex.1 where input/output is csv
  */
 @Component
-public class Ex1_CSV extends LlamaRoute {
+public class Ex1_CSV extends LlamaRoute implements LlamaExamples {
 
     @Override
     public void configure() {
 
         BindyCsvDataFormat bindyCsvDataFormat = new BindyCsvDataFormat(CsvUser.class);
 
-        from(Endpoint.file(defaultInputDir(), "foo.csv"))                              // Fetch input file
+        from(Endpoint.file(exInputDir(), "foo.csv"))                                    // Fetch input file
                 .routeId("read-foo-csv")
-                .unmarshal(bindyCsvDataFormat)                                                  // Unmarshal CSV to POJO
-                .process(this::processUsers)                                                    // Do transformation
-                .marshal(bindyCsvDataFormat)                                                    // Marshal POJO back to CSV
-                .to(Endpoint.file(defaultOutputDir(), "foo_fixed.csv"))                // Write output file
-                .onCompletion().log("Done").end();
+                .unmarshal(bindyCsvDataFormat)                                                   // Unmarshal CSV to POJO
+                .process(this::processUsers)                                                     // Do transformation
+                .marshal(bindyCsvDataFormat)                                                     // Marshal POJO back to CSV
+                .to(Endpoint.file(exOutputDir(), resultingFileName("csv")))              // Write output file
+                .onCompletion().log(getCompletionMessage()).end();
     }
 
     private void processUsers(Exchange exchange) {
@@ -44,4 +44,13 @@ public class Ex1_CSV extends LlamaRoute {
     }
 
 
+    @Override
+    public String exInputDir() {
+        return prop("in-ex-1-csv");
+    }
+
+    @Override
+    public String exOutputDir() {
+        return prop("out-ex-1-csv");
+    }
 }

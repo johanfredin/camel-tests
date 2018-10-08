@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
  * Read 2 csv files and filterValidateAgainst them into one
  */
 @Component
-public class Ex2_2CSVTo1 extends LlamaRoute {
+public class Ex2_2CSVTo1 extends LlamaRoute implements LlamaExamples {
 
     @Override
     public void configure() {
 
-        from(Endpoint.file(prop("input-directory"), "pet.csv"))
+        from(Endpoint.file(exInputDir(), "pet.csv"))
                 .unmarshal(new BindyCsvDataFormat(Pet.class))
-                .to("direct:pet")
+                .to("direct:ex2-2-csv-to1-pet")
                 .startupOrder(nextAvailableStartup());
 
-        from(Endpoint.file(prop("input-directory"), "person.csv"))
+        from(Endpoint.file(exInputDir(), "person.csv"))
                 .unmarshal(new BindyCsvDataFormat(User.class))
-                .pollEnrich("direct:pet", (oldExchange, newExchange) -> {
+                .pollEnrich("direct:ex2-2-csv-to1-pet", (oldExchange, newExchange) -> {
                     List<User> users = LlamaUtils.asLlamaBeanList(oldExchange);
                     List<Pet> pets = LlamaUtils.asLlamaBeanList(newExchange);
 
@@ -48,9 +48,20 @@ public class Ex2_2CSVTo1 extends LlamaRoute {
                     return oldExchange;
                 })
                 .marshal(new BindyCsvDataFormat(User.class))
-                .to(Endpoint.file(prop("output-directory"), "person-with-pets.csv"))
-                .startupOrder(nextAvailableStartup());
+                .to(Endpoint.file(exOutputDir(), resultingFileName("csv")))
+                .startupOrder(nextAvailableStartup())
+                .onCompletion().log(getCompletionMessage());
 
 
+    }
+
+    @Override
+    public String exInputDir() {
+        return prop("in-ex-2-2csv-to1");
+    }
+
+    @Override
+    public String exOutputDir() {
+        return prop("out-ex2-2csv-to1");
     }
 }

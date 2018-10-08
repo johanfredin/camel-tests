@@ -11,21 +11,30 @@ import se.fredin.llama.processor.join.JoinType;
 import se.fredin.llama.utils.Endpoint;
 
 @Component
-public class Ex3_FilterValidateAgainst extends LlamaRoute {
+public class Ex3_FilterValidateAgainst extends LlamaRoute implements LlamaExamples {
 
     public void configure() {
-        String petRoute = getRoute("read-pets", "pet.csv", Pet.class, "pets", nextAvailableStartup());
+        String petRoute = getRoute("read-pets", exInputDir(),
+                "pet.csv", Pet.class, "ex-3-filter-validate-against-pets", nextAvailableStartup());
 
-        from(Endpoint.file(defaultInputDir(), "person.csv"))
+        from(Endpoint.file(exInputDir(), "person.csv"))
                 .routeId("read-persons")
                 .unmarshal(new BindyCsvDataFormat(CsvUser.class))
                 .pollEnrich(petRoute, (mainExchange, joiningExchange) -> Processors.<CsvUser, Pet>filterValidateAgainst(mainExchange, joiningExchange, JoinType.INNER, ResultType.LIST))
                 .marshal(new BindyCsvDataFormat(CsvUser.class))
-                .to(Endpoint.file(defaultOutputDir(), "person-validated.csv"))
+                .to(Endpoint.file(exOutputDir(), resultingFileName("csv")))
                 .startupOrder(nextAvailableStartup())
-                .onCompletion().log("Done!");
-
+                .onCompletion().log(getCompletionMessage());
     }
 
 
+    @Override
+    public String exInputDir() {
+        return prop("in-ex-3-filter-validate-against");
+    }
+
+    @Override
+    public String exOutputDir() {
+        return prop("out-ex-3-filter-validate-against");
+    }
 }

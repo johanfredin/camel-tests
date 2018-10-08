@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * representations
  */
 @Component
-public class Ex1_CSVList extends LlamaRoute {
+public class Ex1_CSVList extends LlamaRoute implements LlamaExamples {
 
     @Override
     public void configure() {
@@ -24,12 +24,13 @@ public class Ex1_CSVList extends LlamaRoute {
         format.setDelimiter(';');
         format.setUseMaps(true);
 
-        from(Endpoint.file(prop("input-directory"), "foo.csv"))
+        from(Endpoint.file(exInputDir(), "foo.csv"))
                 .routeId("read-csv")
                 .unmarshal(format)
                 .process(this::transformData)
                 .marshal(format)
-                .to(Endpoint.file(prop("output-directory"), "foo-plain-modified.csv"));
+                .to(Endpoint.file(exOutputDir(), resultingFileName("csv")))
+                .onCompletion().log(getCompletionMessage());
     }
 
     private void transformData(Exchange exchange) {
@@ -41,11 +42,20 @@ public class Ex1_CSVList extends LlamaRoute {
                 .collect(Collectors.toList());
 
         var header = new HashMap<String, String>();
-        for(String s : collect.get(0).keySet()) {
+        for (String s : collect.get(0).keySet()) {
             header.put(s, s);
         }
         collect.add(0, header);
         exchange.getIn().setBody(collect);
     }
 
+    @Override
+    public String exInputDir() {
+        return prop("in-ex-1-csv-list");
+    }
+
+    @Override
+    public String exOutputDir() {
+        return prop("out-ex-1-csv-list");
+    }
 }

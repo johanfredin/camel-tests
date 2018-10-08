@@ -16,15 +16,16 @@ import java.util.stream.Collectors;
  * Doing ex.1 where input/output is JSON
  */
 @Component
-public class Ex1_JSON extends LlamaRoute {
+public class Ex1_JSON extends LlamaRoute implements LlamaExamples {
 
     @Override
     public void configure() {
-        from(Endpoint.file(prop("input-directory"), "foo.json"))
+        from(Endpoint.file(exInputDir(), "foo.json"))
                 .unmarshal(new ListJacksonDataFormat(CsvUser.class))
                 .process(this::processUsers)
                 .marshal().json(JsonLibrary.Jackson)
-                .to(Endpoint.file(prop("output-directory"), "foo_fixed.json"));
+                .to(Endpoint.file(exOutputDir(), resultingFileName("json")))
+                .onCompletion().log(getCompletionMessage());
     }
 
     private void processUsers(Exchange exchange) {
@@ -39,4 +40,13 @@ public class Ex1_JSON extends LlamaRoute {
         exchange.getIn().setBody(users);
     }
 
+    @Override
+    public String exInputDir() {
+        return prop("in-ex-1-json");
+    }
+
+    @Override
+    public String exOutputDir() {
+        return prop("out-ex-1-json");
+    }
 }
