@@ -3,6 +3,7 @@ package se.fredin.llama.processor.generic;
 import org.apache.camel.Exchange;
 import se.fredin.llama.utils.LlamaUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -12,8 +13,13 @@ public class CsvFilterProcessor extends GenericProcessor {
     private Exchange exchange;
     private Predicate<Map<String, String>> filterFunction;
 
-    public CsvFilterProcessor() {
+    protected CsvFilterProcessor() {
         super(false);
+    }
+
+    protected CsvFilterProcessor(Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
+        super(includeHeader);
+        this.filterFunction = filterFunction;
     }
 
     public CsvFilterProcessor(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
@@ -47,6 +53,18 @@ public class CsvFilterProcessor extends GenericProcessor {
         var records = LlamaUtils.asLinkedListOfMaps(this.exchange);
         this.initialRecords = records.size();
 
+        var filteredRecords = filterRecords(records);
+
+        this.exchange.getIn().setBody(filteredRecords);
+        this.processedRecords = filteredRecords.size();
+    }
+
+    /**
+     * Filters the records in the list, protected so it could only be used in tests
+     * @param records the records to filter
+     * @return the passed in records filtered
+     */
+    protected List<Map<String, String>> filterRecords(List<Map<String,String>> records) {
         var filteredRecords = records
                 .stream()
                 .filter(this.filterFunction)
@@ -56,8 +74,7 @@ public class CsvFilterProcessor extends GenericProcessor {
             filteredRecords.add(0, getHeader(filteredRecords.get(0).keySet()));
         }
 
-        this.exchange.getIn().setBody(filteredRecords);
-        this.processedRecords = filteredRecords.size();
+        return filteredRecords;
     }
 
     @Override

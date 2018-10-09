@@ -196,12 +196,24 @@ public class LlamaUtils {
 
     /**
      * Helper to check if an integer value is within the allowed within the given range
-     * @param o the object that we should be able to parse to an integer
+     *
+     * @param o   the object that we should be able to parse to an integer
      * @param min the value the integer must be larger than.
      * @param max the value the integer must be smaller than.
      * @return true if passed in value is within the given range
      */
     public static boolean withinRange(Object o, int min, int max) {
         return Integer.parseInt(o.toString()) > min && Integer.parseInt(o.toString()) < max;
+    }
+
+    /**
+     * Check if the passed in map qualifies as a header.
+     * @param potentialHeader the map to check whether is a header or not
+     * @return true if each key/values are identical for all map entries.
+     */
+    public static boolean isHeader(Map<String, String> potentialHeader) {
+        return potentialHeader.entrySet()
+                .stream()
+                .allMatch(me -> me.getKey().equals(me.getValue()));
     }
 }

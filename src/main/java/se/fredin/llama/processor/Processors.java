@@ -185,4 +185,25 @@ public class Processors {
         return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExchange, jointype).doExecuteProcess();
     }
 
+    /**
+     * Creates a new {@link CsvFilterProcessor} without a resulting header and returns its doExecuteProcess method
+     * @param exchange the exchange to filter
+     * @param filterFunction the filter function (hint: use lambda!)
+     * @return the exchange with a filtered body
+     */
+    public static Exchange filterCollection(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
+        return filterCollection(exchange, filterFunction, false);
+    }
+
+    /**
+     * Creates a new {@link CsvFilterProcessor} and returns its doExecuteProcess method
+     * @param exchange the exchange to filter
+     * @param filterFunction the filter function (hint: use lambda!)
+     * @param includeHeader whether or not to make the first entry in the resulting collection the header row
+     * @return the exchange with a filtered body
+     */
+    public static Exchange filterCollection(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
+        return new CsvFilterProcessor(exchange, filterFunction, includeHeader).doExecuteProcess();
+    }
+
 }

@@ -8,7 +8,7 @@ import se.fredin.llama.utils.Endpoint;
 /**
  * Helping abstraction layer that extends the camel {@link RouteBuilder} that all
  * that is used for creating routes. Holds helper methods for retrieving spring boot
- * properties and some deault methods for getting a route up and running.
+ * properties and some default methods for getting a route up and running.
  *
  * @author johan
  */

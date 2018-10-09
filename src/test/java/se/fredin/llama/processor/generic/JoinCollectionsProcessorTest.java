@@ -2,6 +2,7 @@ package se.fredin.llama.processor.generic;
 
 import org.junit.Before;
 import org.junit.Test;
+import se.fredin.llama.TestFixture;
 import se.fredin.llama.pojo.Fields;
 import se.fredin.llama.pojo.JoinType;
 import se.fredin.llama.pojo.Keys;
@@ -20,20 +21,8 @@ public class JoinCollectionsProcessorTest {
 
     @Before
     public void innit() {
-        this.mainEntries = List.of(
-                Map.of("Id", "1", "Name", "Jonas", "Age", "25"),
-                Map.of("Id", "1", "Name", "Lena", "Age", "26"),
-                Map.of("Id", "2", "Name", "Leslie", "Age", "30"),
-                Map.of("Id", "3", "Name", "Nils", "Age", "12"),
-                Map.of("Id", "5", "Name", "Eddie", "Age", "56")
-        );
-
-        this.joiningEntries = List.of(
-                Map.of("Id", "1", "Pet", "Dog", "Color", "Blue"),
-                Map.of("Id", "2", "Pet", "Cat", "Color", "Green"),
-                Map.of("Id", "3", "Pet", "Lizard", "Color", "Yellow"),
-                Map.of("Id", "4", "Pet", "Iguana", "Color", "Orange")
-        );
+        this.mainEntries = TestFixture.mainEntries;
+        this.joiningEntries = TestFixture.joiningEntries;
     }
 
     /*
