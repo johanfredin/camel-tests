@@ -1,10 +1,11 @@
-package se.fredin.llama.processor.join;
+package se.fredin.llama.processor.generic;
 
 import org.junit.Before;
 import org.junit.Test;
 import se.fredin.llama.processor.Fields;
+import se.fredin.llama.processor.JoinType;
 import se.fredin.llama.processor.Keys;
-import se.fredin.llama.processor.ResultType;
+import se.fredin.llama.utils.JoinUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -527,7 +528,6 @@ public class JoinCollectionsProcessorTest {
         return new JoinCollectionsProcessor(
                 joinKeys,
                 joinType,
-                ResultType.AS_IS,
                 mainFields,
                 joiningFields);
     }

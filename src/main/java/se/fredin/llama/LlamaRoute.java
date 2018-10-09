@@ -3,7 +3,6 @@ package se.fredin.llama;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
-import se.fredin.llama.processor.ResultType;
 import se.fredin.llama.utils.Endpoint;
 
 /**
@@ -90,10 +89,10 @@ public abstract class LlamaRoute extends RouteBuilder {
         return "seda:" + endpoint;
     }
 
-    protected String getRoute(String routeId, String directory, String fileName, ResultType resultType, String endpoint, int startupOrder) {
+    protected String getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder) {
         from(Endpoint.file(directory, fileName))
                 .routeId(routeId)
-                .unmarshal(resultType == ResultType.LIST ? csvToListOfLists() : csvToCollectionOfMaps())
+                .unmarshal(csvToCollectionOfMaps())
                 .to("seda:" + endpoint)
                 .startupOrder(startupOrder);
 

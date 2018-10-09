@@ -32,14 +32,4 @@ public interface LlamaProcessor {
      */
     String getProcessorName();
 
-    /**
-     * If we want the result type to be of another type then we should specify it here.
-     * Typically the exchange body contains some sort of collection or a map. If we want
-     * any of those we should specify it. Default behaviour is to return the content of the
-     * exchange body the same type as it was passed in.
-     * @return the type of the exchange body.
-     */
-    default ResultType getResultType() {
-        return ResultType.AS_IS;
-    }
 }

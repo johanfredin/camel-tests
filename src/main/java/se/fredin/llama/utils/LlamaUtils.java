@@ -43,13 +43,22 @@ public class LlamaUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static List<Map<String, String>> asList(Exchange e) {
+    public static List<Map<String, String>> asListOfMaps(Exchange e) {
         return new ArrayList<Map<String, String>>(e.getIn().getBody(List.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Map<String, String>> asLinkedListOfMaps(Exchange e) {
+        return new LinkedList<Map<String, String>>(e.getIn().getBody(List.class));
     }
 
     @SuppressWarnings("unchecked")
     public static <T> List<T> asTypedList(Exchange e) {
         return new ArrayList<T>(e.getIn().getBody(List.class));
+    }
+
+    public static <K, V> Map<K, V>asTypedMap(Exchange e) {
+        return new HashMap<K, V>(e.getIn().getBody(Map.class));
     }
 
     /**

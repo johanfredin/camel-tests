@@ -1,4 +1,4 @@
-package se.fredin.llama.processor.union;
+package se.fredin.llama.processor.bean;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
@@ -8,16 +8,16 @@ import se.fredin.llama.utils.LlamaUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnionProcessor extends BaseProcessor {
+public class UnionBeansProcessor extends BaseProcessor {
 
     private Exchange mergingExchange;
     private Exchange mainExchange;
 
     private Exchange resultingExchange;
 
-    public UnionProcessor() {}
+    public UnionBeansProcessor() {}
 
-    public UnionProcessor(Exchange mergingExchange, Exchange mainExchange) {
+    public UnionBeansProcessor(Exchange mergingExchange, Exchange mainExchange) {
         setMergingExchange(mergingExchange);
         setMainExchange(mainExchange);
     }
@@ -69,7 +69,7 @@ public class UnionProcessor extends BaseProcessor {
 
     @Override
     public String toString() {
-        return "UnionProcessor{" +
+        return "UnionBeansProcessor{" +
                 "mergingExchange=" + mergingExchange +
                 ", mainExchange=" + mainExchange +
                 '}';

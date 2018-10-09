@@ -1,4 +1,4 @@
-package se.fredin.llama.processor.filter;
+package se.fredin.llama.processor.bean;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class GenericFilterProcessor<T extends LlamaBean> extends SimpleProcessor<T> {
+public class FilterBeansProcessor<T extends LlamaBean> extends SimpleProcessor<T> {
 
     private Predicate<T> function;
 
-    public GenericFilterProcessor(Exchange exchange, Predicate<T> function) {
+    public FilterBeansProcessor(Exchange exchange, Predicate<T> function) {
         super(exchange);
         setFunction(function);
     }

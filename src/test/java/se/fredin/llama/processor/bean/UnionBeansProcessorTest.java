@@ -1,8 +1,8 @@
-package se.fredin.llama.processor.union;
+package se.fredin.llama.processor.bean;
 
 import org.junit.Test;
 
-public class UnionProcessorTest {
+public class UnionBeansProcessorTest {
 
     @Test
     public void testUnion() {
@@ -15,7 +15,7 @@ public class UnionProcessorTest {
 //        Exchange exchange1 = TestFixture.getMockExchange(itemsFirst);
 //        Exchange exchange2 = TestFixture.getMockExchange(itemsSecond);
 //
-//        UnionProcessor unionTask = new UnionProcessor(exchange1, exchange2);
+//        UnionBeansProcessor unionTask = new UnionBeansProcessor(exchange1, exchange2);
 //        Exchange union = unionTask.union();
 //
 //        List<MockItem> result = LlamaUtils.<MockItem>asLlamaBeanList(union);

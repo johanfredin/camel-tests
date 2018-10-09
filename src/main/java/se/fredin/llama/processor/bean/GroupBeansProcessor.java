@@ -1,4 +1,4 @@
-package se.fredin.llama.processor.group;
+package se.fredin.llama.processor.bean;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class GroupProcessor<T extends LlamaBean, R extends LlamaBean> extends BaseProcessor {
+public abstract class GroupBeansProcessor<T extends LlamaBean, R extends LlamaBean> extends BaseProcessor {
 
     private Exchange exchange;
     private List<R> resultList;
     private Function<T, R> groupFunction;
 
-    public GroupProcessor(Exchange exchange) {
+    public GroupBeansProcessor(Exchange exchange) {
         super();
         this.exchange = exchange;
     }
@@ -43,7 +43,7 @@ public abstract class GroupProcessor<T extends LlamaBean, R extends LlamaBean> e
 
     @Override
     public String toString() {
-        return "GroupProcessor{" +
+        return "GroupBeansProcessor{" +
                 "exchange=" + exchange +
                 ", resultList=" + resultList +
                 ", groupFunction=" + groupFunction +

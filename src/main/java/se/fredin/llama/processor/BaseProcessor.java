@@ -4,6 +4,12 @@ import org.apache.camel.Exchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
  * Base implementation for {@link LlamaProcessor} interface. Holds a Log4J instance and some helper methods
  */
@@ -13,7 +19,6 @@ public abstract class BaseProcessor implements LlamaProcessor {
     protected final byte UN_ALTERED_VALUE = -1;
 
     protected Logger log = LogManager.getLogger(this.getClass());
-    protected ResultType resultType;
 
     protected int initialRecords = UN_ALTERED_VALUE;
     protected int processedRecords = UN_ALTERED_VALUE;
@@ -57,6 +62,13 @@ public abstract class BaseProcessor implements LlamaProcessor {
         return this.processedRecords++;
     }
 
+    public Map<String,String> getHeader(Set<String> header) {
+        return header
+                .stream()
+                .collect(Collectors.toMap(Function.identity(), Function.identity(),
+                        (a, b) -> b, LinkedHashMap::new));
+    }
+
     @Override
     public Exchange doExecuteProcess() {
         postCreate();
@@ -88,15 +100,6 @@ public abstract class BaseProcessor implements LlamaProcessor {
         return this.getClass().getSimpleName();
     }
 
-    public void setResultType(ResultType resultType) {
-        this.resultType = resultType;
-    }
-
-    @Override
-    public ResultType getResultType() {
-        return this.resultType;
-    }
-
     public abstract Exchange getResult();
 
     public abstract void process();
@@ -104,8 +107,8 @@ public abstract class BaseProcessor implements LlamaProcessor {
     @Override
     public String toString() {
         return "BaseProcessor{" +
-                "log=" + log +
-                ", resultType=" + resultType +
+                "UN_ALTERED_VALUE=" + UN_ALTERED_VALUE +
+                ", log=" + log +
                 ", initialRecords=" + initialRecords +
                 ", processedRecords=" + processedRecords +
                 '}';

@@ -1,4 +1,4 @@
-package se.fredin.llama.processor.transform;
+package se.fredin.llama.processor.bean;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class TransformProcessor<T extends LlamaBean> extends SimpleProcessor<T> {
+public class TransformBeansProcessor<T extends LlamaBean> extends SimpleProcessor<T> {
 
     private Consumer<T> function;
 
-    public TransformProcessor(Exchange exchange, Consumer<T> function) {
+    public TransformBeansProcessor(Exchange exchange, Consumer<T> function) {
         super(exchange);
         setFunction(function);
     }

@@ -1,5 +1,7 @@
 package se.fredin.llama.processor;
 
+import se.fredin.llama.processor.generic.JoinCollectionsProcessor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,14 +18,14 @@ public class Fields {
 
     /**
      * Creates a new Fields instance with {@link #isAllFields}=<code>true</code>
-     * Used for example by the {@link se.fredin.llama.processor.join.JoinCollectionsProcessor}
+     * Used for example by the {@link JoinCollectionsProcessor}
      * when we want ALL fields from one exchange and we don't need alternate out names.
      */
     public static final Fields ALL = new Fields(true);
 
     /**
      * Creates a new Fields instance with {@link #isAllFields}=<code>false</code>
-     * Used for example by the {@link se.fredin.llama.processor.join.JoinCollectionsProcessor}
+     * Used for example by the {@link JoinCollectionsProcessor}
      * when we don't want any fields from one exchange.
      */
     public static final Fields NONE = new Fields(false);

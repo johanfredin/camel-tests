@@ -1,6 +1,6 @@
 package se.fredin.llama.processor;
 
-import se.fredin.llama.processor.join.JoinCollectionsProcessor;
+import se.fredin.llama.processor.generic.JoinCollectionsProcessor;
 
 /**
  * Used in {@link JoinCollectionsProcessor}. Holds 2 fields representing key in main

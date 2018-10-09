@@ -1,14 +1,14 @@
-package se.fredin.llama.processor.join;
+package se.fredin.llama.processor.generic;
 
 import org.apache.camel.Exchange;
+import se.fredin.llama.processor.AbstractJoinProcessor;
 import se.fredin.llama.processor.Fields;
+import se.fredin.llama.processor.JoinType;
 import se.fredin.llama.processor.Keys;
-import se.fredin.llama.processor.ResultType;
+import se.fredin.llama.utils.JoinUtils;
 import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Used for joining 2 collections similar to how it is made in an sql filterValidateAgainst
@@ -23,20 +23,25 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     public JoinCollectionsProcessor() {}
 
-    public JoinCollectionsProcessor(Keys joinKeys, JoinType joinType, ResultType resultType, Fields entity1Fields, Fields entity2Fields) {
-        setJoinType(joinType);
-        setResultType(resultType);
-        setJoinKeys(joinKeys);
-        setEntity1Fields(entity1Fields);
-        setEntity2Fields(entity2Fields);
+    public JoinCollectionsProcessor(Keys joinKeys, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {
+        this(joinKeys, joinType, entity1Fields, entity2Fields, false);
     }
 
-    public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, Keys joinKeys, JoinType joinType, ResultType resultType,
-                                    Fields entity1Fields, Fields entity2Fields) {
-        super(mainExchange, joiningExchange, joinType, resultType);
+    public JoinCollectionsProcessor(Keys joinKeys, JoinType joinType, Fields entity1Fields, Fields entity2Fields, boolean includeHeader) {
+        setJoinType(joinType);
         setJoinKeys(joinKeys);
         setEntity1Fields(entity1Fields);
         setEntity2Fields(entity2Fields);
+        setIncludeHeader(includeHeader);
+    }
+
+    public JoinCollectionsProcessor(Exchange mainExchange, Exchange joiningExchange, Keys joinKeys, JoinType joinType,
+                                    Fields entity1Fields, Fields entity2Fields, boolean includeHeader) {
+        super(mainExchange, joiningExchange, joinType);
+        setJoinKeys(joinKeys);
+        setEntity1Fields(entity1Fields);
+        setEntity2Fields(entity2Fields);
+        setIncludeHeader(includeHeader);
     }
 
     public JoinType getJoinType() {
@@ -73,8 +78,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     @Override
     public void process() {
-        var main = LlamaUtils.<Map<String, String>>asList(this.main);
-        var joining = LlamaUtils.<Map<String, String>>asList(this.joining);
+        var main = LlamaUtils.<Map<String, String>>asListOfMaps(this.main);
+        var joining = LlamaUtils.<Map<String, String>>asListOfMaps(this.joining);
 
         setInitialRecords(main.size());
 
@@ -93,18 +98,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         // Proceed with filterValidateAgainst
         var result = new LinkedList<>(join(main, joining));
 
-        switch (this.resultType) {
-            case LIST:
-                result = new LinkedList<>(result);
-
-                // Give the keys to the first entry
-                var header = result.get(0).keySet()
-                        .stream()
-                        .collect(Collectors.toMap(Function.identity(), Function.identity(), (a, b) -> b, LinkedHashMap::new));
-
-                // Now populate the list with the result
-                result.add(0, header);
-                break;
+        if(super.includeHeader) {
+            result.add(0, getHeader(result.get(0).keySet()));
         }
 
         this.main.getIn().setBody(result);

@@ -1,9 +1,10 @@
-package se.fredin.llama.processor.join;
+package se.fredin.llama.processor.bean;
 
 import org.junit.Test;
 import se.fredin.llama.TestFixture;
 import se.fredin.llama.bean.MockItem;
 import se.fredin.llama.bean.MockItemAsset;
+import se.fredin.llama.processor.JoinType;
 
 import java.io.Serializable;
 import java.util.List;

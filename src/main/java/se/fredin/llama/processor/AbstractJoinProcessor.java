@@ -1,14 +1,13 @@
-package se.fredin.llama.processor.join;
+package se.fredin.llama.processor;
 
 import org.apache.camel.Exchange;
-import se.fredin.llama.processor.BaseProcessor;
-import se.fredin.llama.processor.ResultType;
+import se.fredin.llama.processor.generic.GenericProcessor;
 
 /**
  * Super class for all {@link se.fredin.llama.processor.LlamaProcessor} instances where
  * there are 2 exchanges that we need to combine/compare with another.
  */
-public abstract class AbstractJoinProcessor extends BaseProcessor {
+public abstract class AbstractJoinProcessor extends GenericProcessor {
 
     protected Exchange main;
     protected Exchange joining;
@@ -17,20 +16,21 @@ public abstract class AbstractJoinProcessor extends BaseProcessor {
     /**
      * Create a new empty instance
      */
-    public AbstractJoinProcessor() {}
+    public AbstractJoinProcessor() {
+        super(false);
+    }
 
     /**
      * Create a new instance
      * @param main the main exchange from the route that called this processor
      * @param joining the joining exchange from another route
      * @param joinType how to filterValidateAgainst the two exchanges
-     * @param resultType what data type the result should be part of.
      */
-    public AbstractJoinProcessor(Exchange main, Exchange joining, JoinType joinType, ResultType resultType) {
+    public AbstractJoinProcessor(Exchange main, Exchange joining, JoinType joinType) {
+        super(false);
         this.main = main;
         this.joining = joining;
         this.joinType = joinType;
-        this.resultType = resultType;
     }
 
     /**
