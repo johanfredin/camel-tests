@@ -14,8 +14,20 @@ import se.fredin.llama.utils.Endpoint;
  */
 public abstract class LlamaRoute extends RouteBuilder {
 
+    /**
+     * When using several routes and they need unique sequential startup orders then this
+     * property will be useful. Declared static so the current order will be persisted between
+     * instances.
+     */
     public static int startupOrder = 1;
 
+    /**
+     * Increments {@link #startupOrder} by one. Call this when setting startup order
+     * of your routes when you have many of them and you need a simple way to ensure
+     * a new unique order is given
+     *
+     * @return the startup order +1
+     */
     public static int nextAvailableStartup() {
         return startupOrder++;
     }
@@ -28,40 +40,6 @@ public abstract class LlamaRoute extends RouteBuilder {
      */
     protected String prop(String property) {
         return "{{" + property + "}}";
-    }
-
-    /**
-     * Calls {@link #prop(String)} with {@link Endpoint#INPUT_DIR} as parameter
-     *
-     * @return the default input directory property (if one specified).
-     */
-    protected String defaultInputDir() {
-        return prop(Endpoint.INPUT_DIR);
-    }
-
-    /**
-     * Calls {@link #prop(String)} with {@link Endpoint#OUTPUT_DIR} as parameter
-     *
-     * @return the default output directory property (if one specified).
-     */
-    protected String defaultOutputDir() {
-        return prop(Endpoint.OUTPUT_DIR);
-    }
-
-    /**
-     * Reflective call to {@link #getRoute(String, String, String, Class, String, int)}
-     * passing in {@link #defaultInputDir()} as the directory parameter.
-     *
-     * @param routeId      the id to give the route
-     * @param fileName     the name of the file we want to fetch.
-     * @param clazz        the class to unmarshal the data from the file to. Needs to follow the {@link BindyType}
-     *                     specification.
-     * @param endpoint     the endpoint to send the the route to. Will be started with "seda:"
-     * @param startupOrder the startup order of this route.
-     * @return the endpoint.
-     */
-    protected String getRoute(String routeId, String fileName, Class clazz, String endpoint, int startupOrder) {
-        return getRoute(routeId, defaultInputDir(), fileName, clazz, endpoint, startupOrder);
     }
 
     /**
@@ -89,6 +67,18 @@ public abstract class LlamaRoute extends RouteBuilder {
         return "seda:" + endpoint;
     }
 
+    /**
+     * Simplified way to get a route up and running. Reads from a file expected to be of .csv format.
+     * Converts the content of that file to a collection of ordered maps. Sends to a seda:endpoint and gives
+     * it a startup order.
+     *
+     * @param routeId      the unique id to give the route
+     * @param directory    the directory where the csv file is expected to exits
+     * @param fileName     name of the csv file to read
+     * @param endpoint     name of the endpoint (seda: will be appended before the value you pass in)
+     * @param startupOrder the startup order of the route
+     * @return the endpoint name
+     */
     protected String getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder) {
         from(Endpoint.file(directory, fileName))
                 .routeId(routeId)
@@ -104,6 +94,11 @@ public abstract class LlamaRoute extends RouteBuilder {
      * Each entry in the list will be a list of strings in the order
      * the fields are written in the file.
      * Calls {@link #csvToListOfLists(char, boolean)} with default values (';', false)
+     * <p>
+     * <p>
+     * Note to user, there are no processors supporting lists of lists. So working with this collection
+     * would require to code something of your own.
+     *
      * @return a list of list of strings
      */
     protected CsvDataFormat csvToListOfLists() {
@@ -114,7 +109,11 @@ public abstract class LlamaRoute extends RouteBuilder {
      * Converts the content of a .csv file into a nested list of strings.
      * Each entry in the list will be a list of strings in the order
      * the fields are written in the file.
-     * @param delimiter the delimiter used to separate entries in the csv file (default=';')
+     * <p>
+     * Note to user, there are no processors supporting lists of lists. So working with this collection
+     * would require to code something of your own.
+     *
+     * @param delimiter  the delimiter used to separate entries in the csv file (default=';')
      * @param skipHeader whether or not to skip the first(header) row in the file (default=false)
      * @return a list of list of strings
      */
@@ -129,6 +128,7 @@ public abstract class LlamaRoute extends RouteBuilder {
      * Calls {@link #csvToCollectionOfMaps(char, boolean)} with default values <b>';', true</b>
      * Converts the content of a .csv file into a list of maps where key/values are all strings.
      * Each entry in the list will be a map where <b>key=header name, value=value at header index.</b>.
+     *
      * @return the content of a .csv file as a list of ordered maps.
      */
     protected CsvDataFormat csvToCollectionOfMaps() {
@@ -139,6 +139,7 @@ public abstract class LlamaRoute extends RouteBuilder {
      * Calls {@link #csvToCollectionOfMaps(char, boolean)} with passed in delimiter and default value true for ordered maps
      * Converts the content of a .csv file into a list of maps where key/values are all strings.
      * Each entry in the list will be a map where <b>key=header name, value=value at header index.</b>.
+     *
      * @param delimiter the delimiter used to separate the fields in the .csv file (default is ';')
      * @return the content of a .csv file as a list of ordered maps.
      */
@@ -152,14 +153,15 @@ public abstract class LlamaRoute extends RouteBuilder {
      * Here we have the option to disable ordered maps and use standard maps. This could potentially
      * be useful when we have a really big amount of data or we simply don't care if the values
      * are ordered or not.
-     * @param delimiter the delimiter used to separate the fields in the .csv file (default is ';')
+     *
+     * @param delimiter     the delimiter used to separate the fields in the .csv file (default is ';')
      * @param isOrderedMaps whether to use ordered maps or standard maps (default is true)
      * @return the content of a .csv file as a list of ordered (or standard) maps.
      */
     protected CsvDataFormat csvToCollectionOfMaps(char delimiter, boolean isOrderedMaps) {
         var format = new CsvDataFormat();
         format.setDelimiter(delimiter);
-        if(isOrderedMaps) {
+        if (isOrderedMaps) {
             format.setUseOrderedMaps(true);
         } else {
             format.setUseMaps(true);

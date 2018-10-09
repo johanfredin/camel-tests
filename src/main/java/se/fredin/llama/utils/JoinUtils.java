@@ -7,15 +7,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Utility interface with only default methods and some final properties
+ * Utility class with only public static methods and some final properties
  * that is used with the {@link se.fredin.llama.processor.generic.JoinCollectionsProcessor}
  *
  * @author johan
  */
-public interface JoinUtils {
+public class JoinUtils {
 
-    byte EXCHANGE_MAIN = 0;
-    byte EXCHANGE_JOINING = 1;
+    public static final byte EXCHANGE_MAIN = 0;
+    public static final byte EXCHANGE_JOINING = 1;
 
     /**
      * Group a collection of maps into a map of collection of maps, where map key=the fields in collection specified
@@ -26,7 +26,7 @@ public interface JoinUtils {
      * @param list     the list of maps we want to create a map of.
      * @return passed in list wrapped into a map of lists.
      */
-    default Map<String, List<Map<String, String>>> groupCollection(Keys joinKeys, List<Map<String, String>> list) {
+    public static Map<String, List<Map<String, String>>> groupCollection(Keys joinKeys, List<Map<String, String>> list) {
         return groupCollection(joinKeys, EXCHANGE_MAIN, list);
     }
 
@@ -36,11 +36,11 @@ public interface JoinUtils {
      * easier find matches.
      *
      * @param joinKeys the fields in the list that are keys.
-     * @param exchange whether or not passed in list belongs to the main or joining exchange (default is {@link #EXCHANGE_MAIN}
+     * @param exchange whether or not passed in list belongs to the main or joining exchange (public static is {@link #EXCHANGE_MAIN}
      * @param list     the list of maps we want to create a map of.
      * @return passed in list wrapped into a map of lists.
      */
-    default Map<String, List<Map<String, String>>> groupCollection(Keys joinKeys, byte exchange, List<Map<String, String>> list) {
+    public static Map<String, List<Map<String, String>>> groupCollection(Keys joinKeys, byte exchange, List<Map<String, String>> list) {
         var mapOfLists = new HashMap<String, List<Map<String, String>>>();
         for (var map : list) {
 
@@ -72,7 +72,7 @@ public interface JoinUtils {
      * @param exchange         whether we are passing in the body of the main or joining exchange.
      * @return all the key vales in passed in map as a concatenated string.
      */
-    default String keysAsString(Map<String, String> mapWithKeyValues, Keys joinKeys, byte exchange) {
+    public static String keysAsString(Map<String, String> mapWithKeyValues, Keys joinKeys, byte exchange) {
         var keyBuilder = new StringBuilder();
         for (var joinKey : joinKeys.getKeys()) {
             keyBuilder.append(mapWithKeyValues.get(exchange == JoinUtils.EXCHANGE_MAIN ? joinKey.getKeyInMain() : joinKey.getKeyInJoining()));
@@ -87,7 +87,7 @@ public interface JoinUtils {
      * @param map the map that holds the keys.
      * @return the key set of first available map.
      */
-    default Set<String> fetchHeader(Map<String, List<Map<String, String>>> map) {
+    public static Set<String> fetchHeader(Map<String, List<Map<String, String>>> map) {
         for (var entry : map.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isEmpty()) {
                 // The keys are the same for all maps in the collection so simply returning the first entry is good enough.
@@ -106,7 +106,7 @@ public interface JoinUtils {
      * @param fields        the fields we want from the map and the potential new output names.
      * @return a map with the fields from the passed in map that we want.
      */
-    default Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields) {
+    public static Map<String, String> getFields(Map<String, String> mapToTakeFrom, Fields fields) {
         // Add main fields
         if (fields.isAllFields()) {
             return mapToTakeFrom;
@@ -130,7 +130,7 @@ public interface JoinUtils {
      * @param fields the fields we want from the map.
      * @return a map with empty values.
      */
-    default Map<String, String> createDummyMap(Set<String> mapHeaders, Fields fields) {
+    public static Map<String, String> createDummyMap(Set<String> mapHeaders, Fields fields) {
         var dummyMap = new HashMap<String, String>();
 
         // Add main fields
@@ -159,7 +159,7 @@ public interface JoinUtils {
      * @param joining the map with the entries we want to add to the main map.
      * @return a map containing all the entries from the passed in map (main is the owner when there are duplicate keys)
      */
-    default Map<String, String> createMergedMap(Map<String, String> main, Map<String, String> joining) {
+    public static Map<String, String> createMergedMap(Map<String, String> main, Map<String, String> joining) {
         var result = main.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
