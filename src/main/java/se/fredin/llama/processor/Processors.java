@@ -2,11 +2,14 @@ package se.fredin.llama.processor;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
+import se.fredin.llama.pojo.Fields;
+import se.fredin.llama.pojo.JoinType;
+import se.fredin.llama.pojo.Keys;
+import se.fredin.llama.processor.bean.FilterValidateAgainstBeansProcessor;
+import se.fredin.llama.processor.bean.TransformBeansProcessor;
 import se.fredin.llama.processor.bean.UnionBeansProcessor;
 import se.fredin.llama.processor.generic.CsvFilterProcessor;
-import se.fredin.llama.processor.bean.FilterValidateAgainstBeansProcessor;
 import se.fredin.llama.processor.generic.JoinCollectionsProcessor;
-import se.fredin.llama.processor.bean.TransformBeansProcessor;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -20,7 +23,7 @@ import java.util.function.Predicate;
  * instances <b>doExecuteProcess</b> method. So plain and simple, by invoking the llama processors from here we get less bloated routes.
  * @author johan
  */
-public class Processors {
+public interface Processors {
 
     /**
      * Invokes a new {@link UnionBeansProcessor} with the 2 exchanges passed in.
@@ -29,7 +32,7 @@ public class Processors {
      * @param newExchange the exchange to aggregate.
      * @return The old exchange aggregated with the new exchange.
      */
-    public static Exchange union(Exchange oldExchange, Exchange newExchange) {
+    default Exchange union(Exchange oldExchange, Exchange newExchange) {
         return new UnionBeansProcessor(newExchange, oldExchange).doExecuteProcess();
     }
 
@@ -46,7 +49,7 @@ public class Processors {
      * @param keys the keys. Must exist as fields in both exchanges.
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()} with default values for joinType, entity1Fields, entity2Fields.
      */
-    public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys) {
+    default Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys) {
         return join(mainExchange, joiningExchange, keys, JoinType.INNER, Fields.ALL, Fields.ALL, false);
     }
 
@@ -63,7 +66,7 @@ public class Processors {
      * @param keys the keys. Must exist as fields in both exchanges.
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()} with default values for joinType, entity1Fields, entity2Fields.
      */
-    public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, boolean includeHeader) {
+    default Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, boolean includeHeader) {
         return join(mainExchange, joiningExchange, keys, JoinType.INNER, Fields.ALL, Fields.ALL, includeHeader);
     }
 
@@ -80,7 +83,7 @@ public class Processors {
      * @param joinType what type of filterValidateAgainst to use.
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()} with default values for joinType, entity1Fields, entity2Fields.
      */
-    public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType) {
+    default Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType) {
         return join(mainExchange, joiningExchange, keys, joinType, Fields.ALL, Fields.ALL, false);
     }
 
@@ -94,7 +97,7 @@ public class Processors {
      * @param entity2Fields the fields we want to include from the joining exchange in the resulting exchange.
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()}
      */
-    public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {
+    default Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields) {
         return join(mainExchange, joiningExchange, keys, joinType, entity1Fields, entity2Fields, false);
     }
 
@@ -109,7 +112,7 @@ public class Processors {
      * @param includeHeader whether or not to include the header row in the result (default is false)
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()}
      */
-    public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields, boolean includeHeader) {
+    default Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, JoinType joinType, Fields entity1Fields, Fields entity2Fields, boolean includeHeader) {
         return new JoinCollectionsProcessor(mainExchange, joiningExchange, keys, joinType, entity1Fields, entity2Fields, includeHeader).doExecuteProcess();
     }
 
@@ -122,7 +125,7 @@ public class Processors {
      * @param <T> any type extending {@link LlamaBean}
      * @return the exchange passed in transformed.
      */
-    public static <T extends LlamaBean> Exchange transform(Exchange exchange, Consumer<T> transformFunction) {
+    default <T extends LlamaBean> Exchange transform(Exchange exchange, Consumer<T> transformFunction) {
         return new TransformBeansProcessor<>(exchange, transformFunction).doExecuteProcess();
     }
 
@@ -133,7 +136,7 @@ public class Processors {
      * @param filterFunction the filter function.
      * @return the exchange passed in filtered.
      */
-    public static Exchange filter(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
+    default Exchange filter(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
         return filter(exchange, filterFunction, false);
     }
 
@@ -145,7 +148,7 @@ public class Processors {
      * @param includeHeader whether or not to include the header row (default is false)
      * @return the exchange passed in filtered.
      */
-    public static Exchange filter(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
+    default Exchange filter(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
         return new CsvFilterProcessor(exchange, filterFunction, includeHeader).doExecuteProcess();
     }
 
@@ -163,8 +166,8 @@ public class Processors {
      * @param <T2> any type extending {@link LlamaBean}
      * @return {@link #filterValidateAgainst(Exchange, Exchange, JoinType)} with default values for missing params.
      */
-    public static <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange) {
-        return Processors.<T1, T2>filterValidateAgainst(mainExchange, joiningExchange, JoinType.INNER);
+    default <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange) {
+        return filterValidateAgainst(mainExchange, joiningExchange, JoinType.INNER);
     }
 
     /**
@@ -178,7 +181,7 @@ public class Processors {
      * @param <T2> any type extending {@link LlamaBean}
      * @return a call to {@link FilterValidateAgainstBeansProcessor#doExecuteProcess()} with passed in params.
      */
-    public static <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange, JoinType jointype) {
+    default <T1 extends  LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange, JoinType jointype) {
         return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExchange, jointype).doExecuteProcess();
     }
 

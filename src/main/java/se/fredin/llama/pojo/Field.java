@@ -1,4 +1,6 @@
-package se.fredin.llama.processor;
+package se.fredin.llama.pojo;
+
+import se.fredin.llama.processor.LlamaProcessor;
 
 /**
  * Used with different {@link LlamaProcessor} implementations.

@@ -1,4 +1,4 @@
-package se.fredin.llama.processor;
+package se.fredin.llama.pojo;
 
 import se.fredin.llama.processor.generic.JoinCollectionsProcessor;
 

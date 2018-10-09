@@ -4,7 +4,7 @@ import org.junit.Test;
 import se.fredin.llama.TestFixture;
 import se.fredin.llama.bean.MockItem;
 import se.fredin.llama.bean.MockItemAsset;
-import se.fredin.llama.processor.JoinType;
+import se.fredin.llama.pojo.JoinType;
 
 import java.io.Serializable;
 import java.util.List;

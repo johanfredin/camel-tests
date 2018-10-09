@@ -1,11 +1,13 @@
 package se.fredin.llama.processor;
 
 import org.apache.camel.Exchange;
+import se.fredin.llama.pojo.JoinType;
 import se.fredin.llama.processor.generic.GenericProcessor;
 
 /**
  * Super class for all {@link se.fredin.llama.processor.LlamaProcessor} instances where
  * there are 2 exchanges that we need to combine/compare with another.
+ * @author johan
  */
 public abstract class AbstractJoinProcessor extends GenericProcessor {
 

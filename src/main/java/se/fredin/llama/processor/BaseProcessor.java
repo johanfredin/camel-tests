@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +63,12 @@ public abstract class BaseProcessor implements LlamaProcessor {
         return this.processedRecords++;
     }
 
-    public Map<String,String> getHeader(Set<String> header) {
+    /**
+     * Creates a map of passed in collection where each key/value=header[i]
+     * @param header the header to create a map from.
+     * @return a map of passed in collection where each key/value=header[i]
+     */
+    public Map<String,String> getHeader(Collection<String> header) {
         return header
                 .stream()
                 .collect(Collectors.toMap(Function.identity(), Function.identity(),
@@ -100,15 +106,32 @@ public abstract class BaseProcessor implements LlamaProcessor {
         return this.getClass().getSimpleName();
     }
 
+    /**
+     * The exchange that contains the resulting collection of this processor.
+     * Will be used as the return value in {@link #doExecuteProcess()} so
+     * all subclasses must provide a valid exchange to return.
+     * @return The exchange that contains the resulting collection of this processor.
+     */
     public abstract Exchange getResult();
 
+    /**
+     * Put all processing logic in here, including
+     * setting initial and resulting records and
+     * assigning the resulting collection to the exchange
+     * to return. When extending this class {@link #doExecuteProcess()} is
+     * executed (unless overwritten) using the following steps:
+     * <ul>
+     *     <li>call {@link #postCreate()}</li>
+     *     <li>call this method</li>
+     *     <li>call {@link #postExecute()}</li>
+     * </ul>
+     * Return value of {@link #doExecuteProcess()} = {@link #getResult()}
+     */
     public abstract void process();
 
     @Override
     public String toString() {
         return "BaseProcessor{" +
-                "UN_ALTERED_VALUE=" + UN_ALTERED_VALUE +
-                ", log=" + log +
                 ", initialRecords=" + initialRecords +
                 ", processedRecords=" + processedRecords +
                 '}';

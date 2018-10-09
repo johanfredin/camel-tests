@@ -1,4 +1,4 @@
-package se.fredin.llama.processor;
+package se.fredin.llama.pojo;
 
 import java.util.ArrayList;
 import java.util.Arrays;

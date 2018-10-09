@@ -2,9 +2,9 @@ package se.fredin.llama.processor.generic;
 
 import org.junit.Before;
 import org.junit.Test;
-import se.fredin.llama.processor.Fields;
-import se.fredin.llama.processor.JoinType;
-import se.fredin.llama.processor.Keys;
+import se.fredin.llama.pojo.Fields;
+import se.fredin.llama.pojo.JoinType;
+import se.fredin.llama.pojo.Keys;
 import se.fredin.llama.utils.JoinUtils;
 
 import java.util.List;
