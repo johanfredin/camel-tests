@@ -25,7 +25,7 @@ public abstract class LlamaRoute extends RouteBuilder {
      * Access a property from <b>application.properties</b> by passing in the name of the property.
      *
      * @param property the property we want the value for.
-     * @return the value of the property or a malformed string if the property is not found.
+     * @return the value of the property or the name of the property surrounced by {{}} if the property is not found.
      */
     protected String prop(String property) {
         return "{{" + property + "}}";

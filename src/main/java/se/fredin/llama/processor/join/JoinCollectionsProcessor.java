@@ -21,8 +21,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
     private Fields entity2Fields;
     private Keys joinKeys;
 
-    public JoinCollectionsProcessor() {
-    }
+    public JoinCollectionsProcessor() {}
 
     public JoinCollectionsProcessor(Keys joinKeys, JoinType joinType, ResultType resultType, Fields entity1Fields, Fields entity2Fields) {
         setJoinType(joinType);
