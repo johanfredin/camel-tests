@@ -2,7 +2,6 @@ package se.fredin.llama.processor.bean;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
-import se.fredin.llama.processor.SimpleProcessor;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
  * Filters a collection of llama beans based on the predicate passed in.
  * @param <T> any class extending {@link LlamaBean}
  */
-public class FilterBeansProcessor<T extends LlamaBean> extends SimpleProcessor<T> {
+public class FilterBeansBeanProcessor<T extends LlamaBean> extends SimpleBeanProcessor<T> {
 
     private Predicate<T> function;
 
@@ -21,7 +20,7 @@ public class FilterBeansProcessor<T extends LlamaBean> extends SimpleProcessor<T
      * @param exchange the exchange whose body we are going to filter
      * @param function the filter function to apply.
      */
-    public FilterBeansProcessor(Exchange exchange, Predicate<T> function) {
+    public FilterBeansBeanProcessor(Exchange exchange, Predicate<T> function) {
         super(exchange);
         setFunction(function);
     }

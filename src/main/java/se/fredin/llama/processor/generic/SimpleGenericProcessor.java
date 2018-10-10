@@ -1,10 +1,13 @@
-package se.fredin.llama.processor;
+package se.fredin.llama.processor.generic;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.language.Simple;
 import se.fredin.llama.bean.LlamaBean;
+import se.fredin.llama.processor.BaseProcessor;
 import se.fredin.llama.utils.LlamaUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Superclass for "simple" processors that modifies a singe exchange.
@@ -12,18 +15,20 @@ import java.util.List;
  * and SHOULD be the way to do it if we have several things we need to do (transform, sort, filter etc).
  * However if we know we simply want to do one thing to our collection and want to
  * have the code a bit less bloated then this could be a bit more elegant.
- * Body of the exchange is expected to contain a {@link List} of type {@link LlamaBean}.
- * @param <T> any class extending {@link LlamaBean}
+ * Body of the exchange is expected to contain a {@link List} of {@link java.util.Map}s.
+ * @author JFN
  */
-public abstract class SimpleProcessor<T extends LlamaBean> extends BaseProcessor {
+public abstract class SimpleGenericProcessor extends GenericProcessor {
 
     protected Exchange exchange;
+
+    public SimpleGenericProcessor() {}
 
     /**
      * Create a new instance calling super first.
      * @param exchange the exchange to process.
      */
-    public SimpleProcessor(Exchange exchange) {
+    public SimpleGenericProcessor(Exchange exchange) {
         setExchange(exchange);
     }
 
@@ -48,17 +53,28 @@ public abstract class SimpleProcessor<T extends LlamaBean> extends BaseProcessor
 
     @Override
     public void process() {
-        var beans = LlamaUtils.<T>asLlamaBeanList(this.exchange);
-        this.exchange.getIn().setBody(processData(beans));
+        var records = LlamaUtils.asLinkedListOfMaps(this.exchange);
+        this.initialRecords = records.size();
+
+        var modifiedRecords = processData(records);
+
+        // Set the count before applying header to avoid confusion
+        this.processedRecords = modifiedRecords.size();
+
+        if (super.includeHeader) {
+            modifiedRecords.add(0, getHeader(modifiedRecords.get(0).keySet()));
+        }
+
+        this.exchange.getIn().setBody(modifiedRecords);
     }
 
     /**
      * The result of this method will be what we give the exchange.
      * What we do with the passed in collection is decided in the subclasses that
      * will be forced to implement this method.
-     * @param beans the beans to modify
+     * @param records the beans to modify
      * @return the passed in beans, modified.
      */
-    public abstract List<T> processData(List<T> beans);
+    public abstract List<Map<String, String>> processData(List<Map<String, String>> records);
 
 }

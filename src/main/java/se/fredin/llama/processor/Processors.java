@@ -6,7 +6,7 @@ import se.fredin.llama.pojo.Fields;
 import se.fredin.llama.pojo.JoinType;
 import se.fredin.llama.pojo.Keys;
 import se.fredin.llama.processor.bean.FilterValidateAgainstBeansProcessor;
-import se.fredin.llama.processor.bean.TransformBeansProcessor;
+import se.fredin.llama.processor.bean.TransformBeansBeanProcessor;
 import se.fredin.llama.processor.bean.UnionBeansProcessor;
 import se.fredin.llama.processor.generic.CsvFilterProcessor;
 import se.fredin.llama.processor.generic.JoinCollectionsProcessor;
@@ -117,7 +117,7 @@ public class Processors {
     }
 
     /**
-     * Calls the {@link TransformBeansProcessor#doExecuteProcess()} on the passed in exchange
+     * Calls the {@link TransformBeansBeanProcessor#doExecuteProcess()} on the passed in exchange
      * modifying the content of its body with the transformFunction passed in.
      * Exchange body needs to be a collection of type {@link LlamaBean}.
      * @param exchange the exchange to transform
@@ -126,7 +126,7 @@ public class Processors {
      * @return the exchange passed in transformed.
      */
     public static <T extends LlamaBean> Exchange transform(Exchange exchange, Consumer<T> transformFunction) {
-        return new TransformBeansProcessor<>(exchange, transformFunction).doExecuteProcess();
+        return new TransformBeansBeanProcessor<>(exchange, transformFunction).doExecuteProcess();
     }
 
     /**

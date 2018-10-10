@@ -12,11 +12,15 @@ public abstract class GenericProcessor extends BaseProcessor {
 
     protected boolean includeHeader;
 
+    protected GenericProcessor() {
+        this(false);
+    }
+
     /**
      * Create a new instance
      * @param includeHeader whether or not to include the header row (default is false)
      */
-    public GenericProcessor(boolean includeHeader) {
+    protected GenericProcessor(boolean includeHeader) {
         this.includeHeader = includeHeader;
     }
 

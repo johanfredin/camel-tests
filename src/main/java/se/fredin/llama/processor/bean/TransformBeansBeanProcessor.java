@@ -2,7 +2,6 @@ package se.fredin.llama.processor.bean;
 
 import org.apache.camel.Exchange;
 import se.fredin.llama.bean.LlamaBean;
-import se.fredin.llama.processor.SimpleProcessor;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
  * Works with a single exchange that is expected to contain a body of a llama bean collection.
  * @param <T> any class extending {@link LlamaBean}
  */
-public class TransformBeansProcessor<T extends LlamaBean> extends SimpleProcessor<T> {
+public class TransformBeansBeanProcessor<T extends LlamaBean> extends SimpleBeanProcessor<T> {
 
     private Consumer<T> function;
 
@@ -22,7 +21,7 @@ public class TransformBeansProcessor<T extends LlamaBean> extends SimpleProcesso
      * @param exchange the exchange to modify
      * @param function the transform function to apply
      */
-    public TransformBeansProcessor(Exchange exchange, Consumer<T> function) {
+    public TransformBeansBeanProcessor(Exchange exchange, Consumer<T> function) {
         super(exchange);
         setFunction(function);
     }
