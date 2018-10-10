@@ -1,13 +1,9 @@
 package se.fredin.llama.processor.generic;
 
-import org.junit.Test;
 import se.fredin.llama.TestFixture;
-import se.fredin.llama.utils.LlamaUtils;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class CsvTransformProcessorTest extends SimpleGenericProcessorTest{
 
@@ -16,6 +12,10 @@ public class CsvTransformProcessorTest extends SimpleGenericProcessorTest{
         var records = TestFixture.mainEntries;
 
         assertEquals("Un filtered records=5", 5, records.size());
+        records.forEach(
+                m -> assertNotEquals("Age is not 100", "100", m.get("Age"))
+        );
+
 
         var processor = new CsvTransformProcessor(m -> m.put("Age", "100"), false);
         var result = processor.processData(records);

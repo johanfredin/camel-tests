@@ -49,27 +49,6 @@ public class Endpoint {
     /**
      * Create a new sql uri.
      *
-     * @param query the sql query
-     * @return a valid sql uri
-     */
-    public static String sql(String query) {
-        return sql(query, null, true, SqlResultType.ALL, null);
-    }
-
-    /**
-     * Create a new sql uri.
-     *
-     * @param query      the sql query
-     * @param dataSource name of the data source.
-     * @return a valid sql uri
-     */
-    public static String sql(String query, String dataSource) {
-        return sql(query, null, true, SqlResultType.ALL, dataSource);
-    }
-
-    /**
-     * Create a new sql uri.
-     *
      * @param query       the sql query
      * @param outputClass a valid JPA class that can represent the query.
      * @return a valid sql uri
