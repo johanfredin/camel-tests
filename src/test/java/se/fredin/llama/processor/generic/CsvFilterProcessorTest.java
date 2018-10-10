@@ -10,7 +10,7 @@ public class CsvFilterProcessorTest extends SimpleGenericProcessorTest {
 
     @Override
     public void testProcessData() {
-        var records = TestFixture.mainEntries;
+        var records = getEntries();
 
         assertEquals("Un filtered records=5", 5, records.size());
 

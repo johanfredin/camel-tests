@@ -2,6 +2,8 @@ package se.fredin.llama.processor.generic;
 
 import se.fredin.llama.TestFixture;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -9,7 +11,7 @@ public class CsvTransformProcessorTest extends SimpleGenericProcessorTest{
 
     @Override
     public void testProcessData() {
-        var records = TestFixture.mainEntries;
+        var records = new ArrayList<>(getEntries());
 
         assertEquals("Un filtered records=5", 5, records.size());
         records.forEach(

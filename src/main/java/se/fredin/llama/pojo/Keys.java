@@ -1,9 +1,6 @@
 package se.fredin.llama.pojo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +62,7 @@ public class Keys {
         var keyList = keys.entrySet()
                 .stream()
                 .map(e -> new JoinKey(e.getKey(), e.getValue()))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toCollection(LinkedList::new));
         return new Keys(keyList);
     }
 
