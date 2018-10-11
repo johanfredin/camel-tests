@@ -47,17 +47,14 @@ public class LlamaUtils {
         var trueStatementFound = false;
         for (var condition : conditions) {
             if (!condition) {
-                if (operator == "&&") {
+                if (operator.equals("&&")) {
                     return false;
                 }
+            } else {
+                trueStatementFound = true;
             }
-            trueStatementFound = true;
         }
-
-        if (operator == "||") {
-            return trueStatementFound;
-        }
-        return true;
+        return trueStatementFound;
     }
 
 
