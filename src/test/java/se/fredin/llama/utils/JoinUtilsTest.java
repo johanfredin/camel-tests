@@ -2,10 +2,14 @@ package se.fredin.llama.utils;
 
 import org.junit.Test;
 import se.fredin.llama.TestFixture;
+import se.fredin.llama.pojo.Fields;
 import se.fredin.llama.pojo.Keys;
+import se.fredin.llama.pojo.LlamaMap;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -13,10 +17,10 @@ public class JoinUtilsTest {
 
     @Test
     public void testGroupCollection() {
-        assertTrue("Param in is a list", TestFixture.mainEntries instanceof List);
+        assertNotNull("Param in is a list", TestFixture.mainEntries);
 
         var groupedCollection = JoinUtils.groupCollection(Keys.of("Id"), TestFixture.mainEntries);
-        assertTrue("Collection is not a map", groupedCollection instanceof Map);
+        assertNotNull("Collection is not a map", groupedCollection);
         assertEquals("Map size=4", 4, groupedCollection.size());
         assertEquals("2 records where Id=1", 2, groupedCollection.get("1").size());
         assertEquals("1 records where Id=2", 1, groupedCollection.get("2").size());
@@ -36,31 +40,80 @@ public class JoinUtilsTest {
     @Test
     public void testKeysAsStringKeyInJoining() {
         var keysAsString = JoinUtils.keysAsString(TestFixture.joiningEntries.get(0),
-                Keys.of(Map.of(
+                Keys.of(LlamaMap.of(
                         "DummyKeyInMain", "Id",
                         "DummyPetInMain", "Pet",
                         "DummyColorInMain", "Color"
                 )), JoinUtils.EXCHANGE_JOINING);
-        
-        assertEquals("Combined key length=", "1DogBlue".length(), keysAsString.length());
-        assertTrue("Key contains 1", keysAsString.contains("1"));
-        assertTrue("Key contains Dog", keysAsString.contains("Dog"));
-        assertTrue("Key contains Blue", keysAsString.contains("Blue"));
+
+        assertEquals("Combined key=", "1DogBlue", keysAsString);
     }
 
     @Test
-    public void fetchHeader() {
+    public void testGroupingEnsureSameKeys() {
+        Keys keys = Keys.of("Id", "Name", "Age");
+
+        var bigList = new ArrayList<Map<String, String>>();
+        IntStream.range(0, 20000).forEachOrdered(i -> {
+            if (i < 15000) {
+                var mapInList = Map.of("Id", "1", "Name", "Lars", "Age", "20");
+                assertEquals("Combined key=1Lars20", "1Lars20",
+                        JoinUtils.keysAsString(mapInList, keys, JoinUtils.EXCHANGE_MAIN));
+                bigList.add(mapInList);
+            } else {
+                var mapInList = Map.of("Id", "2", "Name", "Lena", "Age", "30");
+                assertEquals("Combined key=2Lena30", "2Lena30",
+                        JoinUtils.keysAsString(mapInList, keys, JoinUtils.EXCHANGE_MAIN));
+                bigList.add(mapInList);
+            }
+        });
+
+        var groupedCollection = JoinUtils.groupCollection(keys, bigList);
+        assertEquals("There should be 2 collections in map", 2, groupedCollection.size());
+        assertEquals("15000 entries with key=1Lars20", 15000, groupedCollection.get("1Lars20").size());
+        assertEquals("5000 entries with key=2Lena30", 5000, groupedCollection.get("2Lena30").size());
     }
 
     @Test
-    public void getFields() {
+    public void testFetchHeader() {
+        var header = JoinUtils.fetchHeader(JoinUtils.groupCollection(Keys.of("Id"), TestFixture.mainEntries));
+        assertEquals("Headers fetched=3", 3, header.size());
+        assertTrue("Header contains Id", header.contains("Id"));
+        assertTrue("Header contains Name", header.contains("Name"));
+        assertTrue("Header contains Age", header.contains("Age"));
     }
 
     @Test
-    public void createDummyMap() {
+    public void testGetFields() {
+        var fields = JoinUtils.getFields(
+                Map.of("Id", "1", "Name", "Lars", "Age", "25"),
+                Fields.of(LlamaMap.of("Name", "Nombre", "Age", "Edad"))
+        );
+
+        assertEquals("Value of out field Nombre=Lars", "Lars", fields.get("Nombre"));
+        assertEquals("Value of out field Edad=25", "25", fields.get("Edad"));
+
+        assertNull("Original field name=Name no longer in map", fields.get("Name"));
+        assertNull("Original field name=Age no longer in map", fields.get("Age"));
+
+        assertEquals("Out map contains 2 entries", 2, fields.size());
     }
 
     @Test
-    public void createMergedMap() {
+    public void testCreateDummyMap() {
+        var dummyMap = JoinUtils.createDummyMap(Set.of("Id", "Name", "Age"), Fields.of(LlamaMap.of("Id", "Identifier", "Name", "Namn")));
+        assertEquals("Value of out field Identifier=\"\"", "", dummyMap.get("Identifier"));
+        assertEquals("Value of out field Namn=\"\"", "", dummyMap.get("Namn"));
+
+        assertNull("Original field name=Id no longer in map", dummyMap.get("Id"));
+        assertNull("Original field name=Name no longer in map", dummyMap.get("Name"));
+
+        assertEquals("Out map contains 2 entries", 2, dummyMap.size());
+    }
+
+    @Test
+    public void testCreateMergedMap() {
+        var mergedMap = JoinUtils.createMergedMap(TestFixture.mainEntries.get(0), TestFixture.joiningEntries.get(0));
+        assertEquals("Merged amount of entries=5", 5, mergedMap.entrySet().size());
     }
 }
