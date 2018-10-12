@@ -28,83 +28,89 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test</artifactId>
-            <version>2.22.1</version>
+            <version>RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.wiztools</groupId>
+            <artifactId>xsd-gen</artifactId>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.6</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-bindy</artifactId>
-            <version>2.22.1</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jacksonxml</artifactId>
-            <version>2.22.1</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jackson</artifactId>
-            <version>2.22.1</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-xstream</artifactId>
-            <version>2.22.1</version>
+            <version>RELEASE</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jaxb</artifactId>
-            <version>2.22.1</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-csv</artifactId>
-            <version>2.22.1</version>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.11.1</version>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.11.1</version>
+            <version>RELEASE</version>
         </dependency>
 
         <!-- JAXB is no longer included in Java10 module path, this is the safest way to inclue it -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>2.3.0.1</version>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.4.0-b180830.0438</version>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
-            <version>1.1.1</version>
+            <version>RELEASE</version>
         </dependency>
 
     </dependencies>
@@ -160,22 +166,22 @@
         </plugins>
     </build>
 
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>jitpack.io</id>-->
-            <!--<url>https://jitpack.io</url>-->
-        <!--</repository>-->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
 
-        <!--<repository>-->
-            <!--<id>llama-mvn-repo</id>-->
-            <!--<url>https://raw.github.com/johanfredin/llama/mvn-repo/</url>-->
+        <repository>
+            <id>llama-mvn-repo</id>
+            <url>https://raw.github.com/johanfredin/llama/mvn-repo/</url>
 
-            <!--<snapshots>-->
-                <!--<enabled>true</enabled>-->
-                <!--<updatePolicy>always</updatePolicy>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
 
-    <!--</repositories>-->
+    </repositories>
 
 </project>
