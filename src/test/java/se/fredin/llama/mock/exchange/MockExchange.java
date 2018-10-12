@@ -98,7 +98,7 @@ public class MockExchange implements Exchange {
 
     @Override
     public void setIn(Message in) {
-
+        this.message = (MockMessage) in;
     }
 
     @Override

@@ -6,6 +6,7 @@ import se.fredin.llama.bean.MockItem;
 import se.fredin.llama.bean.MockItemAsset;
 import se.fredin.llama.mock.exchange.MockExchange;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,13 @@ public class TestFixture {
 
     public static List<MockItemAsset> getMockItemAssets(MockItemAsset... mockItemAssets) {
         return Arrays.asList(mockItemAssets);
+    }
+
+    public static List<MockItem> getMockItems() {
+        return new ArrayList<>(List.of(
+                new MockItem("Abc123", "Samsung"),
+                new MockItem("Abc1234", "Sony")
+        ));
     }
 
     public static <T extends LlamaBean> Exchange getMockExchange(List<T> mockBody) {
