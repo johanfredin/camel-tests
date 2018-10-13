@@ -41,7 +41,7 @@ public class LlamaUtils {
      *
      * @param operator   whether all or any of the conditions should be true
      * @param conditions conditions to check
-     * @return true if operator=&& and all conditions are true or operator=|| and any of the conditions are true.
+     * @return true if operator=&amp;&amp; and all conditions are true or operator=&#124;&#124; and any of the conditions are true.
      */
     public static boolean isTrue(String operator, boolean... conditions) {
         var trueStatementFound = false;

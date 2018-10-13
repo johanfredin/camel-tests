@@ -68,6 +68,7 @@ public class Processors {
      * @param mainExchange    the main exchange.
      * @param joiningExchange the exchange we are joining in.
      * @param keys            the keys. Must exist as fields in both exchanges.
+     * @param includeHeader   whether to include the header row or not.
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()} with public static values for joinType, entity1Fields, entity2Fields.
      */
     public static Exchange join(Exchange mainExchange, Exchange joiningExchange, Keys keys, boolean includeHeader) {

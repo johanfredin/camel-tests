@@ -2,7 +2,7 @@ package se.fredin.llama.utils;
 
 /**
  * Builds URI strings that can be used with the {@link org.apache.camel.model.RouteDefinition}.
- * Instead of having to write <b>from("file:home/user/somedir?someFile.file&noop=true</b>
+ * Instead of having to write <b>from("file:home/user/somedir?someFile.file&amp;noop=true</b>
  * We could call <b>from(Endpoint.file("home/user/somedir", "someFile.file"))</b>.
  * There are also methods for building sql uris.
  *

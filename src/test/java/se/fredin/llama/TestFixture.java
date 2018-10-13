@@ -1,6 +1,7 @@
 package se.fredin.llama;
 
 import org.apache.camel.Exchange;
+import org.junit.Ignore;
 import se.fredin.llama.bean.LlamaBean;
 import se.fredin.llama.bean.MockItem;
 import se.fredin.llama.bean.MockItemAsset;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@Ignore
 public class TestFixture {
 
     public static List<Map<String, String>> mainEntries = List.of(
