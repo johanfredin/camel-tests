@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
  */
 public class CsvFilterProcessor extends SimpleGenericProcessor {
 
-    private Exchange exchange;
     private Predicate<Map<String, String>> filterFunction;
 
     /**
@@ -26,8 +25,7 @@ public class CsvFilterProcessor extends SimpleGenericProcessor {
      * @param includeHeader  whether or not to include the header row in the resulting exchange
      */
     protected CsvFilterProcessor(Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
-        this.includeHeader = includeHeader;
-        this.filterFunction = filterFunction;
+        this(null, filterFunction, includeHeader);
     }
 
     /**
@@ -50,23 +48,9 @@ public class CsvFilterProcessor extends SimpleGenericProcessor {
      * @param includeHeader  whether or not to include the header row in the resulting exchange
      */
     public CsvFilterProcessor(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
+        this.exchange = exchange;
         this.includeHeader = includeHeader;
-        this.exchange = exchange;
         this.filterFunction = filterFunction;
-    }
-
-    /**
-     * @return the exchange containing the body we want to filter
-     */
-    public Exchange getExchange() {
-        return exchange;
-    }
-
-    /**
-     * @param exchange the exchange containing the body we want to filter
-     */
-    public void setExchange(Exchange exchange) {
-        this.exchange = exchange;
     }
 
     /**
