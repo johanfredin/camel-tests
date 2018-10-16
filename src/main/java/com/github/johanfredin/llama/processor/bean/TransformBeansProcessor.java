@@ -12,29 +12,29 @@ import java.util.stream.Collectors;
  * Works with a single exchange that is expected to contain a body of a llama bean collection.
  * @param <T> any class extending {@link LlamaBean}
  */
-public class TransformBeansBeanProcessor<T extends LlamaBean> extends SimpleBeanProcessor<T> {
+public class TransformBeansProcessor<T extends LlamaBean> extends SimpleBeanProcessor<T> {
 
     private Consumer<T> function;
 
     /**
      * Create a new instance
      * @param exchange the exchange to modify
-     * @param function the transform function to apply
+     * @param function the transformBeans function to apply
      */
-    public TransformBeansBeanProcessor(Exchange exchange, Consumer<T> function) {
+    public TransformBeansProcessor(Exchange exchange, Consumer<T> function) {
         super(exchange);
         setFunction(function);
     }
 
     /**
-     * @param function the transform function to apply
+     * @param function the transformBeans function to apply
      */
     private void setFunction(Consumer<T> function) {
         this.function = function;
     }
 
     /**
-     * @return the transform function to apply
+     * @return the transformBeans function to apply
      */
     public Consumer<T> getFunction() {
         return function;

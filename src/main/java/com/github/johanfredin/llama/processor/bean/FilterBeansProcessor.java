@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * Filters a collection of llama beans based on the predicate passed in.
  * @param <T> any class extending {@link LlamaBean}
  */
-public class FilterBeansBeanProcessor<T extends LlamaBean> extends SimpleBeanProcessor<T> {
+public class FilterBeansProcessor<T extends LlamaBean> extends SimpleBeanProcessor<T> {
 
     private Predicate<T> function;
 
@@ -20,7 +20,7 @@ public class FilterBeansBeanProcessor<T extends LlamaBean> extends SimpleBeanPro
      * @param exchange the exchange whose body we are going to filter
      * @param function the filter function to apply.
      */
-    public FilterBeansBeanProcessor(Exchange exchange, Predicate<T> function) {
+    public FilterBeansProcessor(Exchange exchange, Predicate<T> function) {
         super(exchange);
         setFunction(function);
     }

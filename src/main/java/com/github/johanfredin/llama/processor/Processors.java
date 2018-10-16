@@ -1,15 +1,17 @@
 package com.github.johanfredin.llama.processor;
 
-import org.apache.camel.Exchange;
 import com.github.johanfredin.llama.bean.LlamaBean;
 import com.github.johanfredin.llama.pojo.Fields;
 import com.github.johanfredin.llama.pojo.JoinType;
 import com.github.johanfredin.llama.pojo.Keys;
+import com.github.johanfredin.llama.processor.bean.FilterBeansProcessor;
 import com.github.johanfredin.llama.processor.bean.FilterValidateAgainstBeansProcessor;
-import com.github.johanfredin.llama.processor.bean.TransformBeansBeanProcessor;
+import com.github.johanfredin.llama.processor.bean.TransformBeansProcessor;
 import com.github.johanfredin.llama.processor.bean.UnionBeansProcessor;
 import com.github.johanfredin.llama.processor.generic.CsvFilterProcessor;
+import com.github.johanfredin.llama.processor.generic.CsvTransformProcessor;
 import com.github.johanfredin.llama.processor.generic.JoinCollectionsProcessor;
+import org.apache.camel.Exchange;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -125,41 +127,81 @@ public class Processors {
     }
 
     /**
-     * Calls the {@link TransformBeansBeanProcessor#doExecuteProcess()} on the passed in exchange
+     * Calls the {@link TransformBeansProcessor#doExecuteProcess()} on the passed in exchange
      * modifying the content of its body with the transformFunction passed in.
      * Exchange body needs to be a collection of type {@link LlamaBean}.
      *
-     * @param exchange          the exchange to transform
-     * @param transformFunction the transform function.
+     * @param exchange          the exchange to transformBeans
+     * @param transformFunction the transformBeans function.
      * @param <T>               any type extending {@link LlamaBean}
      * @return the exchange passed in transformed.
      */
-    public static <T extends LlamaBean> Exchange transform(Exchange exchange, Consumer<T> transformFunction) {
-        return new TransformBeansBeanProcessor<>(exchange, transformFunction).doExecuteProcess();
+    public static <T extends LlamaBean> Exchange transformBeans(Exchange exchange, Consumer<T> transformFunction) {
+        return new TransformBeansProcessor<>(exchange, transformFunction).doExecuteProcess();
     }
 
     /**
-     * Calls the {@link CsvFilterProcessor} on the passed in exchange, filtering
-     * the body of the exchange according to passed in filterFunction.
+     * Calls the {@link CsvTransformProcessor#doExecuteProcess()} on the passed in exchange
+     * modifying the content of its body with the transformFunction passed in.
+     * Header will not be included.
+     * Exchange body needs to be a collection of type {@link Map}s with key/value={@link String}.
      *
-     * @param exchange       the exchange to transform
-     * @param filterFunction the filter function.
-     * @return the exchange passed in filtered.
+     * @param exchange          the exchange to transformBeans
+     * @param transformFunction the transformBeans function.
+     * @return the exchange passed in transformed.
      */
-    public static Exchange filter(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
-        return filter(exchange, filterFunction, false);
+    public static Exchange transformCollection(Exchange exchange, Consumer<Map<String, String>> transformFunction) {
+        return transformCollection(exchange, transformFunction, false);
     }
 
     /**
-     * Calls the {@link CsvFilterProcessor} on the passed in exchange, filtering
-     * the body of the exchange according to passed in filterFunction.
+     * Calls the {@link CsvTransformProcessor#doExecuteProcess()} on the passed in exchange
+     * modifying the content of its body with the transformFunction passed in.
+     * Exchange body needs to be a collection of type {@link Map}s with key/value={@link String}.
      *
-     * @param exchange       the exchange to transform
-     * @param filterFunction the filter function
-     * @param includeHeader  whether or not to include the header row (public static is false)
-     * @return the exchange passed in filtered.
+     * @param exchange          the exchange to transformBeans
+     * @param transformFunction the transformBeans function.
+     * @param includeHeader     whether or not to include the header row in the result.
+     * @return the exchange passed in transformed.
      */
-    public static Exchange filter(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
+    public static Exchange transformCollection(Exchange exchange, Consumer<Map<String, String>> transformFunction, boolean includeHeader) {
+        return new CsvTransformProcessor(exchange, transformFunction, includeHeader).doExecuteProcess();
+    }
+
+    /**
+     * Calls the {@link FilterBeansProcessor#doExecuteProcess()} on the passed in exchange
+     * modifying the content of its body with the filterFunction passed in.
+     * Exchange body needs to be a collection of type {@link LlamaBean}.
+     *
+     * @param exchange       the exchange to transformBeans
+     * @param filterFunction how to filter the bean collection.
+     * @param <T>            any type extending {@link LlamaBean}
+     * @return the exchange passed in transformed.
+     */
+    public static <T extends LlamaBean> Exchange filterBeans(Exchange exchange, Predicate<T> filterFunction) {
+        return new FilterBeansProcessor<>(exchange, filterFunction).doExecuteProcess();
+    }
+
+    /**
+     * Creates a new {@link CsvFilterProcessor} without a resulting header and returns its doExecuteProcess method
+     *
+     * @param exchange       the exchange to filter
+     * @param filterFunction the filter function (hint: use lambda!)
+     * @return the exchange with a filtered body
+     */
+    public static Exchange filterCollection(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
+        return filterCollection(exchange, filterFunction, false);
+    }
+
+    /**
+     * Creates a new {@link CsvFilterProcessor} and returns its doExecuteProcess method
+     *
+     * @param exchange       the exchange to filter
+     * @param filterFunction the filter function (hint: use lambda!)
+     * @param includeHeader  whether or not to make the first entry in the resulting collection the header row
+     * @return the exchange with a filtered body
+     */
+    public static Exchange filterCollection(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
         return new CsvFilterProcessor(exchange, filterFunction, includeHeader).doExecuteProcess();
     }
 
@@ -196,29 +238,6 @@ public class Processors {
      */
     public static <T1 extends LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange, JoinType jointype) {
         return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExchange, jointype).doExecuteProcess();
-    }
-
-    /**
-     * Creates a new {@link CsvFilterProcessor} without a resulting header and returns its doExecuteProcess method
-     *
-     * @param exchange       the exchange to filter
-     * @param filterFunction the filter function (hint: use lambda!)
-     * @return the exchange with a filtered body
-     */
-    public static Exchange filterCollection(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
-        return filterCollection(exchange, filterFunction, false);
-    }
-
-    /**
-     * Creates a new {@link CsvFilterProcessor} and returns its doExecuteProcess method
-     *
-     * @param exchange       the exchange to filter
-     * @param filterFunction the filter function (hint: use lambda!)
-     * @param includeHeader  whether or not to make the first entry in the resulting collection the header row
-     * @return the exchange with a filtered body
-     */
-    public static Exchange filterCollection(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
-        return new CsvFilterProcessor(exchange, filterFunction, includeHeader).doExecuteProcess();
     }
 
 }

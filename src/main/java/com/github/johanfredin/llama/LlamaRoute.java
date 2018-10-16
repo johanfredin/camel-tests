@@ -54,11 +54,31 @@ public abstract class LlamaRoute extends RouteBuilder {
      *                     specification.
      * @param endpoint     the endpoint to send the the route to. Will be started with "seda:"
      * @param startupOrder the startup order of this route.
-     * @return the endpoint.
+     * @return the name of the endpoint.
      */
     protected String getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder) {
+        return getRoute(routeId, directory, fileName, clazz, endpoint, startupOrder, true);
+    }
+
+    /**
+     * When we have a file that can be used with {@link BindyType} to unmarshal into a collection
+     * of beans mapped up as bindy objects and then passed further to a seda endpoint
+     * to be picked up later by another route. This method does just that.
+     *
+     * @param routeId      the id to give the route
+     * @param directory    the directory of the file we want to fetch.
+     * @param fileName     the name of the file we want to fetch.
+     * @param clazz        the class to unmarshal the data from the file to. Needs to follow the {@link BindyType}
+     *                     specification.
+     * @param endpoint     the endpoint to send the the route to. Will be started with "seda:"
+     * @param startupOrder the startup order of this route.
+     * @param autoStart    whether or not the route should automatically or not (default is true)
+     * @return the name of the endpoint.
+     */
+    protected String getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder, boolean autoStart) {
         from(Endpoint.file(directory, fileName))
                 .routeId(routeId)
+                .autoStartup(autoStart)
                 .unmarshal()
                 .bindy(BindyType.Csv, clazz)
                 .to("seda:" + endpoint)
@@ -80,8 +100,26 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @return the endpoint name
      */
     protected String getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder) {
+        return getRoute(routeId, directory, fileName, endpoint, startupOrder, true);
+    }
+
+    /**
+     * Simplified way to get a route up and running. Reads from a file expected to be of .csv format.
+     * Converts the content of that file to a collection of ordered maps. Sends to a seda:endpoint and gives
+     * it a startup order.
+     *
+     * @param routeId      the unique id to give the route
+     * @param directory    the directory where the csv file is expected to exits
+     * @param fileName     name of the csv file to read
+     * @param endpoint     name of the endpoint (seda: will be appended before the value you pass in)
+     * @param startupOrder the startup order of the route
+     * @param autoStart    whether or not the route should automatically or not (default is true)
+     * @return the endpoint name
+     */
+    protected String getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder, boolean autoStart) {
         from(Endpoint.file(directory, fileName))
                 .routeId(routeId)
+                .autoStartup(autoStart)
                 .unmarshal(csvToCollectionOfMaps())
                 .to("seda:" + endpoint)
                 .startupOrder(startupOrder);
