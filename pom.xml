@@ -33,7 +33,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/johanfredin/llama.git</connection>
-        <developerConnection>scm:git:https://github.com:johanfredin/llama.git</developerConnection>
+        <developerConnection>scm:git:ssh://github.com:johanfredin/llama.git</developerConnection>
         <url>http://github.com/johanfredin/llama</url>
     </scm>
 
