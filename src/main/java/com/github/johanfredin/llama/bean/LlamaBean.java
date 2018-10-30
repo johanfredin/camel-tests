@@ -8,7 +8,7 @@ import java.io.Serializable;
  * {@link #getId()} method is used by all the processor classes under the /bean package that operates
  * on collections/maps of llama beans to identify the records.
  *
- * @author johan johanfredin
+ * @author johanfredin
  */
 public interface LlamaBean extends Serializable {
 

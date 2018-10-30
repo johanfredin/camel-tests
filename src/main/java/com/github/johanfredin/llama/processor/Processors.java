@@ -11,6 +11,7 @@ import com.github.johanfredin.llama.processor.bean.UnionBeansProcessor;
 import com.github.johanfredin.llama.processor.generic.CsvFilterProcessor;
 import com.github.johanfredin.llama.processor.generic.CsvTransformProcessor;
 import com.github.johanfredin.llama.processor.generic.JoinCollectionsProcessor;
+import com.github.johanfredin.llama.processor.generic.MergeCollectionsProcessor;
 import org.apache.camel.Exchange;
 
 import java.util.Map;
@@ -238,6 +239,14 @@ public class Processors {
      */
     public static <T1 extends LlamaBean, T2 extends LlamaBean> Exchange filterValidateAgainst(Exchange mainExchange, Exchange joiningExchange, JoinType jointype) {
         return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExchange, jointype).doExecuteProcess();
+    }
+
+    public static Exchange merge(Exchange mainExchang, Exchange mergingExchange) {
+        return merge(mainExchang, mergingExchange, false);
+    }
+
+    public static Exchange merge(Exchange mainExchang, Exchange mergingExchange, boolean includeHeader) {
+        return new MergeCollectionsProcessor(mainExchang, mergingExchange, includeHeader).doExecuteProcess();
     }
 
 }
