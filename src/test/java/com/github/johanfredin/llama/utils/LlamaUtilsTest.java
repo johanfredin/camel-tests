@@ -6,7 +6,7 @@ import com.github.johanfredin.llama.TestFixture;
 import com.github.johanfredin.llama.bean.LlamaBean;
 import com.github.johanfredin.llama.mock.exchange.MockExchange;
 import com.github.johanfredin.llama.mock.exchange.MockMessage;
-import com.github.johanfredin.llama.pojo.LlamaMap;
+import com.github.johanfredin.llama.collection.LlamaMap;
 
 import java.io.Serializable;
 import java.util.*;

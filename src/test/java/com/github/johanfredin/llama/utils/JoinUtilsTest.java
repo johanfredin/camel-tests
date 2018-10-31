@@ -4,7 +4,7 @@ import org.junit.Test;
 import com.github.johanfredin.llama.TestFixture;
 import com.github.johanfredin.llama.pojo.Fields;
 import com.github.johanfredin.llama.pojo.Keys;
-import com.github.johanfredin.llama.pojo.LlamaMap;
+import com.github.johanfredin.llama.collection.LlamaMap;
 
 import java.util.ArrayList;
 import java.util.Map;

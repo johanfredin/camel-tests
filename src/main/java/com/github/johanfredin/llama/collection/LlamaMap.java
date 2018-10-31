@@ -1,6 +1,7 @@
-package com.github.johanfredin.llama.pojo;
+package com.github.johanfredin.llama.collection;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Extension of {@link LinkedHashMap} with the methods
@@ -49,5 +50,24 @@ public class LlamaMap<K, V> extends LinkedHashMap<K, V> {
         map.put(k4, v4);
         map.put(k5, v5);
         return map;
+    }
+
+    public LlamaMap(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
+
+    public LlamaMap(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public LlamaMap() {
+    }
+
+    public LlamaMap(Map<? extends K, ? extends V> m) {
+        super(m);
+    }
+
+    public LlamaMap(int initialCapacity, float loadFactor, boolean accessOrder) {
+        super(initialCapacity, loadFactor, accessOrder);
     }
 }
