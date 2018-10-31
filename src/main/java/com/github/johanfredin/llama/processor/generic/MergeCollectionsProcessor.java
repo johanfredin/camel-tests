@@ -13,8 +13,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Simplified version of the {@link JoinCollectionsProcessor}. This processor simply
- * merges the content of 2 collections into one. Merging happens the following way:
+ * This processor simply merges the content of 2 collections into one.
+ * This would be useful when we have similar collections that we just want to squash into one.
+ * Unlike the {@link JoinCollectionsProcessor} the MergeCollectionsProcessor will not match any
+ * records. Merging here simply means first add everything in the main exchange and then everything in the
+ * merging exchange and return that in one combined collection. Like so:
  * <ul>
  *     <li>Header fields (key-set) are combined into one</li>
  *     <li>Content of the first exchange is added</li>
@@ -38,13 +41,26 @@ import java.util.stream.Collectors;
  *  1;Joe;25;;<br/>
  *  2;;;Programmer;info@mail.com
  *  <br/>
+ *  <br/>
+ * As with every other {@link GenericProcessor} the body of the exchanges are expected to
+ * be a List of Maps
  *
  * @author johan fredin
  */
 public class MergeCollectionsProcessor extends AbstractJoinProcessor {
 
+    /**
+     * Create a new empty instance. Package private, used for
+     * unit testing only.
+     */
     MergeCollectionsProcessor() {}
 
+    /**
+     * Create a new instance
+     * @param main the main exchange
+     * @param joining the exchange we want to merge with the main exchange.
+     * @param includeHeader whether or not to include the header (default is false)
+     */
     public MergeCollectionsProcessor(Exchange main, Exchange joining, boolean includeHeader) {
         super(main, joining, null);
         this.includeHeader = includeHeader;
@@ -66,6 +82,13 @@ public class MergeCollectionsProcessor extends AbstractJoinProcessor {
         this.main.getIn().setBody(result);
     }
 
+    /**
+     * Combines the headers (key-sets) into one collection and then
+     * adds both the content of the main and the merging exchange into one collection.
+     * @param mainList the body of the main exchange
+     * @param mergeList the body of the merging exchange
+     * @return the content of the main and the merging exchange in one collection.
+     */
     List<Map<String, String>> merge(List<Map<String, String>> mainList, List<Map<String, String>> mergeList) {
         var keys = LlamaList.of(mainList.get(0).keySet(), mergeList.get(0).keySet());
         return LlamaList.of(getContent(mainList, keys), getContent(mergeList, keys));
