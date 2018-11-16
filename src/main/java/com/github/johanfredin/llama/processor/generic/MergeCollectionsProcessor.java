@@ -24,24 +24,24 @@ import java.util.stream.Collectors;
  *     <li>Content of the second exchange is added</li>
  *     <li>Values that does not exist in the other exchange come out as empty strings</li>
  * </ul>
- * <br/>
+ * <br>
  * <b>Example:</b><br>
- * <p/>
- * <u>Exchange 1</u><br/>
- * Id;Name;Age<br/>
+ * <p>
+ * <u>Exchange 1</u><br>
+ * Id;Name;Age<br>
  * 1;Joe;25
- * <p/>
- *  <u>Exchange 1</u><br/>
- *  Id;Profession;Email<br/>
+ * <p>
+ *  <u>Exchange 1</u><br>
+ *  Id;Profession;Email<br>
  *  2;Programmer;info@mail.com
  *  
- *  <p/>
+ *  <p>
  *  <u>Result</u><br>
- *  Id;Name;Age;Profession;Email<br/>
- *  1;Joe;25;;<br/>
+ *  Id;Name;Age;Profession;Email<br>
+ *  1;Joe;25;;<br>
  *  2;;;Programmer;info@mail.com
- *  <br/>
- *  <br/>
+ *  <br>
+ *  <br>
  * As with every other {@link GenericProcessor} the body of the exchanges are expected to
  * be a List of Maps
  *
