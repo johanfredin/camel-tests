@@ -192,13 +192,69 @@ public abstract class LlamaRoute extends RouteBuilder {
      * be useful when we have a really big amount of data or we simply don't care if the values
      * are ordered or not.
      *
+     * @param isOrderedMaps whether to use ordered maps or standard maps (default is true)
+     * @param format a pre-defined csv format to use.
+     * @return the content of a .csv file as a list of ordered (or standard) maps.
+     */
+    protected CsvDataFormat csvToCollectionOfMaps(boolean isOrderedMaps, CsvDataFormat format) {
+        if (isOrderedMaps) {
+            format.setUseOrderedMaps(true);
+        } else {
+            format.setUseMaps(true);
+        }
+        return format;
+    }
+
+    /**
+     * Converts the content of a .csv file into a list of maps where key/values are all strings.
+     * Each entry in the list will be a map where <b>key=header name, value=value at header index.</b>.
+     * Here we have the option to disable ordered maps and use standard maps. This could potentially
+     * be useful when we have a really big amount of data or we simply don't care if the values
+     * are ordered or not.
+     *
      * @param delimiter     the delimiter used to separate the fields in the .csv file (default is ';')
      * @param isOrderedMaps whether to use ordered maps or standard maps (default is true)
      * @return the content of a .csv file as a list of ordered (or standard) maps.
      */
     protected CsvDataFormat csvToCollectionOfMaps(char delimiter, boolean isOrderedMaps) {
+        return csvToCollectionOfMaps(isOrderedMaps, delimiter, false, '"', true,
+                null, false, "", false);
+    }
+
+    /**
+     * Converts the content of a .csv file into a list of maps where key/values are all strings.
+     * Each entry in the list will be a map where <b>key=header name, value=value at header index.</b>.
+     * Here we have the option to disable ordered maps and use standard maps.
+     * Ordered maps are required if we need to make sure the fields are given to the map and returned in the same
+     * order as in the file. If we have a really big amount of data or we simply don't care if the values
+     * are ordered or not then set this to false
+     *
+     * @param isOrderedMaps whether to use ordered maps or standard maps
+     * @param delimiter the character used to separate the csv columns
+     * @param allowMissingColumnNames whether to allow if a column is missing or not
+     * @param escapeChar character that should be interpreted as an escape character
+     * @param ignoreEmptyLines whether or not to skip an empty line in the file
+     * @param quoteChar if fields are wrapped in quotes we should specify what character is used for that. Pass in null if
+     *                  no quote char is used in the file.
+     * @param skipHeaderRecord whether or not to skip the header record.
+     * @param nullValue a default value to use when we encounter null in a column.
+     * @param ignoreSurroundingSpaces whether or not to skip spaces before and after a column field value.
+     * @return the content of a .csv file as a list of ordered (or standard) maps.
+     */
+    protected CsvDataFormat csvToCollectionOfMaps(boolean isOrderedMaps, char delimiter, boolean allowMissingColumnNames,
+                                                  char escapeChar, boolean ignoreEmptyLines, Character quoteChar, boolean skipHeaderRecord,
+                                                  String nullValue, boolean ignoreSurroundingSpaces) {
         var format = new CsvDataFormat();
         format.setDelimiter(delimiter);
+        format.setAllowMissingColumnNames(allowMissingColumnNames);
+        format.setEscape(escapeChar);
+        format.setIgnoreEmptyLines(ignoreEmptyLines);
+        if(quoteChar != null) {
+            format.setQuote(quoteChar);
+        }
+        format.setSkipHeaderRecord(skipHeaderRecord);
+        format.setNullString(nullValue);
+        format.setIgnoreSurroundingSpaces(ignoreSurroundingSpaces);
         if (isOrderedMaps) {
             format.setUseOrderedMaps(true);
         } else {

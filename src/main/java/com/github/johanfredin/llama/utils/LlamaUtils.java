@@ -1,7 +1,7 @@
 package com.github.johanfredin.llama.utils;
 
-import org.apache.camel.Exchange;
 import com.github.johanfredin.llama.bean.LlamaBean;
+import org.apache.camel.Exchange;
 
 import java.io.Serializable;
 import java.util.*;
@@ -213,4 +213,5 @@ public class LlamaUtils {
                 .stream()
                 .allMatch(me -> me.getKey().equals(me.getValue()));
     }
+
 }

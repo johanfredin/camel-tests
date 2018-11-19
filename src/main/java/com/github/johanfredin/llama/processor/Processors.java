@@ -241,12 +241,27 @@ public class Processors {
         return new <T1, T2>FilterValidateAgainstBeansProcessor(mainExchange, joiningExchange, jointype).doExecuteProcess();
     }
 
-    public static Exchange merge(Exchange mainExchang, Exchange mergingExchange) {
-        return merge(mainExchang, mergingExchange, false);
+    /**
+     * Invokes a new instance of {@link MergeCollectionsProcessor} with the passed in params and returns its <b>doExecuteProcess</b> method.
+     * For more info see the {@link MergeCollectionsProcessor} doc.
+     * @param mainExchange the main exchange
+     * @param mergingExchange the exchange to merge into the main exchange
+     * @return the 2 exchanges merged
+     */
+    public static Exchange merge(Exchange mainExchange, Exchange mergingExchange) {
+        return merge(mainExchange, mergingExchange, false);
     }
 
-    public static Exchange merge(Exchange mainExchang, Exchange mergingExchange, boolean includeHeader) {
-        return new MergeCollectionsProcessor(mainExchang, mergingExchange, includeHeader).doExecuteProcess();
+    /**
+     * Invokes a new instance of {@link MergeCollectionsProcessor} with the passed in params and returns its <b>doExecuteProcess</b> method.
+     * For more info see the {@link MergeCollectionsProcessor} doc.
+     * @param mainExchange the main exchange
+     * @param mergingExchange the exchange to merge into the main exchange
+     * @param includeHeader whether or not to include the header in the result.
+     * @return the 2 exchanges merged
+     */
+    public static Exchange merge(Exchange mainExchange, Exchange mergingExchange, boolean includeHeader) {
+        return new MergeCollectionsProcessor(mainExchange, mergingExchange, includeHeader).doExecuteProcess();
     }
 
 }
