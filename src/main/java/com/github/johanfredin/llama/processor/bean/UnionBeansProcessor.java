@@ -1,9 +1,24 @@
+/**
+ * Copyright 2018 Johan Fredin
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.johanfredin.llama.processor.bean;
 
-import org.apache.camel.Exchange;
 import com.github.johanfredin.llama.bean.LlamaBean;
 import com.github.johanfredin.llama.processor.BaseProcessor;
 import com.github.johanfredin.llama.utils.LlamaUtils;
+import org.apache.camel.Exchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +30,9 @@ public class UnionBeansProcessor extends BaseProcessor {
 
     private Exchange resultingExchange;
 
-    public UnionBeansProcessor() {}
-
     public UnionBeansProcessor(Exchange mergingExchange, Exchange mainExchange) {
-        setMergingExchange(mergingExchange);
-        setMainExchange(mainExchange);
+        this.setMergingExchange(mergingExchange);
+        this.setMainExchange(mainExchange);
     }
 
     public Exchange getMergingExchange() {
@@ -45,7 +58,7 @@ public class UnionBeansProcessor extends BaseProcessor {
         if (this.mainExchange == null) {
             beans = new ArrayList<>();
 
-            if(newBean != null) {
+            if (newBean != null) {
                 beans.add(newBean);
             }
 
@@ -54,7 +67,7 @@ public class UnionBeansProcessor extends BaseProcessor {
         }
 
         beans = LlamaUtils.asLlamaBeanList(this.mainExchange);
-        if(newBean != null) {
+        if (newBean != null) {
             beans.add(newBean);
         }
         super.incProcessedRecords();
