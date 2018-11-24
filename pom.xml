@@ -4,7 +4,7 @@
 
     <groupId>com.github.johanfredin</groupId>
     <artifactId>llama</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3.1</version>
     <packaging>jar</packaging>
 
     <name>Llama API</name>
@@ -34,7 +34,7 @@
         <connection>scm:git:git://github.com/johanfredin/llama.git</connection>
         <developerConnection>scm:git:git@github.com:johanfredin/llama.git</developerConnection>
         <url>http://github.com/johanfredin/llama</url>
-      <tag>r0.1</tag>
+      <tag>v0.3.1</tag>
   </scm>
 
     <properties>
