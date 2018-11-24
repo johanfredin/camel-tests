@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,8 +42,8 @@ public class JoinKey {
      * @param keyInJoining the representation of the key in the joining exchange
      */
     public JoinKey(String keyInMain, String keyInJoining) {
-        this.keyInMain = keyInMain;
-        this.keyInJoining = keyInJoining;
+        setKeyInMain(keyInMain);
+        setKeyInJoining(keyInJoining);
     }
 
     /**

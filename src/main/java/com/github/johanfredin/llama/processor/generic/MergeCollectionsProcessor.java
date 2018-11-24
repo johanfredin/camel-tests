@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,23 +76,23 @@ public class MergeCollectionsProcessor extends AbstractJoinProcessor {
      */
     public MergeCollectionsProcessor(Exchange main, Exchange joining, boolean includeHeader) {
         super(main, joining, null);
-        this.includeHeader = includeHeader;
+        setIncludeHeader(includeHeader);
     }
 
     @Override
     public void process() {
-        var mainList = LlamaUtils.asListOfMaps(this.main);
-        var mergeList = LlamaUtils.asListOfMaps(this.joining);
+        var mainList = LlamaUtils.asListOfMaps(getMain());
+        var mergeList = LlamaUtils.asListOfMaps(getJoining());
 
         var result = merge(mainList, mergeList);
 
-        this.processedRecords = result.size();
+        setProcessedRecords(result.size());
 
-        if (this.includeHeader) {
+        if (isIncludeHeader()) {
             result.add(0, getHeader(result.get(0).keySet()));
         }
 
-        this.main.getIn().setBody(result);
+        getMain().getIn().setBody(result);
     }
 
     /**

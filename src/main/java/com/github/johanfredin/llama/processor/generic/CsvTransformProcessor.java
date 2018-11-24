@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,8 +52,8 @@ public class CsvTransformProcessor extends SimpleGenericProcessor {
      */
     public CsvTransformProcessor(Exchange exchange, Consumer<Map<String, String>> transformFunction, boolean includeHeader) {
         super(exchange);
-        this.setIncludeHeader(includeHeader);
-        this.setTransformFunction(transformFunction);
+        setIncludeHeader(includeHeader);
+        setTransformFunction(transformFunction);
     }
 
     /**
@@ -74,7 +74,7 @@ public class CsvTransformProcessor extends SimpleGenericProcessor {
     public List<Map<String, String>> processData(List<Map<String, String>> records) {
         return records.
                 stream()
-                .peek(this.getTransformFunction())
+                .peek(getTransformFunction())
                 .collect(Collectors.toList());
     }
 

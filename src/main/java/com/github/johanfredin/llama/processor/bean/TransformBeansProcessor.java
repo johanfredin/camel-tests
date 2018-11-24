@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ public class TransformBeansProcessor<T extends LlamaBean> extends SimpleBeanProc
      */
     public TransformBeansProcessor(Exchange exchange, Consumer<T> function) {
         super(exchange);
-        this.setFunction(function);
+        setFunction(function);
     }
 
     /**
@@ -61,7 +61,7 @@ public class TransformBeansProcessor<T extends LlamaBean> extends SimpleBeanProc
     public List<T> processData(List<T> beans) {
         return beans
                 .stream()
-                .peek(this.getFunction())
+                .peek(getFunction())
                 .collect(Collectors.toList());
     }
 

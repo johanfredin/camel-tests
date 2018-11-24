@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,23 +49,12 @@ public class CsvFilterProcessor extends SimpleGenericProcessor {
      *
      * @param exchange       the exchange with the body we want to filter
      * @param filterFunction what to filter the collection on.
-     */
-    public CsvFilterProcessor(Exchange exchange, Predicate<Map<String, String>> filterFunction) {
-        this(exchange, filterFunction, false);
-    }
-
-    /**
-     * Create a new instance
-     * should only be used in unit tests, hence protected
-     *
-     * @param exchange       the exchange with the body we want to filter
-     * @param filterFunction what to filter the collection on.
      * @param includeHeader  whether or not to include the header row in the resulting exchange
      */
     public CsvFilterProcessor(Exchange exchange, Predicate<Map<String, String>> filterFunction, boolean includeHeader) {
-        this.exchange = exchange;
-        this.includeHeader = includeHeader;
-        this.filterFunction = filterFunction;
+        setExchange(exchange);
+        setIncludeHeader(includeHeader);
+        setFilterFunction(filterFunction);
     }
 
     /**
@@ -92,7 +81,7 @@ public class CsvFilterProcessor extends SimpleGenericProcessor {
     public List<Map<String, String>> processData(List<Map<String, String>> records) {
         return records
                 .stream()
-                .filter(this.filterFunction)
+                .filter(getFilterFunction())
                 .collect(Collectors.toList());
     }
 

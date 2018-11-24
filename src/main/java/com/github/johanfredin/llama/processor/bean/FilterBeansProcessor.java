@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ public class FilterBeansProcessor<T extends LlamaBean> extends SimpleBeanProcess
      */
     public FilterBeansProcessor(Exchange exchange, Predicate<T> function) {
         super(exchange);
-        this.setFunction(function);
+        setFunction(function);
     }
 
     /**
@@ -58,7 +58,7 @@ public class FilterBeansProcessor<T extends LlamaBean> extends SimpleBeanProcess
     public List<T> processData(List<T> beans) {
         return beans
                 .stream()
-                .filter(this.getFunction())
+                .filter(getFunction())
                 .collect(Collectors.toList());
 
     }

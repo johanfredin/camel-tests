@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,24 +55,24 @@ public class UnionBeansProcessor extends BaseProcessor {
     public void process() {
         var newBean = getMergingExchange().getIn().getBody(LlamaBean.class);
         List<LlamaBean> beans;
-        if (this.mainExchange == null) {
+        if (getMainExchange() == null) {
             beans = new ArrayList<>();
 
             if (newBean != null) {
                 beans.add(newBean);
             }
 
-            this.mergingExchange.getIn().setBody(beans);
-            this.resultingExchange = this.mergingExchange;
+            getMergingExchange().getIn().setBody(beans);
+            this.resultingExchange = getMergingExchange();
         }
 
-        beans = LlamaUtils.asLlamaBeanList(this.mainExchange);
+        beans = LlamaUtils.asLlamaBeanList(getMainExchange());
         if (newBean != null) {
             beans.add(newBean);
         }
         super.incProcessedRecords();
-        this.mainExchange.getIn().setBody(beans);
-        this.resultingExchange = this.mainExchange;
+        getMainExchange().getIn().setBody(beans);
+        this.resultingExchange = getMainExchange();
     }
 
     @Override

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,8 +101,8 @@ public abstract class BaseProcessor implements LlamaProcessor {
     public void postCreate() {
         log.info("=======================================");
         log.info(getProcessorName() + " initiated");
-        if(this.initialRecords != UN_ALTERED_VALUE) {
-            log.info("Initial records=" + this.initialRecords);
+        if(getInitialRecords() != UN_ALTERED_VALUE) {
+            log.info("Initial records=" + getInitialRecords());
         }
     }
 

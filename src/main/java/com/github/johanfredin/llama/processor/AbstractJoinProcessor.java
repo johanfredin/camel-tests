@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,9 @@
  */
 package com.github.johanfredin.llama.processor;
 
-import org.apache.camel.Exchange;
 import com.github.johanfredin.llama.pojo.JoinType;
 import com.github.johanfredin.llama.processor.generic.GenericProcessor;
+import org.apache.camel.Exchange;
 
 /**
  * Super class for all {@link com.github.johanfredin.llama.processor.LlamaProcessor} instances where
@@ -45,9 +45,9 @@ public abstract class AbstractJoinProcessor extends GenericProcessor {
      */
     public AbstractJoinProcessor(Exchange main, Exchange joining, JoinType joinType) {
         super(false);
-        this.main = main;
-        this.joining = joining;
-        this.joinType = joinType;
+        setMain(main);
+        setJoining(joining);
+        setJoinType(joinType);
     }
 
     /**

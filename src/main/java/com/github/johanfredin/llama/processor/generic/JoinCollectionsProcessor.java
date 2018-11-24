@@ -174,16 +174,16 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
 
     @Override
     public void process() {
-        var main = LlamaUtils.<Map<String, String>>asListOfMaps(this.main);
-        var joining = LlamaUtils.<Map<String, String>>asListOfMaps(this.joining);
+        var main = LlamaUtils.<Map<String, String>>asListOfMaps(getMain());
+        var joining = LlamaUtils.<Map<String, String>>asListOfMaps(getJoining());
 
-        super.setInitialRecords(main.size());
+        setInitialRecords(main.size());
 
         // Make sure keys exist
         var mainKeys = main.get(0).keySet();
         var joiningKeys = joining.get(0).keySet();
 
-        for (var joinKey : this.joinKeys.getKeys()) {
+        for (var joinKey : getJoinKeys().getKeys()) {
             if (!mainKeys.contains(joinKey.getKeyInMain())) {
                 throw new RuntimeException("Join key=" + joinKey.getKeyInMain() + " does not exist in main exchange! Available keys in main are: " + Arrays.toString(mainKeys.toArray()));
             } else if (!joiningKeys.contains(joinKey.getKeyInJoining())) {
@@ -195,13 +195,13 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         var result = new LinkedList<>(join(main, joining));
 
         // Give the header to the list if specified
-        if (super.includeHeader) {
-            result.add(0, super.getHeader(result.get(0).keySet()));
+        if (isIncludeHeader()) {
+            result.add(0, getHeader(result.get(0).keySet()));
         }
 
         // Update the main exchange
-        this.main.getIn().setBody(result);
-        super.setProcessedRecords(result.size());
+        getMain().getIn().setBody(result);
+        setProcessedRecords(result.size());
     }
 
     /**
@@ -214,10 +214,10 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
      */
     protected List<Map<String, String>> join(List<Map<String, String>> main, List<Map<String, String>> joining) {
         // Group the collections into maps for easier joining later.
-        var mainMap = JoinUtils.groupCollection(this.joinKeys, JoinUtils.EXCHANGE_MAIN, main);
-        var joiningMap = JoinUtils.groupCollection(this.joinKeys, JoinUtils.EXCHANGE_JOINING, joining);
+        var mainMap = JoinUtils.groupCollection(getJoinKeys(), JoinUtils.EXCHANGE_MAIN, main);
+        var joiningMap = JoinUtils.groupCollection(getJoinKeys(), JoinUtils.EXCHANGE_JOINING, joining);
 
-        switch (this.joinType) {
+        switch (getJoinType()) {
             case INNER:
                 return innerJoin(mainMap, joiningMap);
             case LEFT:
@@ -290,8 +290,8 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
         var joiningHeaders = JoinUtils.fetchHeader(joining);
 
         // Determine what to pass in as main and joining field headers.
-        var mainFields = this.joinType == JoinType.LEFT ? this.entity1Fields : this.entity2Fields;
-        var joiningFields = this.joinType == JoinType.LEFT ? this.entity2Fields : this.entity1Fields;
+        var mainFields = getJoinType() == JoinType.LEFT ? getEntity1Fields() : getEntity2Fields();
+        var joiningFields = getJoinType() == JoinType.LEFT ? getEntity2Fields() : getEntity1Fields();
 
         // Iterate main map
         for (var mainKey : main.keySet()) {
@@ -334,8 +334,7 @@ public class JoinCollectionsProcessor extends AbstractJoinProcessor {
      */
     private List<Map<String, String>> leftOrRightExcludingJoin(Map<String, List<Map<String, String>>> main, Map<String, List<Map<String, String>>> joining) {
         // Determine what to pass in as main and joining field headers.
-        var mainFields = this.joinType == JoinType.LEFT_EXCLUDING ? this.entity1Fields : this.entity2Fields;
-        var joiningFields = this.joinType == JoinType.LEFT_EXCLUDING ? this.entity2Fields : this.entity1Fields;
+        var mainFields = getJoinType() == JoinType.LEFT_EXCLUDING ? getEntity1Fields() : getEntity2Fields();
 
         var result = new ArrayList<Map<String, String>>();
 

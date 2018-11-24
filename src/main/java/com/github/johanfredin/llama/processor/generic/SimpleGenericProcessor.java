@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 Johan Fredin
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,18 +66,18 @@ public abstract class SimpleGenericProcessor extends GenericProcessor {
     @Override
     public void process() {
         var records = LlamaUtils.asLinkedListOfMaps(this.exchange);
-        this.initialRecords = records.size();
+        setInitialRecords(records.size());
 
         var modifiedRecords = processData(records);
 
         // Set the count before applying header to avoid confusion
-        this.processedRecords = modifiedRecords.size();
+        setProcessedRecords(modifiedRecords.size());
 
-        if (super.includeHeader) {
+        if (isIncludeHeader()) {
             modifiedRecords.add(0, getHeader(modifiedRecords.get(0).keySet()));
         }
 
-        this.exchange.getIn().setBody(modifiedRecords);
+        getExchange().getIn().setBody(modifiedRecords);
     }
 
     /**
