@@ -27,23 +27,6 @@ public class MockRouteDefinition {
         this.enpointsTomock = enpointsTomock;
     }
 
-    public String getRouteId() {
-        return routeId;
-    }
-
-    public void setRouteId(String routeId) {
-        this.routeId = routeId;
-    }
-
-    public List<EndpointToMockEndpoint> getEnpointsTomock() {
-        return enpointsTomock;
-    }
-
-    public void setEnpointsTomock(List<EndpointToMockEndpoint> enpointsTomock) {
-        this.enpointsTomock = enpointsTomock;
-    }
-
-
     @Override
     public String toString() {
         return "MockRouteDefinition{" +

@@ -16,7 +16,7 @@
 package com.github.johanfredin.llama.utils;
 
 /**
- * Used with the {@link Endpoint} class to build string uris to I/O sources.
+ * Used with the {@link com.github.johanfredin.llama.LlamaRoute} class to build string uris to I/O sources.
  * Each entry contains a string value that will be used in the uris.
  *
  * @author johan

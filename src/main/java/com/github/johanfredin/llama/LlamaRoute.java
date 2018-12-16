@@ -15,10 +15,12 @@
  */
 package com.github.johanfredin.llama;
 
+import com.github.johanfredin.llama.utils.InputOptions;
+import com.github.johanfredin.llama.utils.InputType;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
+import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.dataformat.BindyType;
-import com.github.johanfredin.llama.utils.Endpoint;
 
 /**
  * Helping abstraction layer that extends the camel {@link RouteBuilder} that all
@@ -71,7 +73,7 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @param startupOrder the startup order of this route.
      * @return the name of the endpoint.
      */
-    protected String getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder) {
+    protected RouteDefinition getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder) {
         return getRoute(routeId, directory, fileName, clazz, endpoint, startupOrder, true);
     }
 
@@ -90,16 +92,14 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @param autoStart    whether or not the route should automatically or not (default is true)
      * @return the name of the endpoint.
      */
-    protected String getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder, boolean autoStart) {
-        from(Endpoint.file(directory, fileName))
+    protected RouteDefinition getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder, boolean autoStart) {
+        return from(file(directory, fileName))
                 .routeId(routeId)
                 .autoStartup(autoStart)
                 .unmarshal()
                 .bindy(BindyType.Csv, clazz)
                 .to("seda:" + endpoint)
                 .startupOrder(startupOrder);
-
-        return "seda:" + endpoint;
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @param startupOrder the startup order of the route
      * @return the endpoint name
      */
-    protected String getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder) {
+    protected RouteDefinition getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder) {
         return getRoute(routeId, directory, fileName, endpoint, startupOrder, true);
     }
 
@@ -131,50 +131,13 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @param autoStart    whether or not the route should automatically or not (default is true)
      * @return the endpoint name
      */
-    protected String getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder, boolean autoStart) {
-        from(Endpoint.file(directory, fileName))
+    protected RouteDefinition getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder, boolean autoStart) {
+        return from(file(directory, fileName))
                 .routeId(routeId)
                 .autoStartup(autoStart)
                 .unmarshal(csvToCollectionOfMaps())
                 .to("seda:" + endpoint)
                 .startupOrder(startupOrder);
-
-        return "seda:" + endpoint;
-    }
-
-    /**
-     * Converts the content of a .csv file into a nested list of strings.
-     * Each entry in the list will be a list of strings in the order
-     * the fields are written in the file.
-     * Calls {@link #csvToListOfLists(char, boolean)} with default values (';', false)
-     * <br>
-     * <br>
-     * Note to user, there are no processors supporting lists of lists. So working with this collection
-     * would require to code something of your own.
-     *
-     * @return a list of list of strings
-     */
-    protected CsvDataFormat csvToListOfLists() {
-        return csvToListOfLists(';', false);
-    }
-
-    /**
-     * Converts the content of a .csv file into a nested list of strings.
-     * Each entry in the list will be a list of strings in the order
-     * the fields are written in the file.
-     * <p>
-     * Note to user, there are no processors supporting lists of lists. So working with this collection
-     * would require to code something of your own.
-     *
-     * @param delimiter  the delimiter used to separate entries in the csv file (default=';')
-     * @param skipHeader whether or not to skip the first(header) row in the file (default=false)
-     * @return a list of list of strings
-     */
-    protected CsvDataFormat csvToListOfLists(char delimiter, boolean skipHeader) {
-        var format = new CsvDataFormat();
-        format.setDelimiter(delimiter);
-        format.setSkipHeaderRecord(skipHeader);
-        return format;
     }
 
     /**
@@ -207,26 +170,6 @@ public abstract class LlamaRoute extends RouteBuilder {
      * be useful when we have a really big amount of data or we simply don't care if the values
      * are ordered or not.
      *
-     * @param isOrderedMaps whether to use ordered maps or standard maps (default is true)
-     * @param format a pre-defined csv format to use.
-     * @return the content of a .csv file as a list of ordered (or standard) maps.
-     */
-    protected CsvDataFormat csvToCollectionOfMaps(boolean isOrderedMaps, CsvDataFormat format) {
-        if (isOrderedMaps) {
-            format.setUseOrderedMaps(true);
-        } else {
-            format.setUseMaps(true);
-        }
-        return format;
-    }
-
-    /**
-     * Converts the content of a .csv file into a list of maps where key/values are all strings.
-     * Each entry in the list will be a map where <b>key=header name, value=value at header index.</b>.
-     * Here we have the option to disable ordered maps and use standard maps. This could potentially
-     * be useful when we have a really big amount of data or we simply don't care if the values
-     * are ordered or not.
-     *
      * @param delimiter     the delimiter used to separate the fields in the .csv file (default is ';')
      * @param isOrderedMaps whether to use ordered maps or standard maps (default is true)
      * @return the content of a .csv file as a list of ordered (or standard) maps.
@@ -244,15 +187,15 @@ public abstract class LlamaRoute extends RouteBuilder {
      * order as in the file. If we have a really big amount of data or we simply don't care if the values
      * are ordered or not then set this to false
      *
-     * @param isOrderedMaps whether to use ordered maps or standard maps
-     * @param delimiter the character used to separate the csv columns
+     * @param isOrderedMaps           whether to use ordered maps or standard maps
+     * @param delimiter               the character used to separate the csv columns
      * @param allowMissingColumnNames whether to allow if a column is missing or not
-     * @param escapeChar character that should be interpreted as an escape character
-     * @param ignoreEmptyLines whether or not to skip an empty line in the file
-     * @param quoteChar if fields are wrapped in quotes we should specify what character is used for that. Pass in null if
-     *                  no quote char is used in the file.
-     * @param skipHeaderRecord whether or not to skip the header record.
-     * @param nullValue a default value to use when we encounter null in a column.
+     * @param escapeChar              character that should be interpreted as an escape character
+     * @param ignoreEmptyLines        whether or not to skip an empty line in the file
+     * @param quoteChar               if fields are wrapped in quotes we should specify what character is used for that. Pass in null if
+     *                                no quote char is used in the file.
+     * @param skipHeaderRecord        whether or not to skip the header record.
+     * @param nullValue               a default value to use when we encounter null in a column.
      * @param ignoreSurroundingSpaces whether or not to skip spaces before and after a column field value.
      * @return the content of a .csv file as a list of ordered (or standard) maps.
      */
@@ -264,7 +207,7 @@ public abstract class LlamaRoute extends RouteBuilder {
         format.setAllowMissingColumnNames(allowMissingColumnNames);
         format.setEscape(escapeChar);
         format.setIgnoreEmptyLines(ignoreEmptyLines);
-        if(quoteChar != null) {
+        if (quoteChar != null) {
             format.setQuote(quoteChar);
         }
         format.setSkipHeaderRecord(skipHeaderRecord);
@@ -276,6 +219,145 @@ public abstract class LlamaRoute extends RouteBuilder {
             format.setUseMaps(true);
         }
         return format;
+    }
+
+    /**
+     * Create a new file uri where we don't want to move the file.
+     *
+     * @param url      directory of the file
+     * @param fileName name of the file
+     * @return a valid file uri with noop=true
+     */
+    protected String file(String url, String fileName) {
+        return fileSource(InputType.FILE, url, fileName, InputOptions.KEEP);
+    }
+
+    /**
+     * Create a new file uri
+     *
+     * @param url      directory of the file
+     * @param fileName name of the file
+     * @param options  whether to keep the file or not (default is KEEP)
+     * @return a valid file uri
+     */
+    protected String file(String url, String fileName, InputOptions options) {
+        return fileSource(InputType.FILE, url, fileName, options);
+    }
+
+    /**
+     * Create a new source uri.
+     *
+     * @param inputType what type of source to read from
+     * @param url       directory to the source
+     * @param fileName  name of the source
+     * @param option    whether to keep the source or not
+     * @return a valid source uri.
+     */
+    protected String fileSource(InputType inputType, String url, String fileName, InputOptions option) {
+        return inputType.getType() + ':' + url + "/?fileName=" + fileName + '&' + option.getOption();
+    }
+
+    /**
+     * Create a new sql uri. Result will be stored in a collection of JPA entities
+     *
+     * @param query       the sql query
+     * @param outputClass a valid JPA class that can represent the query.
+     * @return a valid sql uri
+     */
+    protected String sql(String query, Class outputClass) {
+        return sql(query, outputClass, true, false, true);
+    }
+
+    /**
+     * Create a new sql uri. Result will be stored in a collection of JPA entities
+     *
+     * @param query               the sql query
+     * @param outputClass         a valid JPA class that can represent the query.
+     * @param routeEmptyResultSet whether or not to continue the routing if the query result is empty, if false route will wait until data can be fetched. (default is true)
+     * @return a valid sql uri
+     */
+    protected String sql(String query, Class outputClass, boolean routeEmptyResultSet) {
+        return sql(query, outputClass, true, false, routeEmptyResultSet);
+    }
+
+    /**
+     * Create a new sql uri. Result will be stored in a collection of JPA entities
+     *
+     * @param query               the sql query
+     * @param outputClass         a valid JPA class that can represent the query.
+     * @param reuseQuery          whether or not the source can be accessed again (default is true)
+     * @param useIterator         if true then result will be processed one by one, if false then the entire result set is returned (default is false)
+     * @param routeEmptyResultSet whether or not to continue the routing if the query result is empty, if false route will wait until data can be fetched. (default is true)
+     * @return a valid sql uri
+     */
+    protected String sql(String query, Class outputClass, boolean reuseQuery, boolean useIterator, boolean routeEmptyResultSet) {
+        return new StringBuilder()
+                .append(InputType.SQL.getType()).append(':').append(query)
+                .append("?outputClass=").append(outputClass.getCanonicalName())
+                .append("&noop=").append(reuseQuery)
+                .append("&useIterator=").append(useIterator)
+                .append("&routeEmptyResultSet=").append(routeEmptyResultSet)
+                .toString();
+    }
+
+    /**
+     * Create a new sql uri. Result will be stored in a List of Maps
+     *
+     * @param query the sql query
+     * @return a valid sql uri
+     */
+    protected String sql(String query) {
+        return sql(query, true, false, true);
+    }
+
+    /**
+     * Create a new sql uri. Result will be stored in a List of Maps
+     *
+     * @param query               the sql query
+     * @param routeEmptyResultSet whether or not to continue the routing if the query result is empty, if false route will wait until data can be fetched. (default is true)
+     * @return a valid sql uri
+     */
+    protected String sql(String query, boolean routeEmptyResultSet) {
+        return sql(query, true, false, routeEmptyResultSet);
+    }
+
+    /**
+     * Create a new sql uri. Result will be stored in a List of Maps
+     *
+     * @param query               the sql query
+     * @param reuseQuery          whether or not the source can be accessed again (default is true)
+     * @param useIterator         if true then result will be processed one by one, if false then the entire result set is returned (default is false)
+     * @param routeEmptyResultSet whether or not to continue the routing if the query result is empty, if false route will wait until data can be fetched. (default is true)
+     * @return a valid sql uri
+     */
+    protected String sql(String query, boolean reuseQuery, boolean useIterator, boolean routeEmptyResultSet) {
+        return new StringBuilder()
+                .append(InputType.SQL.getType()).append(':').append(query)
+                .append("?noop=").append(reuseQuery)
+                .append("&useIterator=").append(useIterator)
+                .append("&routeEmptyResultSet=").append(routeEmptyResultSet)
+                .toString();
+    }
+
+    /**
+     * Used when we want to stop polling a route. Will make an async call to the control bus passing in
+     * the id of the route we want to stop.
+     * @param routeId the id of the route we want to stop
+     * @return the uri string <b>controlbus:route?routeId=routeId&action=stop&async=true</b> where routeId=routeId param
+     */
+    protected String controlBus(String routeId) {
+        return controlBus(routeId, "stop");
+    }
+
+    /**
+     * Used when we want to call the control bus and make it do something, could be stopping a route for example
+     * the id of the route we want to stop.
+     * @param routeId the id of the route we want to invoke
+     * @param action the action we want the control bus to take.
+     * @return the uri string <b>controlbus:route?routeId=routeId&action=action&async=true</b> where routeId=routeId param and action=action param
+     */
+    protected String controlBus(String routeId, String action) {
+        return "controlbus:route?routeId=" + routeId + "&action=" + action + "&async=true";
     }
 }
 

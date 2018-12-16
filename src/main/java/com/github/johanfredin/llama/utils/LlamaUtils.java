@@ -16,6 +16,7 @@
 package com.github.johanfredin.llama.utils;
 
 import com.github.johanfredin.llama.bean.LlamaBean;
+import com.github.johanfredin.llama.collection.LlamaMap;
 import org.apache.camel.Exchange;
 
 import java.io.Serializable;
@@ -227,6 +228,38 @@ public class LlamaUtils {
         return potentialHeader.entrySet()
                 .stream()
                 .allMatch(me -> me.getKey().equals(me.getValue()));
+    }
+
+    /**
+     * When we are working with lists of maps between exchanges then the header record gets lost.
+     * If we want it included in the result we can "re-attach" it to the body of the exchange
+     * by simply adding a new entry at the first index containing the keyset. When we later marshal this
+     * into a CSV file or similar format the header row will be returned.
+     * @param body the collection to insert the header to.
+     * @return the passed in collection + the header.
+     */
+    public static Map<String, String> reconnectHeader(List<Map<String, String>> body) {
+        return body.get(0).keySet()
+                .stream()
+                .collect(Collectors.toMap(key -> key, key -> key, (a, b) -> b, LlamaMap::new));
+    }
+
+    /**
+     * When we are working with lists of maps between exchanges then the header record gets lost.
+     * If we want it included in the result we can "re-attach" it to the body of the exchange
+     * by simply adding a new entry at the first index containing the keyset. When we later marshal this
+     * into a CSV file or similar format the header row will be returned.
+     * @param exchange the exchange assumed to contain a body of format List of Maps.
+     * @return the exchange with an updated body containing the body + the header
+     * @throws RuntimeException if the body of passed in exchange is not a List of Maps.
+     */
+    public static Exchange reconnectHeader(Exchange exchange) {
+        if(exchange.getIn().getBody() instanceof List) {
+            var body = asLinkedListOfMaps(exchange);
+            body.add(0, reconnectHeader(body));
+            exchange.getIn().setBody(body);
+        }
+        throw new RuntimeException("Can not add header row to exchange when body is not a List of Maps. Body of passed in exchange=" + exchange.getIn().getBody().getClass());
     }
 
 }

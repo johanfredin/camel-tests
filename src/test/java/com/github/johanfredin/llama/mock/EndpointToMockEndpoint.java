@@ -25,22 +25,6 @@ public class EndpointToMockEndpoint {
         this.mockedEnpoint = mockedEnpoint;
     }
 
-    public String getRealEndpoint() {
-        return realEndpoint;
-    }
-
-    public void setRealEndpoint(String realEndpoint) {
-        this.realEndpoint = realEndpoint;
-    }
-
-    public String getMockedEnpoint() {
-        return mockedEnpoint;
-    }
-
-    public void setMockedEnpoint(String mockedEnpoint) {
-        this.mockedEnpoint = mockedEnpoint;
-    }
-
     @Override
     public String toString() {
         return "EndpointToMock{" +

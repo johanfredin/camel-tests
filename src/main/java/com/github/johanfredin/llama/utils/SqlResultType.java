@@ -16,7 +16,7 @@
 package com.github.johanfredin.llama.utils;
 
 /**
- * Used when using an sql query with the {@link Endpoint} class.
+ * Used when using an sql query with the {@link com.github.johanfredin.llama.LlamaRoute} class.
  */
 public enum SqlResultType {
 
