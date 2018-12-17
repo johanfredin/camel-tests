@@ -343,7 +343,7 @@ public abstract class LlamaRoute extends RouteBuilder {
      * Used when we want to stop polling a route. Will make an async call to the control bus passing in
      * the id of the route we want to stop.
      * @param routeId the id of the route we want to stop
-     * @return the uri string <b>controlbus:route?routeId=routeId&action=stop&async=true</b> where routeId=routeId param
+     * @return the uri string <b>controlbus:route?routeId=routeId&amp;action=stop&amp;async=true</b> where routeId=routeId param
      */
     protected String controlBus(String routeId) {
         return controlBus(routeId, "stop");
@@ -354,7 +354,7 @@ public abstract class LlamaRoute extends RouteBuilder {
      * the id of the route we want to stop.
      * @param routeId the id of the route we want to invoke
      * @param action the action we want the control bus to take.
-     * @return the uri string <b>controlbus:route?routeId=routeId&action=action&async=true</b> where routeId=routeId param and action=action param
+     * @return the uri string <b>controlbus:route?routeId=routeId&amp;action=action&amp;async=true</b> where routeId=routeId param and action=action param
      */
     protected String controlBus(String routeId, String action) {
         return "controlbus:route?routeId=" + routeId + "&action=" + action + "&async=true";

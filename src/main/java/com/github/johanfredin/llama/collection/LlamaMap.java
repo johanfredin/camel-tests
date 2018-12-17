@@ -32,13 +32,14 @@ public class LlamaMap<K, V> extends LinkedHashMap<K, V> {
     /**
      * Create a new empty instance
      */
-    public LlamaMap() {}
+    public LlamaMap() {
+    }
 
     /**
      * Create a new instance calling super constructor on the params
      *
-     * @param initialCapacity
-     * @param loadFactor
+     * @param initialCapacity the initial capacity
+     * @param loadFactor      the load capacity
      */
     public LlamaMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
@@ -47,7 +48,7 @@ public class LlamaMap<K, V> extends LinkedHashMap<K, V> {
     /**
      * Create a new instance calling super constructor on the params
      *
-     * @param initialCapacity
+     * @param initialCapacity the initial capacity
      */
     public LlamaMap(int initialCapacity) {
         super(initialCapacity);
@@ -56,7 +57,7 @@ public class LlamaMap<K, V> extends LinkedHashMap<K, V> {
     /**
      * Create a new instance calling super constructor on the params
      *
-     * @param m
+     * @param m an map to copy values from
      */
     public LlamaMap(Map<? extends K, ? extends V> m) {
         super(m);
@@ -65,9 +66,10 @@ public class LlamaMap<K, V> extends LinkedHashMap<K, V> {
     /**
      * Create a new instance calling super constructor on the params
      *
-     * @param initialCapacity
-     * @param loadFactor
-     * @param accessOrder
+     * @param initialCapacity the initial capacity
+     * @param loadFactor      the load capacity
+     * @param accessOrder     the ordering mode - {@code true} for
+     *                        access-order, {@code false} for insertion-order
      */
     public LlamaMap(int initialCapacity, float loadFactor, boolean accessOrder) {
         super(initialCapacity, loadFactor, accessOrder);
