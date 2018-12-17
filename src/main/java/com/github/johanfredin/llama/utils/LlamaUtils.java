@@ -254,12 +254,14 @@ public class LlamaUtils {
      * @throws RuntimeException if the body of passed in exchange is not a List of Maps.
      */
     public static Exchange reconnectHeader(Exchange exchange) {
-        if(exchange.getIn().getBody() instanceof List) {
+        try {
             var body = asLinkedListOfMaps(exchange);
             body.add(0, reconnectHeader(body));
             exchange.getIn().setBody(body);
+            return exchange;
+        } catch(Exception ex) {
+            throw new RuntimeException("Can not add header row to exchange when body is not a List of Maps. Body of passed in exchange=" + exchange.getIn().getBody().getClass());
         }
-        throw new RuntimeException("Can not add header row to exchange when body is not a List of Maps. Body of passed in exchange=" + exchange.getIn().getBody().getClass());
     }
 
 }

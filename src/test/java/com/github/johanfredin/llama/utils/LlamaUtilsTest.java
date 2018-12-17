@@ -184,6 +184,24 @@ public class LlamaUtilsTest {
                 });
     }
 
+    @Test
+    public void testReconnectHeaderMapParam() {
+        verifyHeader(LlamaUtils.reconnectHeader(TestFixture.mainEntries));
+    }
+
+    @Test
+    public void testReconnectHeaderExchangeParam() {
+        var exchange = LlamaUtils.reconnectHeader(getExchange(TestFixture.mainEntries));
+        verifyHeader(LlamaUtils.asLinkedListOfMaps(exchange).get(0));
+    }
+
+    void verifyHeader(Map<String, String> header) {
+        assertEquals("Header size=3", 3, header.size());
+        assertEquals("Header name/value contains Id", "Id", header.get("Id"));
+        assertEquals("Header name/value contains Name", "Name", header.get("Name"));
+        assertEquals("Header name/value contains Age", "Age", header.get("Age"));
+    }
+
     private Exchange getExchange(Object body) {
         var in = new MockMessage();
         in.setBody(body);
