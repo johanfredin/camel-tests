@@ -15,12 +15,14 @@
  */
 package com.github.johanfredin.llama;
 
+import com.github.johanfredin.llama.pojo.RouteHolder;
 import com.github.johanfredin.llama.utils.InputOptions;
 import com.github.johanfredin.llama.utils.InputType;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
-import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.dataformat.BindyType;
+
+import java.util.Arrays;
 
 /**
  * Helping abstraction layer that extends the camel {@link RouteBuilder} that all
@@ -60,7 +62,7 @@ public abstract class LlamaRoute extends RouteBuilder {
     }
 
     /**
-     * When we have a file that can be used with {@link BindyType} to unmarshal into a collection
+     * When we have a file that can be used with {@link BindyType} to un-marshal into a collection
      * of beans mapped up as bindy objects and then passed further to a seda endpoint
      * to be picked up later by another route. This method does just that.
      *
@@ -71,9 +73,9 @@ public abstract class LlamaRoute extends RouteBuilder {
      *                     specification.
      * @param endpoint     the endpoint to send the the route to. Will be started with "seda:"
      * @param startupOrder the startup order of this route.
-     * @return the name of the endpoint.
+     * @return a new {@link RouteHolder} containing the id of the route, name of the endpoint and the route definition.
      */
-    protected RouteDefinition getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder) {
+    protected RouteHolder getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder) {
         return getRoute(routeId, directory, fileName, clazz, endpoint, startupOrder, true);
     }
 
@@ -90,20 +92,22 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @param endpoint     the endpoint to send the the route to. Will be started with "seda:"
      * @param startupOrder the startup order of this route.
      * @param autoStart    whether or not the route should automatically or not (default is true)
-     * @return the name of the endpoint.
+     * @return a new {@link RouteHolder} containing the id of the route, name of the endpoint and the route definition.
      */
-    protected RouteDefinition getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder, boolean autoStart) {
-        return from(file(directory, fileName))
+    protected RouteHolder getRoute(String routeId, String directory, String fileName, Class clazz, String endpoint, int startupOrder, boolean autoStart) {
+        var route = from(file(directory, fileName))
                 .routeId(routeId)
                 .autoStartup(autoStart)
                 .unmarshal()
                 .bindy(BindyType.Csv, clazz)
                 .to("seda:" + endpoint)
                 .startupOrder(startupOrder);
+
+        return new RouteHolder(routeId, "seda:" + endpoint, route);
     }
 
     /**
-     * Simplified way to get a route up and running. Reads from a file expected to be of .csv format.
+     * Simplified way to get a route up and running.
      * Converts the content of that file to a collection of ordered maps. Sends to a seda:endpoint and gives
      * it a startup order.
      *
@@ -112,15 +116,15 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @param fileName     name of the csv file to read
      * @param endpoint     name of the endpoint (seda: will be appended before the value you pass in)
      * @param startupOrder the startup order of the route
-     * @return the endpoint name
+     * @return a new {@link RouteHolder} containing the id of the route, name of the endpoint and the route definition.
      */
-    protected RouteDefinition getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder) {
+    protected RouteHolder getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder) {
         return getRoute(routeId, directory, fileName, endpoint, startupOrder, true);
     }
 
     /**
-     * Simplified way to get a route up and running. Reads from a file expected to be of .csv format.
-     * Converts the content of that file to a collection of ordered maps. Sends to a seda:endpoint and gives
+     * Simplified way to get a route up and running.
+     * Converts the content of a file to a collection of ordered maps. Sends to a seda:endpoint and gives
      * it a startup order.
      *
      * @param routeId      the unique id to give the route
@@ -129,15 +133,17 @@ public abstract class LlamaRoute extends RouteBuilder {
      * @param endpoint     name of the endpoint (seda: will be appended before the value you pass in)
      * @param startupOrder the startup order of the route
      * @param autoStart    whether or not the route should automatically or not (default is true)
-     * @return the endpoint name
+     * @return a new {@link RouteHolder} containing the id of the route, name of the endpoint and the route definition.
      */
-    protected RouteDefinition getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder, boolean autoStart) {
-        return from(file(directory, fileName))
+    protected RouteHolder getRoute(String routeId, String directory, String fileName, String endpoint, int startupOrder, boolean autoStart) {
+        var route = from(file(directory, fileName))
                 .routeId(routeId)
                 .autoStartup(autoStart)
                 .unmarshal(csvToCollectionOfMaps())
                 .to("seda:" + endpoint)
                 .startupOrder(startupOrder);
+
+        return new RouteHolder(routeId, "seda:" + endpoint, route);
     }
 
     /**
@@ -342,6 +348,7 @@ public abstract class LlamaRoute extends RouteBuilder {
     /**
      * Used when we want to stop polling a route. Will make an async call to the control bus passing in
      * the id of the route we want to stop.
+     *
      * @param routeId the id of the route we want to stop
      * @return the uri string <b>controlbus:route?routeId=routeId&amp;action=stop&amp;async=true</b> where routeId=routeId param
      */
@@ -352,12 +359,23 @@ public abstract class LlamaRoute extends RouteBuilder {
     /**
      * Used when we want to call the control bus and make it do something, could be stopping a route for example
      * the id of the route we want to stop.
+     *
      * @param routeId the id of the route we want to invoke
-     * @param action the action we want the control bus to take.
+     * @param action  the action we want the control bus to take.
      * @return the uri string <b>controlbus:route?routeId=routeId&amp;action=action&amp;async=true</b> where routeId=routeId param and action=action param
      */
     protected String controlBus(String routeId, String action) {
         return "controlbus:route?routeId=" + routeId + "&action=" + action + "&async=true";
+    }
+
+    /**
+     * Helper method for ending an arbitrary amount of routes.
+     * Calls {@link #controlBus(String)} on each routes RouteDefinition instance.
+     * @param routes the routes to end.
+     */
+    protected void endRoutes(RouteHolder... routes) {
+        Arrays.stream(routes)
+                .forEach(route -> route.getRouteDefinition().to(controlBus(route.getRouteId())));
     }
 }
 

@@ -117,7 +117,7 @@ public class Processors {
      * @param mainExchange    the main exchange.
      * @param joiningExchange the exchange we are joining in.
      * @param keys            the keys. Must exist as fields in both exchanges.
-     * @param joinType        what type of filterValidateAgainst to use.
+     * @param joinType        what type of join this should be
      * @param entity1Fields   the fields we want to include from the main exchange in the resulting exchange.
      * @param entity2Fields   the fields we want to include from the joining exchange in the resulting exchange.
      * @return {@link JoinCollectionsProcessor#doExecuteProcess()}
@@ -132,7 +132,7 @@ public class Processors {
      * @param mainExchange    the main exchange.
      * @param joiningExchange the exchange we are joining in.
      * @param keys            the keys. Must exist as fields in both exchanges.
-     * @param joinType        what type of filterValidateAgainst to use.
+     * @param joinType        what type of join this should be.
      * @param entity1Fields   the fields we want to include from the main exchange in the resulting exchange.
      * @param entity2Fields   the fields we want to include from the joining exchange in the resulting exchange.
      * @param includeHeader   whether or not to include the header row in the result (public static is false)

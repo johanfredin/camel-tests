@@ -39,17 +39,17 @@ public class LlamaRouteTest {
     @Test
     public void getRoute() {
         var route = llamaRoute.getRoute("my_route_id", DIR, FILE_NAME, LlamaBean.class, "my_endpoint", 1, true);
-        assertEquals("Route id=my_route_id", "my_route_id", route.getId());
-        assertEquals("Startup order=1", 1, route.getStartupOrder().intValue());
-        assertEquals("Autostart=true", "true", route.getAutoStartup());
+        assertEquals("Route id=my_route_id", "my_route_id", route.getRouteId());
+        assertEquals("Startup order=1", 1, route.getRouteDefinition().getStartupOrder().intValue());
+        assertEquals("Autostart=true", "true", route.getRouteDefinition().getAutoStartup());
     }
 
     @Test
     public void getRoute1() {
         var route = llamaRoute.getRoute("my_route_id", DIR, FILE_NAME, "my_endpoint", 1, true);
-        assertEquals("Route id=my_route_id", "my_route_id", route.getId());
-        assertEquals("Startup order=1", 1, route.getStartupOrder().intValue());
-        assertEquals("Autostart=true", "true", route.getAutoStartup());
+        assertEquals("Route id=my_route_id", "my_route_id", route.getRouteId());
+        assertEquals("Startup order=1", 1, route.getRouteDefinition().getStartupOrder().intValue());
+        assertEquals("Autostart=true", "true", route.getRouteDefinition().getAutoStartup());
     }
 
 
